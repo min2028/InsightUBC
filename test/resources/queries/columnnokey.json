@@ -1,0 +1,16 @@
+{
+	"title": "column having no key, InsightError",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
