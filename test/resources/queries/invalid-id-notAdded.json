@@ -1,0 +1,19 @@
+{
+  "title": "query with invalid id (not added) -> should reject with InsightError",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "other_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "other_dept",
+        "other_avg"
+      ],
+      "ORDER": "other_avg"
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}

@@ -1,0 +1,22 @@
+{
+  "title": "query with extra param -> should reject with InsightError",
+  "input": {
+    "WHERE": {
+      "GT": {
+        "sections_avg": 97
+      }
+    },
+    "OPTIONS": {
+      "COLUMNS": [
+        "sections_dept",
+        "sections_avg"
+      ],
+      "ORDER": "sections_avg"
+    },
+    "OTHER": {
+      "LT": 123
+    }
+  },
+  "errorExpected": true,
+  "expected": "InsightError"
+}
