@@ -50,21 +50,21 @@ describe("InsightFacade Combined test suite", function () {
 		fs.removeSync(persistDirectory);
 	});
 
-	beforeEach(function () {
-		// This section resets the insightFacade instance
-		// This runs before each test
-		insightFacade = new InsightFacade();
-	});
-
-	afterEach(function () {
-		// This section resets the data directory (removing any cached data)
-		// This runs after each test, which should make each test independent of the previous one
-		fs.removeSync(persistDirectory);
-	});
-
 	describe("[ addDataset() ]", function () {
 		after(function () {
 			console.info("\n-----------------------------");
+		});
+
+		beforeEach(function () {
+			// This section resets the insightFacade instance
+			// This runs before each test
+			insightFacade = new InsightFacade();
+		});
+
+		afterEach(function () {
+			// This section resets the data directory (removing any cached data)
+			// This runs after each test, which should make each test independent of the previous one
+			fs.removeSync(persistDirectory);
 		});
 
 		describe("C1's", function () {
@@ -396,6 +396,14 @@ describe("InsightFacade Combined test suite", function () {
 			console.info("\n-----------------------------");
 		});
 
+		beforeEach(function () {
+			insightFacade = new InsightFacade();
+		});
+
+		afterEach(function () {
+			fs.removeSync(persistDirectory);
+		});
+
 		describe("Min's", function () {
 			it("successful removal", function () {
 				return insightFacade.addDataset(
@@ -539,6 +547,14 @@ describe("InsightFacade Combined test suite", function () {
 			console.info("\n-----------------------------");
 		});
 
+		beforeEach(function () {
+			insightFacade = new InsightFacade();
+		});
+
+		afterEach(function () {
+			fs.removeSync(persistDirectory);
+		});
+
 		describe("Min's", function () {
 			it("should list no datasets", function () {
 				return insightFacade.listDatasets().then((insightDatasets) => {
@@ -630,8 +646,13 @@ describe("InsightFacade Combined test suite", function () {
 	});
 
 	describe("[ performQuery() ] - special case", function () {
+		before(function () {
+			insightFacade = new InsightFacade();
+		});
+
 		after(function () {
 			console.info("\n-----------------------------");
+			fs.removeSync(persistDirectory);
 		});
 
 		const simpleValidQuery: unknown = {
@@ -666,15 +687,15 @@ describe("InsightFacade Combined test suite", function () {
 
 			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
 			// Will *fail* if there is a problem reading ANY dataset.
-			// const loadDatasetPromises = [
-			// 	insightFacade.addDataset(
-			// 		"sections",
-			// 		datasetContents.get("sections") ?? "",
-			// 		InsightDatasetKind.Sections
-			// 	),
-			// ];
-			//
-			// return Promise.all(loadDatasetPromises);
+			const loadDatasetPromises = [
+				insightFacade.addDataset(
+					"sections",
+					datasetContents.get("sections") ?? "",
+					InsightDatasetKind.Sections
+				),
+			];
+
+			return Promise.all(loadDatasetPromises);
 		});
 
 		after(function () {
