@@ -11,7 +11,10 @@ import InsightFacade from "../../src/controller/InsightFacade";
 import * as fs from "fs-extra";
 
 import {folderTest} from "@ubccpsc310/folder-test";
-import {expect} from "chai";
+import chai, {expect} from "chai";
+import chaiAsPromised from "chai-as-promised";
+
+chai.use(chaiAsPromised);
 
 describe("InsightFacade Combined test suite", function () {
 	let insightFacade: InsightFacade;
