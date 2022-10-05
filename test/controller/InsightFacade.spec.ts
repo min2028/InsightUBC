@@ -1,7 +1,9 @@
 import {
 	InsightDatasetKind,
-	InsightError,
+	InsightDataset,
 	InsightResult,
+	InsightError,
+	NotFoundError,
 	ResultTooLargeError
 } from "../../src/controller/IInsightFacade";
 import InsightFacade from "../../src/controller/InsightFacade";
@@ -9,10 +11,14 @@ import InsightFacade from "../../src/controller/InsightFacade";
 import * as fs from "fs-extra";
 
 import {folderTest} from "@ubccpsc310/folder-test";
-import {expect} from "chai";
+import chai, {expect} from "chai";
+import chaiAsPromised from "chai-as-promised";
 
-describe("InsightFacade", function () {
+chai.use(chaiAsPromised);
+
+describe("InsightFacade Combined test suite", function () {
 	let insightFacade: InsightFacade;
+	let smallContent: string;
 
 	const persistDirectory = "./data";
 	const datasetContents = new Map<string, string>();
@@ -21,48 +27,655 @@ describe("InsightFacade", function () {
 	// automatically be loaded in the 'before' hook.
 	const datasetsToLoad: {[key: string]: string} = {
 		sections: "./test/resources/archives/pair.zip",
+		invalidDir: "./test/resources/archives/rtdirwrong.zip",
+		notInJsonfile: "./test/resources/archives/notinjson.zip",
+		noValidSec: "./test/resources/archives/novalidsec.zip",
+		skipFiles: "./test/resources/archives/skipfiles.zip",
+		valid_small: "./test/resources/archives/courses-valid-small.zip",
+		valid_singleSection: "./test/resources/archives/courses-valid-singleSection.zip",
+		invalid_course: "./test/resources/archives/courses-invalid-course.zip",
+		invalid_empty: "./test/resources/archives/courses-invalid-empty.zip",
+		invalid_name: "./test/resources/archives/courses-invalid-name.zip",
+		invalid_section: "./test/resources/archives/courses-invalid-section.zip",
+		invalid_structure: "./test/resources/archives/courses-invalid-structure.zip",
 	};
 
 	before(function () {
+		console.info("\n-----------------------------");
+
 		// This section runs once and loads all datasets specified in the datasetsToLoad object
 		for (const key of Object.keys(datasetsToLoad)) {
 			const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
 			datasetContents.set(key, content);
 		}
+		smallContent = datasetContents.get("valid_small") ?? "";
 		// Just in case there is anything hanging around from a previous run of the test suite
 		fs.removeSync(persistDirectory);
 	});
 
-	describe("Add/Remove/List Dataset", function () {
-		before(function () {
-			console.info(`Before: ${this.test?.parent?.title}`);
+	describe("[ addDataset() ]", function () {
+		after(function () {
+			console.info("\n-----------------------------");
 		});
 
 		beforeEach(function () {
 			// This section resets the insightFacade instance
 			// This runs before each test
-			console.info(`BeforeTest: ${this.currentTest?.title}`);
 			insightFacade = new InsightFacade();
-		});
-
-		after(function () {
-			console.info(`After: ${this.test?.parent?.title}`);
 		});
 
 		afterEach(function () {
 			// This section resets the data directory (removing any cached data)
 			// This runs after each test, which should make each test independent of the previous one
-			console.info(`AfterTest: ${this.currentTest?.title}`);
 			fs.removeSync(persistDirectory);
 		});
 
-		// This is a unit test. You should create more like this!
-		it("Should add a valid dataset", function () {
-			const id: string = "sections";
-			const content: string = datasetContents.get("sections") ?? "";
-			const expected: string[] = [id];
-			return insightFacade.addDataset(id, content, InsightDatasetKind.Sections)
-				.then((result: string[]) => expect(result).to.deep.equal(expected));
+		describe("C1's", function () {
+			// This is a unit test. You should create more like this!
+			it("Should add a valid dataset", function () {
+				const id: string = "sections";
+				const content: string = datasetContents.get("sections") ?? "";
+				const expected: string[] = [id];
+				return insightFacade.addDataset(id, content, InsightDatasetKind.Sections)
+					.then((result: string[]) => expect(result).to.deep.equal(expected));
+			});
+		});
+
+		describe("Min's", function () {
+			it("should add dataset successfully", async function () {
+				const insightDatasets = await insightFacade.addDataset(
+					"courses", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections
+				);
+				expect(insightDatasets).to.be.instanceof(Array);
+				expect(insightDatasets).to.deep.equal(["courses"]);
+				const [insightDataset] = insightDatasets;
+				expect(insightDataset).to.be.a("string");
+			});
+
+			it("should successfully add two datasets", function () {
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.addDataset(
+							"courses-2", smallContent, InsightDatasetKind.Sections
+						);
+					})
+					.then((insightDatasetIDs) => {
+						expect(insightDatasetIDs).to.be.instanceof(Array);
+						expect(insightDatasetIDs).to.have.length(2);
+						const expectedIDs = ["courses", "courses-2"];
+						expect(insightDatasetIDs).to.have.deep.members(expectedIDs);
+					});
+			});
+
+			it("should reject the dataset with whitespace only id", function () {
+				return insightFacade.addDataset(
+					" ", smallContent, InsightDatasetKind.Sections
+				)
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("should reject the dataset with underscore in id", function () {
+				return insightFacade.addDataset(
+					"a_b", smallContent, InsightDatasetKind.Sections
+				)
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("should reject dataset with the existing id", function () {
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.addDataset(
+							"courses", smallContent, InsightDatasetKind.Sections
+						);
+					})
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("courses/ root directory or else InsightError", function () {
+				return insightFacade.addDataset(
+					"ubc", datasetContents.get("invalidDir") ?? "", InsightDatasetKind.Sections
+				)
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("not in JSON format, invalid dataset will have InsightError", function () {
+				return insightFacade.addDataset(
+					"ubc", datasetContents.get("notInJsonfile") ?? "", InsightDatasetKind.Sections
+				)
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("no valid section, will be invalid data", function () {
+				return insightFacade.addDataset(
+					"ubc", datasetContents.get("novalidsec") ?? "", InsightDatasetKind.Sections
+				)
+					.catch((err) =>
+						expect(err).to.be.instanceof(InsightError));
+			});
+
+			it("successful add but skip some files for insufficient query info", function () {
+				return insightFacade.addDataset(
+					"ubc", datasetContents.get("skipFiles") ?? "", InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.listDatasets();
+					})
+					.then((insightDatasets) => {
+						const expectedDataset: InsightDataset[] = [{
+							id: "ubc",
+							kind: InsightDatasetKind.Sections,
+							numRows: 5,
+						}];
+						expect(insightDatasets).to.be.instanceof(Array);
+						expect(insightDatasets).to.have.length(1);
+						expect(insightDatasets).to.deep.equal(expectedDataset);
+					});
+			});
+		});
+
+		describe("Payam's", function () {
+			it("simple valid add (small dataset) -> should add the dataset", async function () {
+				const result = await insightFacade.addDataset("small", smallContent, InsightDatasetKind.Sections);
+				expect(result).to.deep.equal(["small"]);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "small",
+					kind: InsightDatasetKind.Sections,
+					numRows: 39
+				}] as InsightDataset[]);
+			});
+
+			it("simple valid add (large dataset) -> should add the dataset", async function () {
+				const content = datasetContents.get("sections") ?? "";
+				const result = await insightFacade.addDataset("large", content, InsightDatasetKind.Sections);
+				expect(result).to.deep.equal(["large"]);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "large",
+					kind: InsightDatasetKind.Sections,
+					numRows: 64612
+				}] as InsightDataset[]);
+			});
+
+			it("valid id of symbols -> should add the dataset", function () {
+				const result = insightFacade.addDataset(
+					"ABC abc 0123 @.,&^%$#@!-=+?<>:[]{}() ",
+					smallContent,
+					InsightDatasetKind.Sections
+				);
+				return expect(result).eventually.to.deep.equal(["ABC abc 0123 @.,&^%$#@!-=+?<>:[]{}() "]);
+			});
+
+			it("similar id -> should add both datasets", async function () {
+				const firstAdd = await insightFacade.addDataset("myID", smallContent, InsightDatasetKind.Sections);
+				expect(firstAdd).to.have.length(1);
+
+				const secondAdd = await insightFacade.addDataset("MyID", smallContent, InsightDatasetKind.Sections);
+				expect(secondAdd).to.have.length(2);
+				expect(secondAdd).to.have.deep.members(["myID", "MyID"]);
+
+				const list = await insightFacade.listDatasets();
+				expect(list).to.have.length(2);
+				expect(list).to.have.deep.members([
+					{
+						id: "myID",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					},
+					{
+						id: "MyID",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					}
+				] as InsightDataset[]);
+			});
+
+			it("valid content (single section) -> should add the dataset", async function () {
+				const content = datasetContents.get("valid_singleSection") ?? "";
+				const result = await insightFacade.addDataset("single", content, InsightDatasetKind.Sections);
+				expect(result).to.deep.equal(["single"]);
+
+				const list = await insightFacade.listDatasets();
+				expect(list).to.have.length(1);
+				expect(list).to.deep.equal([
+					{
+						id: "single",
+						kind: InsightDatasetKind.Sections,
+						numRows: 1
+					}
+				] as InsightDataset[]);
+			});
+
+			it("invalid id (whitespace 1) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset(" ", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid id (whitespace 2) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("\n\t ", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid id (underscore 1) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("_", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid id (underscore 2) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("_a_", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid id (underscore 3) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("validId._", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid id (empty) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("", smallContent, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("same id (consecutive) -> should reject with InsightError", async function () {
+				const firstAdd = await insightFacade.addDataset("same ID", smallContent, InsightDatasetKind.Sections);
+				expect(firstAdd).to.have.length(1);
+				expect(firstAdd).to.deep.equal(["same ID"]);
+
+				try {
+					await insightFacade.addDataset("same ID", smallContent, InsightDatasetKind.Sections);
+					expect.fail("Should have not reached this line");
+				} catch (err) {
+					expect(err).to.be.instanceof(InsightError);
+				}
+
+				const list = await insightFacade.listDatasets();
+				expect(list).to.have.length(1);
+				expect(list).to.deep.equal([
+					{
+						id: "same ID",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					}
+				] as InsightDataset[]);
+			});
+
+			it("same id (non-consecutive) -> should reject with InsightError", async function () {
+				const firstAdd = await insightFacade.addDataset("same ID", smallContent, InsightDatasetKind.Sections);
+				expect(firstAdd).to.have.length(1);
+				expect(firstAdd).to.deep.equal(["same ID"]);
+
+				const secondAdd = await insightFacade.addDataset(
+					"different ID 1",
+					smallContent,
+					InsightDatasetKind.Sections
+				);
+				expect(secondAdd).to.have.length(2);
+				expect(secondAdd).to.have.deep.members(["same ID", "different ID 1"]);
+
+				try {
+					await insightFacade.addDataset("same ID", smallContent, InsightDatasetKind.Sections);
+					expect.fail("Should have not reached this line");
+				} catch (err) {
+					expect(err).to.be.instanceof(InsightError);
+				}
+
+				const fourthAdd = await insightFacade.addDataset(
+					"different ID 2",
+					smallContent,
+					InsightDatasetKind.Sections
+				);
+				expect(fourthAdd).to.have.length(3);
+				expect(fourthAdd).to.have.deep.members(["same ID", "different ID 1", "different ID 2"]);
+
+				const list = await insightFacade.listDatasets();
+				expect(list).to.have.length(3);
+				expect(list).to.have.deep.members([
+					{
+						id: "same ID",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					},
+					{
+						id: "different ID 1",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					},
+					{
+						id: "different ID 2",
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					}
+				] as InsightDataset[]);
+			});
+
+			it("[temp] invalid kind (rooms) -> should reject with InsightError", function () {
+				const result = insightFacade.addDataset("rooms", smallContent, InsightDatasetKind.Rooms);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid content (bad folder structure) -> should reject with InsightError", function () {
+				const content = datasetContents.get("invalid_structure") ?? "";
+				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid content (empty file) -> should reject with InsightError", function () {
+				const content = datasetContents.get("invalid_empty") ?? "";
+				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid content (wrong name) -> should reject with InsightError", function () {
+				const content = datasetContents.get("invalid_name") ?? "";
+				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid content (invalid JSON format) -> should reject with InsightError", function () {
+				const content = datasetContents.get("invalid_course") ?? "";
+				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid content (incomplete section data) -> should reject with InsightError", function () {
+				const content = datasetContents.get("invalid_section") ?? "";
+				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+		});
+	});
+
+	describe("[ removeDataset() ]", function () {
+		after(function () {
+			console.info("\n-----------------------------");
+		});
+
+		beforeEach(function () {
+			insightFacade = new InsightFacade();
+		});
+
+		afterEach(function () {
+			fs.removeSync(persistDirectory);
+		});
+
+		describe("Min's", function () {
+			it("successful removal", function () {
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.removeDataset("courses");
+					})
+					.then((removedId) => {
+						expect(removedId).to.equal("courses");
+						expect(removedId).to.be.a("string");
+					});
+			});
+
+			it("reject non existent dataset removal, NotFoundError", function () {
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.removeDataset("courses-2");
+					})
+					.catch((err) => {
+						expect(err).to.be.instanceof(NotFoundError);
+					});
+			});
+
+			it("reject with Insight Error if removing id is whitespace", function () {
+				return insightFacade.removeDataset("  ")
+					.catch((err) => {
+						expect(err).to.be.instanceof(InsightError);
+					});
+			});
+
+			it("reject with Insight Error if removing id containing underscore", function () {
+				return insightFacade.removeDataset("ab_bc")
+					.catch((err) => {
+						expect(err).to.be.instanceof(InsightError);
+					});
+			});
+		});
+
+		describe("Payam's", function () {
+			it("simple valid remove -> should remove dataset", async function () {
+				let list: InsightDataset[];
+				const added = await insightFacade.addDataset("courses2022", smallContent, InsightDatasetKind.Sections);
+				expect(added).to.deep.equal(["courses2022"]);
+
+				list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "courses2022",
+					kind: InsightDatasetKind.Sections,
+					numRows: 39
+				}] as InsightDataset[]);
+
+				const removed = await insightFacade.removeDataset("courses2022");
+				expect(removed).to.equals("courses2022");
+				list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([]);
+			});
+
+			// it("multiple alternating add and remove -> should remove dataset", async function () {
+			// 	let added: string[], removed: string, list: InsightDataset[];
+			//
+			// 	for (let i = 0; i < 5; i++) {
+			// 		added = await insightFacade.addDataset("sameID", smallContent, InsightDatasetKind.Sections);
+			// 		expect(added).to.deep.equal(["sameID"]);
+			//
+			// 		removed = await insightFacade.removeDataset("sameID");
+			// 		expect(removed).to.equals("sameID");
+			//
+			// 		list = await insightFacade.listDatasets();
+			// 		expect(list).to.deep.equal([]);
+			// 	}
+			// });
+
+			// it("[Modified] multiple consecutive removes -> should remove dataset", async function () {
+			// 	let list: InsightDataset[], expectedList: InsightDataset[] = [];
+			//
+			// 	for (let i = 1; i <= 5; i++) {
+			// 		insightFacade.addDataset(i.toString(), smallContent, InsightDatasetKind.Sections)
+			// 			.then((added) => {
+			// 				expect(added).to.have.deep.members(expectedList.map((item) => item.id));
+			// 				expect(added).to.have.length(i);
+			// 			});
+			// 		expectedList.push({
+			// 			id: i.toString(),
+			// 			kind: InsightDatasetKind.Sections,
+			// 			numRows: 39
+			// 		} as InsightDataset);
+			//
+			// 	}
+			//
+			// 	list = await insightFacade.listDatasets();
+			// 	expect(list).to.have.deep.members(expectedList as InsightDataset[]);
+			// 	expect(list).to.have.length(5);
+			//
+			// 	for (let i = 1; i <= 5; i++) {
+			// 		insightFacade.removeDataset(i.toString())
+			// 			.then((removed) => {
+			// 				expect(removed).to.equals(i.toString());
+			// 			});
+			// 	}
+			//
+			// 	list = await insightFacade.listDatasets();
+			// 	expect(list).to.deep.equal([]);
+			// });
+
+			it("remove invalid id (whitespace) -> should reject with InsightError", async function () {
+				await insightFacade.addDataset("id", smallContent, InsightDatasetKind.Sections);
+				const result = insightFacade.removeDataset("\n \t");
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("remove invalid id (underscore) -> should reject with InsightError", async function () {
+				await insightFacade.addDataset("id", smallContent, InsightDatasetKind.Sections);
+				const result = insightFacade.removeDataset("a_");
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("remove invalid id (empty) -> should reject with InsightError", async function () {
+				await insightFacade.addDataset("id", smallContent, InsightDatasetKind.Sections);
+				const result = insightFacade.removeDataset("");
+				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("remove invalid id (different) -> should reject with NotFoundError", async function () {
+				await insightFacade.addDataset("id", smallContent, InsightDatasetKind.Sections);
+				const result = insightFacade.removeDataset("iD");
+				return expect(result).eventually.to.be.rejectedWith(NotFoundError);
+			});
+
+			it("remove from empty -> should reject with NotFoundError", function () {
+				const result = insightFacade.removeDataset("1");
+				return expect(result).eventually.to.be.rejectedWith(NotFoundError);
+			});
+		});
+	});
+
+	describe("[ listDatasets() ]", function () {
+		after(function () {
+			console.info("\n-----------------------------");
+		});
+
+		beforeEach(function () {
+			insightFacade = new InsightFacade();
+		});
+
+		afterEach(function () {
+			fs.removeSync(persistDirectory);
+		});
+
+		describe("Min's", function () {
+			it("should list no datasets", function () {
+				return insightFacade.listDatasets().then((insightDatasets) => {
+					expect(insightDatasets).to.deep.equal([]);
+				});
+
+				// expect([]).to.equal([]) will always fail because asserting equality on two different objects
+				// two different arrays that happen to have equal
+				// deep.equal check if both are same kind of object and check individual properties
+				// could do expect(insightDatasets).to.be.an.instanceof(Array);
+				// expect(insightDatasets).to.have.length(0);
+			});
+
+			it("should list one dataset", function () {
+				// 1. add dataset
+
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					// 2. list dataset
+					.then(() => insightFacade.listDatasets())
+					.then((insightDatasets) => {
+						expect(insightDatasets).to.deep.equal([{
+							id: "courses",
+							kind: InsightDatasetKind.Sections,
+							numRows: 39,
+						}]);
+						expect(insightDatasets).to.be.an.instanceof(Array);
+						expect(insightDatasets).to.have.length(1);
+					});
+			});
+
+			it("should list multiple dataset", function () {
+				return insightFacade.addDataset(
+					"courses", smallContent, InsightDatasetKind.Sections
+				)
+					.then(() => {
+						return insightFacade.addDataset(
+							"courses-2", smallContent, InsightDatasetKind.Sections
+						);
+					})
+					.then(() => {
+						return insightFacade.listDatasets();
+					})
+					.then((insightDatasets) => {
+						const expectedDatasets: InsightDataset[] = [
+							{
+								id: "courses",
+								kind: InsightDatasetKind.Sections,
+								numRows: 39,
+							},
+							{
+								id: "courses-2",
+								kind: InsightDatasetKind.Sections,
+								numRows: 39,
+							}
+						];
+						expect(insightDatasets).to.be.an.instanceof(Array);
+						expect(insightDatasets).to.have.deep.members(expectedDatasets);
+						expect(insightDatasets).to.have.length(2);
+					});
+			});
+		});
+
+		describe("Payam's", function () {
+			it("list before adding -> should return empty list", function () {
+				const list = insightFacade.listDatasets();
+				return expect(list).eventually.to.deep.equal([]);
+			});
+
+			it("[Modified] list multiple datasets -> should return list", async function () {
+				let expectedList: InsightDataset[] = [];
+				let promiseList: any[] = [];
+
+				for (let i = 1; i <= 5; i++) {
+					promiseList.push(insightFacade.addDataset(i.toString(), smallContent, InsightDatasetKind.Sections));
+					expectedList.push({
+						id: i.toString(),
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					} as InsightDataset);
+				}
+				await Promise.all(promiseList);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.have.deep.members(expectedList as InsightDataset[]);
+				expect(list).to.have.length(5);
+			});
+		});
+	});
+
+	describe("[ performQuery() ] - special case", function () {
+		before(function () {
+			insightFacade = new InsightFacade();
+		});
+
+		after(function () {
+			console.info("\n-----------------------------");
+			fs.removeSync(persistDirectory);
+		});
+
+		const simpleValidQuery: unknown = {
+			WHERE: {
+				GT: {
+					sections_avg: 97
+				}
+			},
+			OPTIONS: {
+				COLUMNS: [
+					"sections_dept",
+					"sections_avg"
+				],
+				ORDER: "sections_avg"
+			}
+		};
+
+		it("query before adding dataset -> should reject with InsightError", function () {
+			const result = insightFacade.performQuery(simpleValidQuery);
+			return expect(result).eventually.to.be.rejectedWith(InsightError);
 		});
 	});
 
@@ -71,10 +684,8 @@ describe("InsightFacade", function () {
 	 * You should not need to modify it; instead, add additional files to the queries directory.
 	 * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
 	 */
-	describe("PerformQuery", () => {
+	describe("[ performQuery() ]", () => {
 		before(function () {
-			console.info(`Before: ${this.test?.parent?.title}`);
-
 			insightFacade = new InsightFacade();
 
 			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
@@ -91,7 +702,7 @@ describe("InsightFacade", function () {
 		});
 
 		after(function () {
-			console.info(`After: ${this.test?.parent?.title}`);
+			console.info("\n-----------------------------");
 			fs.removeSync(persistDirectory);
 		});
 
