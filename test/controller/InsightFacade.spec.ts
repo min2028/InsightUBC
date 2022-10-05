@@ -257,6 +257,8 @@ describe("InsightFacade Combined test suite", function () {
 
 			it("invalid id (whitespace 1) -> should reject with InsightError", function () {
 				const result = insightFacade.addDataset(" ", smallContent, InsightDatasetKind.Sections);
+				console.log(typeof (result));
+				console.log(typeof (InsightError));
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
 
