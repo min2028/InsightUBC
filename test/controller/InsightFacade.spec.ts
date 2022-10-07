@@ -686,44 +686,75 @@ describe("InsightFacade Combined test suite", function () {
 	 * You should not need to modify it; instead, add additional files to the queries directory.
 	 * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
 	 */
-	describe("[ performQuery() ]", () => {
-		before(function () {
-			insightFacade = new InsightFacade();
+	// describe("[ performQuery() ]", () => {
+	// 	before(function () {
+	// 		insightFacade = new InsightFacade();
+	//
+	// 		// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+	// 		// Will *fail* if there is a problem reading ANY dataset.
+	// 		const loadDatasetPromises = [
+	// 			insightFacade.addDataset(
+	// 				"sections",
+	// 				datasetContents.get("sections") ?? "",
+	// 				InsightDatasetKind.Sections
+	// 			),
+	// 		];
+	//
+	// 		return Promise.all(loadDatasetPromises);
+	// 	});
+	//
+	// 	after(function () {
+	// 		console.info("\n-----------------------------");
+	// 		fs.removeSync(persistDirectory);
+	// 	});
+	//
+	// 	type PQErrorKind = "ResultTooLargeError" | "InsightError";
+	//
+	// 	folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
+	// 		"Dynamic InsightFacade PerformQuery tests",
+	// 		(input) => insightFacade.performQuery(input),
+	// 		"./test/resources/queries",
+	// 		{
+	// 			errorValidator: (error): error is PQErrorKind =>
+	// 				error === "ResultTooLargeError" || error === "InsightError",
+	// 			assertOnError: (actual, expected) => {
+	// 				if (expected === "ResultTooLargeError") {
+	// 					expect(actual).to.be.instanceof(ResultTooLargeError);
+	// 				} else {
+	// 					expect(actual).to.be.instanceof(InsightError);
+	// 				}
+	// 			},
+	// 		}
+	// 	);
+	// });
 
-			// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
-			// Will *fail* if there is a problem reading ANY dataset.
-			const loadDatasetPromises = [
-				insightFacade.addDataset(
-					"sections",
-					datasetContents.get("sections") ?? "",
-					InsightDatasetKind.Sections
-				),
-			];
-
-			return Promise.all(loadDatasetPromises);
-		});
-
-		after(function () {
-			console.info("\n-----------------------------");
+	type Input = unknown;
+	type Output = Promise<InsightResult[]>;
+	type Error = "InsightError" | "ResultTooLargeError";
+	describe("performQuery (Payam's C0)", function() {
+		before(async function() {
 			fs.removeSync(persistDirectory);
+			insightFacade = new InsightFacade();
+			const pair = fs.readFileSync("test/resources/archives/pair.zip").toString("base64");
+			await insightFacade.addDataset("sections", pair, InsightDatasetKind.Sections);
 		});
 
-		type PQErrorKind = "ResultTooLargeError" | "InsightError";
-
-		folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
-			"Dynamic InsightFacade PerformQuery tests",
-			(input) => insightFacade.performQuery(input),
+		folderTest<Input, Output, Error>(
+			"folderTest",
+			(input: Input): Output => insightFacade.performQuery(input),
 			"./test/resources/queries",
 			{
-				errorValidator: (error): error is PQErrorKind =>
-					error === "ResultTooLargeError" || error === "InsightError",
-				assertOnError: (actual, expected) => {
-					if (expected === "ResultTooLargeError") {
+				errorValidator: (error): error is Error =>
+					error === "InsightError" || error === "ResultTooLargeError",
+				assertOnError: ((actual, expected) => {
+					if (expected === "InsightError") {
+						expect(actual).to.be.instanceof(InsightError);
+					} else if (expected === "ResultTooLargeError") {
 						expect(actual).to.be.instanceof(ResultTooLargeError);
 					} else {
-						expect(actual).to.be.instanceof(InsightError);
+						expect.fail("Other errors were not expected.");
 					}
-				},
+				})
 			}
 		);
 	});

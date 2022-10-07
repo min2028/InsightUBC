@@ -1,76 +1,54 @@
-import JSZip from "jszip";
-import {Course} from "./Course";
-import {InsightError} from "../controller/IInsightFacade";
-
 export interface ISection {
-	section: string, // Not necessary (if section is 'overall', change the year to 1900)
-	dept: string,   // i.e. CPSC,BIOL
-	id: string, 	// Course Code
-	avg: number,	//  Course Avg
-	instructor: string,		// Course Instructor
-	title: string, 	// Course title
-	pass: number,
-	fail: number,
-	audit: number,
-	uuid: string,	// Course unique key
-	year: number
+	dept: string,   	// The department that offered the section. i.e. CPSC, BIOL, ...
+	id: string, 		// The course number (will be treated as a string (e.g., 499b)).
+	avg: number,		// The average of the section offering.
+	instructor: string,	// The instructor teaching the section offering.
+	title: string, 		// The name of the course.
+	pass: number,		// The number of students that passed the section offering.
+	fail: number,		// The number of students that failed the section offering.
+	audit: number,		// The number of students that audited the section offering.
+	uuid: string,		// The unique id of a section offering.
+	year: number		// The year the section offering ran.
 }
+
+type FieldT = keyof typeof fieldName;
+const fieldName = {
+	dept: ["Subject", "s"],
+	id: ["Course", "s"],
+	avg: ["Avg", "n"],
+	instructor: ["Professor", "s"],
+	title: ["Title", "s"],
+	pass: ["Pass", "n"],
+	fail: ["Fail", "n"],
+	audit: ["Audit", "n"],
+	uuid: ["id", "s"],
+	year: ["Year", "n"]
+};
 
 export class Section {
 	public static async parseSection(json: any): Promise<ISection> {
-		const section: ISection = {} as ISection;
-		// {
-		// 	"Title": "adv plnt comm",
-		// 	"id": 24495,
-		// 	"Professor": "",
-		// 	"Audit": 1,
-		// 	"Year": "2008",
-		// 	"Course": "526",
-		// 	"Pass": 6,
-		// 	"Fail": 0,
-		// 	"Avg": 83.83,
-		// 	"Subject": "bota"
-		// }
-		// Validate that the json parameter is of type object (null check)
-		console.log("Testing");
-		console.log(json.has("Title") ? "true" : "false");
-		console.log("Title" in json ? "true" : "false");
-		console.log(json.title ? "true" : "false");
-		if (json === null) {
-			return Promise.reject("Null Check Failed");
+		const section: any = {};
+
+		// Validate that the json is representing a valid Course
+		if (!json) {
+			return Promise.reject("Section is null or empty");
 		}
-		if (json.has("Title") &&
-			json.has("id") &&
-			json.has("Professor") &&
-			json.has("Audit") &&
-			json.has("Year") &&
-			json.has("Course") &&
-			json.has("Pass") &&
-			json.has("Fail") &&
-			json.has("Avg") &&
-			json.has("Subject")
-		) {
-			section.dept = json.Subject;
-			section.id = json.Course;
-			section.avg = json.Avg;
-			section.instructor = json.Professor;
-			section.title = json.Title;
-			section.pass = json.Pass;
-			section.fail = json.Fail;
-			section.audit = json.Audit;
-			section.uuid = json.id;
-			if (json.has("Section") && json.Section === "overall") {
-				section.year = 1900;
-			} else {
-				section.year = json.Year;
+		for (let field in fieldName) {
+			if (!(fieldName[field as FieldT][0] in json)) {
+				return Promise.reject("Missing fields in the Section");
 			}
 		}
-			// TODO: validate that the json parameter contains all the 11 fields except "section" (if any field is missing, it should fail)
-			// if (json.dept && section.)
-			// TODO: populate the fields in the section variable (this and previous todo may be done in 1 go)
-
-		{
-			return section;
+		// At this point, json is a valid Course
+		for (let field in fieldName) {
+			if (fieldName[field as FieldT][1] === "s") {
+				section[field] = (json[fieldName[field as FieldT][0]]).toString();
+			} else {
+				section[field] = Number(json[fieldName[field as FieldT][0]]);
+			}
 		}
+		if ("Section" in json && json.Section === "overall") {
+			section.year = 1900;
+		}
+		return section as ISection;
 	}
 }
