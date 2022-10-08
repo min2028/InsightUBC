@@ -5,9 +5,10 @@ import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {InsightDatasetKind, InsightError} from "../src/controller/IInsightFacade";
 import {ISection, Section} from "../src/model/Section";
-import {readJSON} from "fs-extra";
+import {mkdirSync, readJSON} from "fs-extra";
 import {Course} from "../src/model/Course";
 import JSZip from "jszip";
+import path from "path";
 
 
 chai.use(chaiAsPromised);
@@ -137,4 +138,17 @@ it("Course.parse - invalid data -> should throw error", function () {
 	}
 	const course = Course.parseCourse(myFile);
 	return expect(course).eventually.to.be.rejected;
+});
+
+// it("Should write the ids to disk", function () {
+// 	const ids = ["1", "2", "3"];
+// 	createDirAndWriteIDs("_testing");
+// });
+
+it("Should write the ids to disk 2", function () {
+	const ids = ["1", "2", "3"];
+	// mkdirSync(path.resolve("./data/_LISTDATA.json"), {recursive: true});
+	mkdirSync(path.join("data"));
+	console.log(path.join("data"));
+	// createDirAndWriteIDs("myID");
 });

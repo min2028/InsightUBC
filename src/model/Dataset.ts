@@ -14,7 +14,7 @@ export class Dataset {
 	 * @REQUIRES
 	 * @EFFECT
 	 */
-	public static parseDataset(id: string, content: string, kind: InsightDatasetKind): Promise<Dataset> {
+	public static parseDataset(id: string, content: string, kind: InsightDatasetKind): Promise<IDataset> {
 		const dataset: IDataset = {id: "", kind: InsightDatasetKind.Sections, courses: []};
 		let skippedCoursesCount = 0;
 		let promises: Array<Promise<any>> = [];
@@ -49,6 +49,7 @@ export class Dataset {
 				dataset.kind = kind;
 				return dataset;
 			}).catch((err) => {
+				console.log("Invalid Dataset: " + err);
 				return Promise.reject(err);
 			});
 	}
