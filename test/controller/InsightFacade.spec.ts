@@ -61,14 +61,15 @@ describe("InsightFacade Combined test suite", function () {
 		beforeEach(function () {
 			// This section resets the insightFacade instance
 			// This runs before each test
+			fs.removeSync(persistDirectory);
 			insightFacade = new InsightFacade();
 		});
 
-		afterEach(function () {
-			// This section resets the data directory (removing any cached data)
-			// This runs after each test, which should make each test independent of the previous one
-			fs.removeSync(persistDirectory);
-		});
+		// afterEach(function () {
+		// 	// This section resets the data directory (removing any cached data)
+		// 	// This runs after each test, which should make each test independent of the previous one
+		// 	fs.removeSync(persistDirectory);
+		// });
 
 		describe("C1's", function () {
 			// This is a unit test. You should create more like this!
@@ -105,7 +106,7 @@ describe("InsightFacade Combined test suite", function () {
 						expect(insightDatasetIDs).to.be.instanceof(Array);
 						expect(insightDatasetIDs).to.have.length(2);
 						const expectedIDs = ["courses", "courses-2"];
-						expect(insightDatasetIDs).to.have.deep.members(expectedIDs);
+						expect(expectedIDs).to.have.deep.members(insightDatasetIDs);
 					});
 			});
 
@@ -257,6 +258,8 @@ describe("InsightFacade Combined test suite", function () {
 
 			it("invalid id (whitespace 1) -> should reject with InsightError", function () {
 				const result = insightFacade.addDataset(" ", smallContent, InsightDatasetKind.Sections);
+				console.log(typeof (result));
+				console.log(typeof (InsightError));
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
 
@@ -357,11 +360,6 @@ describe("InsightFacade Combined test suite", function () {
 				] as InsightDataset[]);
 			});
 
-			it("[temp] invalid kind (rooms) -> should reject with InsightError", function () {
-				const result = insightFacade.addDataset("rooms", smallContent, InsightDatasetKind.Rooms);
-				return expect(result).eventually.to.be.rejectedWith(InsightError);
-			});
-
 			it("invalid content (bad folder structure) -> should reject with InsightError", function () {
 				const content = datasetContents.get("invalid_structure") ?? "";
 				const result = insightFacade.addDataset("badZip", content, InsightDatasetKind.Sections);
@@ -400,11 +398,8 @@ describe("InsightFacade Combined test suite", function () {
 		});
 
 		beforeEach(function () {
-			insightFacade = new InsightFacade();
-		});
-
-		afterEach(function () {
 			fs.removeSync(persistDirectory);
+			insightFacade = new InsightFacade();
 		});
 
 		describe("Min's", function () {
@@ -551,11 +546,8 @@ describe("InsightFacade Combined test suite", function () {
 		});
 
 		beforeEach(function () {
-			insightFacade = new InsightFacade();
-		});
-
-		afterEach(function () {
 			fs.removeSync(persistDirectory);
+			insightFacade = new InsightFacade();
 		});
 
 		describe("Min's", function () {
