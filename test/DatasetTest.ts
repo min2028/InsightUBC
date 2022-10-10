@@ -3,12 +3,13 @@ import {Dataset} from "../src/model/Dataset";
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
-import {InsightDatasetKind, InsightError} from "../src/controller/IInsightFacade";
-import {ISection, Section} from "../src/model/Section";
-import {mkdirSync, readJSON} from "fs-extra";
+import {InsightDatasetKind} from "../src/controller/IInsightFacade";
+import {Section} from "../src/model/Section";
 import {Course} from "../src/model/Course";
 import JSZip from "jszip";
+import {Disk} from "../src/Utility/Disk";
 import path from "path";
+import {isValidId} from "../src/Utility/General";
 
 
 chai.use(chaiAsPromised);
@@ -45,7 +46,7 @@ before(function () {
 		datasetContents.set(key, content);
 	}
 	// Just in case there is anything hanging around from a previous run of the test suite
-	fs.removeSync(persistDirectory);
+	// fs.removeSync(persistDirectory);
 });
 
 
@@ -53,20 +54,19 @@ after(function () {
 	console.info("\n-----------------------------");
 });
 
-// beforeEach(function () {
-// });
-
-afterEach(function () {
+beforeEach(function () {
 	fs.removeSync(persistDirectory);
 });
+
+// afterEach(function () {
+// });
 
 it("Should parse the Dataset : Small", async function () {
 	dataset = await Dataset.parseDataset(
 		"ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections
-	)
-		.catch((err) => {
-			expect.fail("Should have not thrown an error");
-		});
+	).catch((err) => {
+		expect.fail("Should have not thrown an error");
+	});
 });
 
 it("Should parse the Dataset : Large", async function () {
@@ -140,15 +140,73 @@ it("Course.parse - invalid data -> should throw error", function () {
 	return expect(course).eventually.to.be.rejected;
 });
 
-// it("Should write the ids to disk", function () {
-// 	const ids = ["1", "2", "3"];
-// 	createDirAndWriteIDs("_testing");
-// });
+it("Should write the metadata on the disk", function () {
+	Disk.writeDatasetMeta([{id: "ubc", kind: InsightDatasetKind.Rooms, numRows: 10},
+		{id: "Min", kind: InsightDatasetKind.Sections, numRows: 3}]);
+	const idList = Disk.readDatasetMeta();
+	return expect(idList).to.deep.equal([{id: "ubc", kind: InsightDatasetKind.Rooms, numRows: 10},
+		{id: "Min", kind: InsightDatasetKind.Sections, numRows: 3}]);
+});
 
-it("Should write the ids to disk 2", function () {
-	const ids = ["1", "2", "3"];
-	// mkdirSync(path.resolve("./data/_LISTDATA.json"), {recursive: true});
-	mkdirSync(path.join("data"));
-	console.log(path.join("data"));
-	// createDirAndWriteIDs("myID");
+it("Should write the meta data on the disk multiple times", function () {
+	Disk.writeDatasetMeta([{id: "ubc", kind: InsightDatasetKind.Sections, numRows: 10},
+		{id: "Min", kind: InsightDatasetKind.Sections, numRows: 3}]);
+	Disk.writeDatasetMeta([{id: "ubc", kind: InsightDatasetKind.Sections, numRows: 2},
+		{id: "Payam", kind: InsightDatasetKind.Rooms, numRows: 5},
+		{id: "ubc", kind: InsightDatasetKind.Sections, numRows: 6}]);
+	const idList = Disk.readDatasetMeta();
+	return expect(idList).to.deep.equal([{id: "ubc", kind: InsightDatasetKind.Sections, numRows: 2},
+		{id: "Payam", kind: InsightDatasetKind.Rooms, numRows: 5},
+		{id: "ubc", kind: InsightDatasetKind.Sections, numRows: 6}]);
+});
+
+it ("testing", function () {
+	const contentPath = "/content";
+	fs.mkdirSync(path.join(persistDirectory + contentPath), {recursive: true});
+	fs.createFileSync(persistDirectory + contentPath + "/test.json");
+	fs.writeJSONSync(persistDirectory + contentPath + "/test.json", "first content");
+	fs.createFileSync(persistDirectory + contentPath + "/test.json");
+	fs.writeJSONSync(persistDirectory + contentPath + "/test.json", "second content");
+});
+
+it ("write Dataset", function () {
+	return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+		.then((small_dataset) => {
+			Disk.writeDataset(small_dataset);
+			const content = Disk.readDataset("ubc");
+			console.log(small_dataset);
+			console.log(content);
+			expect(content).to.deep.equal(small_dataset);
+		});
+});
+
+it ("write multiple Datasets", function () {
+	return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+		.then(() => {
+			return Dataset.parseDataset("small", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections)
+				.then((small_dataset) => {
+					Disk.writeDataset(small_dataset);
+					const content = Disk.readDataset("small");
+					expect(content).to.deep.equal(small_dataset);
+				});
+		});
+});
+
+it("should remove a dataset, testing writeDataset", function () {
+	return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+		.then((small_dataset) => {
+			Disk.writeDataset(small_dataset);
+			Disk.removeDataset("ubc");
+		});
+});
+
+it("should remove a dataset, testing writeDataMeta", function () {
+	Disk.writeDatasetMeta([{id: "ubc", kind: InsightDatasetKind.Rooms, numRows: 10},
+		{id: "Min", kind: InsightDatasetKind.Sections, numRows: 3}]);
+	Disk.removeDataset("ubc");
+});
+
+it ("invalid id", function() {
+	const res = isValidId("\n");
+	return expect(res).to.be.false;
 });

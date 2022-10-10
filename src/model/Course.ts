@@ -2,8 +2,6 @@ import {ISection, Section} from "./Section";
 import JSZip from "jszip";
 
 export interface ICourse {
-	// dept: string,
-	// code: string,
 	sections: ISection[]
 }
 
@@ -20,18 +18,18 @@ export class Course {
 						.then((section) => {
 							course.sections.push(section);
 						}).catch((err)=> {
-							console.log("Invalid Section: " + err);
+							// console.log("Invalid Section: " + err);
 							// skipping
 							skippedSectionsCount++;
 						})
 					);
 				});
 				await Promise.all(promises);
-				console.log(`Skipped ${skippedSectionsCount} sections`);
+				// console.log(`Skipped ${skippedSectionsCount} sections`);
 
 				// Checking if the dataset.courses is empty
 				if (course.sections.length > 0) {
-					console.log(`Returning a course with ${course.sections.length} sections.`);
+					// console.log(`Returning a course with ${course.sections.length} sections.`);
 					return course;
 				}
 				return Promise.reject("No valid Sections in the course");

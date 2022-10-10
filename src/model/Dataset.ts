@@ -1,23 +1,21 @@
 import {Course, ICourse} from "./Course";
 import {InsightDatasetKind} from "../controller/IInsightFacade";
 import JSZip, {JSZipObject} from "jszip";
-import {isValidId} from "./Utility";
+import {isValidId} from "../Utility/General";
 
 export interface IDataset {
 	id: string,
 	kind: InsightDatasetKind,
-	courses: ICourse[]
+	courses: ICourse[],
+	numRows: number
 }
 
 export class Dataset {
-	/**
-	 * @REQUIRES
-	 * @EFFECT
-	 */
 	public static parseDataset(id: string, content: string, kind: InsightDatasetKind): Promise<IDataset> {
-		const dataset: IDataset = {id: "", kind: InsightDatasetKind.Sections, courses: []};
+		const dataset: IDataset = {id: "", kind: InsightDatasetKind.Sections, courses: [], numRows: 0};
 		let skippedCoursesCount = 0;
 		let promises: Array<Promise<any>> = [];
+		let sectionsCount = 0;
 
 		if (!isValidId(id)) {
 			return Promise.reject("Invalid id");
@@ -31,15 +29,16 @@ export class Dataset {
 						.then((course) => {
 							// populating the dataset.courses variable
 							dataset.courses.push(course);
+							sectionsCount += course.sections.length;
 						}).catch((err) => {
-							console.log("Invalid Course: " + err);
+							// console.log("Invalid Course: " + err);
 							// skipping
 							skippedCoursesCount++;
 						})
 					);
 				});
 				await Promise.all(promises);
-				console.log(`Skipped ${skippedCoursesCount} sections`);
+				// console.log(`Skipped ${skippedCoursesCount} sections`);
 
 				// Checking if the dataset.courses is empty
 				if (dataset.courses.length === 0) {
@@ -47,9 +46,10 @@ export class Dataset {
 				}
 				dataset.id = id;
 				dataset.kind = kind;
+				dataset.numRows = sectionsCount;
 				return dataset;
 			}).catch((err) => {
-				console.log("Invalid Dataset: " + err);
+				// console.log("Invalid Dataset: " + err);
 				return Promise.reject(err);
 			});
 	}

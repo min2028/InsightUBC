@@ -8,60 +8,55 @@ import {
 	ResultTooLargeError
 } from "./IInsightFacade";
 import {IDataset, Dataset} from "../model/Dataset";
-import {isValidId, readDatasetIDs, removeFromDatasetIDs} from "../model/Utility";
-// import {Dataset} from "../model/Dataset";
+import {Disk} from "../Utility/Disk";
+import {isValidId} from "../Utility/General";
 
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
  *
  */
-export const persistDirectory = "../data";
 
 export default class InsightFacade implements IInsightFacade {
-	protected datasets: IDataset[];
-	protected datasetIDs: string[];
+	protected latestDataset: IDataset;
+	protected insightDatasetList: InsightDataset[];
 
 	constructor() {
-		// TODO: read the list of ids from the file in .data
-		this.datasetIDs = readDatasetIDs();
-		this.datasets = [];
-		console.log("InsightFacadeImpl::init()");
+		// ead the list of metadata from the file in .data
+		this.insightDatasetList = Disk.readDatasetMeta();
+		this.latestDataset = {} as IDataset;
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if (!isValidId(id, this.datasetIDs)) {
+		if (!isValidId(id, this.insightDatasetList.map((item) => item.id))) {
 			return Promise.reject(new InsightError("Id is already used"));
 		}
 		return Dataset.parseDataset(id, content, kind)
 			.then((dataset) => {
-				this.datasets.push(dataset);
-				this.datasetIDs.push(id);
-				// TODO: Add the newly added dataset to disk
-				// createDirAndWriteIDs(id);
-				return this.datasetIDs;
+				this.latestDataset = dataset;
+				this.insightDatasetList.push( {id: id, kind: kind, numRows: dataset.numRows} );
+				Disk.writeDatasetMeta(this.insightDatasetList);
+				Disk.writeDataset(this.latestDataset);
+				return this.insightDatasetList.map((item) => item.id);
 			}).catch((err) => {
 				return Promise.reject(new InsightError(err));
 			});
 	}
 
 	public removeDataset(id: string): Promise<string> {
-		// TODO: remove it from
 		if (!isValidId(id)) {
 			return Promise.reject(new InsightError("Invalid id"));
 		}
-		if (!this.datasetIDs.includes(id)) {
-			return Promise.reject(new NotFoundError());
-		}
-		const index = this.datasets.findIndex((item) => item.id);
+		const index = this.insightDatasetList.findIndex((item) => item.id === id);
 		if (index === -1) {
 			return Promise.reject(new NotFoundError());
 		}
-		this.datasets.splice(index, 1);
-		this.datasetIDs.splice(this.datasetIDs.indexOf(id), 1);
-		removeFromDatasetIDs(id);
-		// At this point, dataset includes
-
+		this.insightDatasetList.splice(index, 1);
+		Disk.writeDatasetMeta(this.insightDatasetList);
+		Disk.removeDataset(id);
+		if (this.latestDataset.id === id) {
+			this.latestDataset = {} as IDataset;
+		}
 		return Promise.resolve(id);
 	}
 
@@ -70,18 +65,6 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
-		return Promise.reject("Not implemented.");
+		return Promise.resolve(this.insightDatasetList);
 	}
-
-	//
-	// private parseDataset(content: string): Dataset {
-	//
-	// }
-	//
-	// private writeToDisk(content: string): any {
-	//
-	// }
-	//
-	// private readFromDisk(): Dataset {
-	// }
 }
