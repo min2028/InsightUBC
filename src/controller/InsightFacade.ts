@@ -10,6 +10,7 @@ import {
 import {IDataset, Dataset} from "../model/Dataset";
 import {Disk} from "../Utility/Disk";
 import {isValidId} from "../Utility/General";
+import {Query} from "../model/Query";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -61,7 +62,25 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public performQuery(query: unknown): Promise<InsightResult[]> {
-		return Promise.reject("Not implemented.");
+		return Query.parseQuery(query)
+			.then((queryProps) => {
+				if (this.latestDataset.id !== queryProps.datasetID) {
+					if (!isValidId(queryProps.datasetID, this.insightDatasetList.map((item) => item.id))) {
+						return Promise.reject(new InsightError("Dataset is not added"));
+					}
+					const diskDataset = Disk.readDataset(queryProps.datasetID);
+					if (diskDataset === null) {
+						return Promise.reject("Dataset is missing from the disk");
+					}
+					this.latestDataset = diskDataset;
+				}
+				return Query.processQuery(queryProps.query, this.latestDataset)
+					.catch((err) => {
+						return Promise.reject(new ResultTooLargeError(err));
+					});
+			}).catch((err) => {
+				return Promise.reject(new InsightError(err));
+			});
 	}
 
 	public listDatasets(): Promise<InsightDataset[]> {
