@@ -76,7 +76,7 @@ export default class InsightFacade implements IInsightFacade {
 				}
 				return Query.processQuery(queryProps.query, this.latestDataset)
 					.catch((err) => {
-						return Promise.reject(new ResultTooLargeError(err));
+						return Promise.reject(new ResultTooLargeError());
 					});
 			}).catch((err) => {
 				return Promise.reject(new InsightError(err));
