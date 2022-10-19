@@ -699,12 +699,18 @@ describe("InsightFacade Combined test suite", function () {
 		});
 
 		type PQErrorKind = "ResultTooLargeError" | "InsightError";
+		type Output = any[];
+
+		function assertResult(actual: any, expected: Output): void {
+			expect(actual).to.have.deep.members(expected);
+		}
 
 		folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
 			"Dynamic InsightFacade PerformQuery tests",
 			(input) => insightFacade.performQuery(input),
 			"./test/resources/queries",
 			{
+				assertOnResult: assertResult,
 				errorValidator: (error): error is PQErrorKind =>
 					error === "ResultTooLargeError" || error === "InsightError",
 				assertOnError: (actual, expected) => {

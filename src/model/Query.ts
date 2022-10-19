@@ -1,35 +1,21 @@
-import {isKeyObject} from "util/types";
 import {IDataset} from "./Dataset";
 import {InsightDataset, InsightResult, ResultTooLargeError} from "../controller/IInsightFacade";
 import {FieldT, ISection, Section} from "./Section";
-// import {buildTree} from "./Tree";
-import {Key} from "readline";
 
 export interface QueryProps {
 	query: IQuery,
 	datasetID: string
 }
-
-interface IQuery {
+export interface IQuery {
 	WHERE: FILTER,
 	OPTIONS: {
 		COLUMNS: string[],
 		ORDER?: string
 	}
 }
-
 interface KeyValuePair {[key: string]: string | number}
 type FILTER = {[filterType in "AND" | "OR" | "NOT" | "LT" | "GT" | "EQ" | "IS"]: FILTER[] | FILTER | KeyValuePair};
-interface NEGATION {NOT: FILTER}
 type LOGICCOMPARISON = {[logic in "AND" | "OR"]: FILTER[]};
-type MCOMPARISON = {[comparison in "LT" | "GT" | "EQ"]: KeyValuePair};
-type SCOMPARISON = {[comparison in "IS"]: KeyValuePair};
-
-// TREE INTERFACE
-interface TreeNode<T> {
-	children?: Array<TreeNode<T>>;
-	filter: T;
-}
 
 export class Query {
 	protected result: InsightResult[] = [];
@@ -53,13 +39,12 @@ export class Query {
 		filteredResults = this.processFILTER(query.WHERE, dataset);
 		results = this.processOptions(query.OPTIONS, filteredResults);
 		if (results.length > 5000) {
-			return Promise.reject("Results greater than 5000");
+			return Promise.reject("Result is too large; > 5000");
 		}
 		return Promise.resolve(results);
 	}
 
-	public static processFILTER(filter: FILTER, dataset: IDataset): ISection[]{
-		// let filterTree = buildTree(filter);
+	public static processFILTER(filter: any, dataset: IDataset): ISection[]{
 		const child = Object.keys(filter)[0];
 		switch (child) {
 			case "AND":
@@ -69,16 +54,37 @@ export class Query {
 			case "NOT":
 				return this.processNOT(filter[child] as FILTER, dataset);
 			case "IS":
+				return this.processSCOMP(filter[child] as KeyValuePair, dataset);
 			case "LT":
 			case "GT":
 			case "EQ":
-				return this.processSMComp(filter[child] as KeyValuePair, dataset, child);
+				return this.processMComp(filter[child] as KeyValuePair, dataset, child);
 			default:
 				return [];
 		}
 	}
 
-	public static processSMComp(key: KeyValuePair, dataset: IDataset, operator: "LT" | "GT" | "EQ" | "IS"): ISection[] {
+	public static processSCOMP(key: KeyValuePair, dataset: IDataset): ISection[] {
+		let field: string = extractField(key);
+		let sections: ISection[] = [];
+		let value: string = String(Object.values(key)[0]);
+		dataset.courses.forEach((course) =>
+			course.sections.forEach((section) => {
+				if (value.startsWith("*")) {
+					sections.push();
+				}
+				if (value.endsWith("*")) {
+					sections.push();
+				}
+				if (section[field as FieldT] === value) {
+					sections.push(section);
+				}
+			})
+		);
+		return sections;
+	};
+
+	public static processMComp(key: KeyValuePair, dataset: IDataset, operator: "LT" | "GT" | "EQ" ): ISection[] {
 		let field: string = extractField(key);
 		let sections: ISection[] = [];
 		dataset.courses.forEach((course) =>
@@ -94,7 +100,6 @@ export class Query {
 							 sections.push(section);
 						 }
 						 break;
-					 case "IS":
 					 case "EQ":
 						 if (section[field as FieldT] === Object.values(key)[0]) {
 							 sections.push(section);
@@ -148,10 +153,10 @@ export class Query {
 			field = options.ORDER;
 			if (typeof results[0][field] === "string") {
 				results.sort((a, b) => {
-					if (a[field] > b[field]) {
+					if (a[field] < b[field]) {
 						return -1;
 					}
-					if (a[field] < b[field]) {
+					if (a[field] > b[field]) {
 						return 1;
 					}
 					return 0;
@@ -166,10 +171,8 @@ export class Query {
 }
 
 function getDatasetId(json: any): string | false {
-	if ("OPTIONS" in json
-		&& "COLUMNS" in json.OPTIONS
-		&& Array.isArray(json.OPTIONS.COLUMNS)
-		&& json.OPTIONS.COLUMNS.length
+	if ("OPTIONS" in json && "COLUMNS" in json.OPTIONS
+		&& Array.isArray(json.OPTIONS.COLUMNS) && json.OPTIONS.COLUMNS.length
 	) {
 		const key: string = json.OPTIONS.COLUMNS[0];
 		const keyParts = key.split("_");
@@ -180,9 +183,10 @@ function getDatasetId(json: any): string | false {
 	return false;
 }
 
-function validateQuery(json: any, targetDatasetId: string): string | true {
+export function validateQuery(json: any, targetDatasetId: string): string | true {
+	let queryString: string  = JSON.stringify(json);
 	try {
-		JSON.parse(json);
+		JSON.parse(queryString);
 	} catch (err) {
 		return "Invalid query format";
 	}
@@ -202,19 +206,15 @@ function validateQuery(json: any, targetDatasetId: string): string | true {
 
 function checkOptions(options: any, targetDatasetId: string): boolean {
 	if (!(
-		options
-		&& typeof options === "object"
-		&& Object.keys(options).length <= 2
-		&& "COLUMNS" in options
-		&& Array.isArray(options.COLUMNS)
-		&& options.COLUMNS.length
+		options && typeof options === "object" && Object.keys(options).length <= 2
+		&& "COLUMNS" in options && Array.isArray(options.COLUMNS) && options.COLUMNS.length
 	)) {
 		return false;
 	}
 	if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
 		return false;
 	}
-	for (let col in options.COLUMNS) {
+	for (let col of options.COLUMNS) {
 		if (!isValidQueryKey(col, targetDatasetId)) {
 			return false;
 		}
@@ -248,7 +248,7 @@ const isLogicComparison = (logic: any, targetDatasetId: string): logic is LOGICC
 	if (!(logic && Array.isArray(logic) && logic.length >= 2)) {
 		return false;
 	}
-	for (let filter in logic) {
+	for (let filter of logic) {
 		if (!isFilter(filter, targetDatasetId)) {
 			return false;
 		}
@@ -256,25 +256,25 @@ const isLogicComparison = (logic: any, targetDatasetId: string): logic is LOGICC
 	return true;
 };
 
-function isValidKeyValuePair(pair: any, targetDatasetId: string, expectedFieldType?: string) {
-	if (!(pair && typeof pair === "object" && Object.keys(pair).length === 1)) {
+export function isValidKeyValuePair(pair: any, targetDatasetId: string, expectedFieldType?: string) {
+	const keys = Object.keys(pair);
+	if (!(pair && typeof pair === "object" && keys.length === 1)) {
 		return false;
 	}
-	const key = extractField(pair);
-	if (!isValidQueryKey(key,targetDatasetId, expectedFieldType)) {
+	if (!isValidQueryKey(keys[0], targetDatasetId, expectedFieldType)) {
 		return false;
 	}
 	switch (expectedFieldType) {
 		case "n":
-			return typeof pair[key] === "number";
+			return typeof pair[keys[0]] === "number";
 		case "s":
-			return typeof pair[key] === "string";
+			return typeof pair[keys[0]] === "string";
 		default:
 			return true;
 	}
 }
 
-function isValidQueryKey(key: string, targetDatasetID: string, expectedFieldType?: string): boolean {
+export function isValidQueryKey(key: string, targetDatasetID: string, expectedFieldType?: string): boolean {
 	const keyParts = key.split("_");
 	if (keyParts.length === 2 && keyParts[0].length && keyParts[1].length) {
 		if (keyParts[0] === targetDatasetID) {
