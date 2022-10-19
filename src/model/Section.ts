@@ -11,21 +11,22 @@ export interface ISection {
 	year: number		// The year the section offering ran.
 }
 
-type FieldT = keyof typeof fieldName;
-const fieldName = {
-	dept: ["Subject", "s"],
-	id: ["Course", "s"],
-	avg: ["Avg", "n"],
-	instructor: ["Professor", "s"],
-	title: ["Title", "s"],
-	pass: ["Pass", "n"],
-	fail: ["Fail", "n"],
-	audit: ["Audit", "n"],
-	uuid: ["id", "s"],
-	year: ["Year", "n"]
-};
+export type FieldT = keyof typeof Section.fieldName;
 
 export class Section {
+	public static fieldName = {
+		dept: ["Subject", "s"],
+		id: ["Course", "s"],
+		avg: ["Avg", "n"],
+		instructor: ["Professor", "s"],
+		title: ["Title", "s"],
+		pass: ["Pass", "n"],
+		fail: ["Fail", "n"],
+		audit: ["Audit", "n"],
+		uuid: ["id", "s"],
+		year: ["Year", "n"]
+	};
+
 	public static async parseSection(json: any): Promise<ISection> {
 		const section: any = {};
 
@@ -33,17 +34,17 @@ export class Section {
 		if (!json) {
 			return Promise.reject("Section is null or empty");
 		}
-		for (let field in fieldName) {
-			if (!(fieldName[field as FieldT][0] in json)) {
+		for (let field in this.fieldName) {
+			if (!(this.fieldName[field as FieldT][0] in json)) {
 				return Promise.reject("Missing fields in the Section");
 			}
 		}
 		// At this point, json is a valid Course
-		for (let field in fieldName) {
-			if (fieldName[field as FieldT][1] === "s") {
-				section[field] = (json[fieldName[field as FieldT][0]]).toString();
+		for (let field in this.fieldName) {
+			if (this.fieldName[field as FieldT][1] === "s") {
+				section[field] = (json[this.fieldName[field as FieldT][0]]).toString();
 			} else {
-				section[field] = Number(json[fieldName[field as FieldT][0]]);
+				section[field] = Number(json[this.fieldName[field as FieldT][0]]);
 			}
 		}
 		if ("Section" in json && json.Section === "overall") {
