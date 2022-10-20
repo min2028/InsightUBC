@@ -7,10 +7,10 @@ import {
 	NotFoundError,
 	ResultTooLargeError
 } from "./IInsightFacade";
-import {IDataset, Dataset} from "../model/Dataset";
+import {IDataset, Dataset} from "../model/Dataset/Dataset";
 import {Disk} from "../Utility/Disk";
 import {isValidId} from "../Utility/General";
-import {Query} from "../model/Query";
+import {Query} from "../model/Query/Query";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -70,16 +70,13 @@ export default class InsightFacade implements IInsightFacade {
 					}
 					const diskDataset = Disk.readDataset(queryProps.datasetID);
 					if (diskDataset === null) {
-						return Promise.reject("Dataset is missing from the disk");
+						return Promise.reject(new InsightError("Dataset is missing from the disk"));
 					}
 					this.latestDataset = diskDataset;
 				}
-				return Query.processQuery(queryProps.query, this.latestDataset)
-					.catch((err) => {
-						return Promise.reject(new ResultTooLargeError());
-					});
+				return Query.processQuery(queryProps.query, this.latestDataset);
 			}).catch((err) => {
-				return Promise.reject(new InsightError(err));
+				return Promise.reject(err);
 			});
 	}
 

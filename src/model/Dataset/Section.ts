@@ -7,7 +7,7 @@ export interface ISection {
 	pass: number,		// The number of students that passed the section offering.
 	fail: number,		// The number of students that failed the section offering.
 	audit: number,		// The number of students that audited the section offering.
-	uuid: string,		// The unique id of a section offering.
+	uuid: string,		// The unique id of a sectiarn on offering.
 	year: number		// The year the section offering ran.
 }
 
