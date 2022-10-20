@@ -1,7 +1,7 @@
 import {Course, ICourse} from "./Course";
-import {InsightDatasetKind} from "../controller/IInsightFacade";
+import {InsightDatasetKind} from "../../controller/IInsightFacade";
 import JSZip, {JSZipObject} from "jszip";
-import {isValidId} from "../Utility/General";
+import {isValidId} from "../../Utility/General";
 
 export interface IDataset {
 	id: string,
