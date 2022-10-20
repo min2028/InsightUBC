@@ -1,0 +1,266 @@
+{
+	"title": "query should pass even with duplicate columns",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"sections_title": "* *"
+					}
+				},
+				{
+					"GT": {
+						"sections_avg": 97
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_id",
+				"sections_title",
+				"sections_title"
+			],
+			"ORDER": "sections_title"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_dept": "epse",
+			"sections_id": "534",
+			"sections_title": "acad assess schl"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "534",
+			"sections_title": "acad assess schl"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "532",
+			"sections_title": "algb geometry i"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "532",
+			"sections_title": "algb geometry i"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "527",
+			"sections_title": "algb topology i"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "527",
+			"sections_title": "algb topology i"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "421",
+			"sections_title": "assess lrn diffi"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "421",
+			"sections_title": "assess lrn diffi"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "421",
+			"sections_title": "assess lrn diffi"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "421",
+			"sections_title": "assess lrn diffi"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "421",
+			"sections_title": "assess lrn diffi"
+		},
+		{
+			"sections_dept": "cnps",
+			"sections_id": "574",
+			"sections_title": "career planning"
+		},
+		{
+			"sections_dept": "cnps",
+			"sections_id": "574",
+			"sections_title": "career planning"
+		},
+		{
+			"sections_dept": "cnps",
+			"sections_id": "574",
+			"sections_title": "career planning"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "509",
+			"sections_title": "cl pro prim care"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "509",
+			"sections_title": "cl pro prim care"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "509",
+			"sections_title": "cl pro prim care"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "509",
+			"sections_title": "cl pro prim care"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "606",
+			"sections_title": "coll&uni teachng"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "596",
+			"sections_title": "cor des ed res"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "596",
+			"sections_title": "cor des ed res"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "519",
+			"sections_title": "dev el sk df&hrd"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "519",
+			"sections_title": "dev el sk df&hrd"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "525",
+			"sections_title": "diff geometry i"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "525",
+			"sections_title": "diff geometry i"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "449",
+			"sections_title": "educ stds autism"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "591",
+			"sections_title": "eth&profl issues"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "591",
+			"sections_title": "eth&profl issues"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "nurs",
+			"sections_id": "578",
+			"sections_title": "fam nrs pract"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "541",
+			"sections_title": "harmonic anal i"
+		},
+		{
+			"sections_dept": "math",
+			"sections_id": "541",
+			"sections_title": "harmonic anal i"
+		},
+		{
+			"sections_dept": "eece",
+			"sections_id": "541",
+			"sections_title": "multimedia sys"
+		},
+		{
+			"sections_dept": "eece",
+			"sections_id": "541",
+			"sections_title": "multimedia sys"
+		},
+		{
+			"sections_dept": "educ",
+			"sections_id": "500",
+			"sections_title": "res mthd in educ"
+		},
+		{
+			"sections_dept": "epse",
+			"sections_id": "549",
+			"sections_title": "sem in autism"
+		},
+		{
+			"sections_dept": "spph",
+			"sections_id": "300",
+			"sections_title": "work int health"
+		},
+		{
+			"sections_dept": "spph",
+			"sections_id": "300",
+			"sections_title": "work int health"
+		}
+	]
+}

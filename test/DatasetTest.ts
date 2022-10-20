@@ -1,11 +1,11 @@
-import {Dataset} from "../src/model/Dataset";
+import {Dataset} from "../src/model/Dataset/Dataset";
 
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {InsightDatasetKind} from "../src/controller/IInsightFacade";
-import {Section} from "../src/model/Section";
-import {Course} from "../src/model/Course";
+import {Section} from "../src/model/Dataset/Section";
+import {Course} from "../src/model/Dataset/Course";
 import JSZip from "jszip";
 import {Disk} from "../src/Utility/Disk";
 import path from "path";
