@@ -30,7 +30,7 @@ export function processSCOMP(key: KeyValuePair, dataset: IDataset): ISection[] {
 	let value: string = String(Object.values(key)[0]);
 	dataset.courses.forEach((course) =>
 		course.sections.forEach((section) => {
-			if (value.startsWith("*") && value.endsWith("*")) {
+			if (value.startsWith("*") && value.endsWith("*") && value.length >= 2) {
 				let substring: string = value.substring(1, value.length - 1);
 				if (String(section[field as FieldT]).includes(substring)) {
 					sections.push(section);

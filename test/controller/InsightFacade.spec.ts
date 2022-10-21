@@ -61,15 +61,15 @@ describe("InsightFacade Combined test suite", function () {
 		beforeEach(function () {
 			// This section resets the insightFacade instance
 			// This runs before each test
-			fs.removeSync(persistDirectory);
+			// fs.removeSync(persistDirectory);
 			insightFacade = new InsightFacade();
 		});
 
-		// afterEach(function () {
-		// 	// This section resets the data directory (removing any cached data)
-		// 	// This runs after each test, which should make each test independent of the previous one
-		// 	fs.removeSync(persistDirectory);
-		// });
+		afterEach(function () {
+			// This section resets the data directory (removing any cached data)
+			// This runs after each test, which should make each test independent of the previous one
+			fs.removeSync(persistDirectory);
+		});
 
 		describe("C1's", function () {
 			// This is a unit test. You should create more like this!
@@ -258,8 +258,6 @@ describe("InsightFacade Combined test suite", function () {
 
 			it("invalid id (whitespace 1) -> should reject with InsightError", function () {
 				const result = insightFacade.addDataset(" ", smallContent, InsightDatasetKind.Sections);
-				console.log(typeof (result));
-				console.log(typeof (InsightError));
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
 

@@ -1,0 +1,29 @@
+{
+	"title": "valid query checking case sensitivity of IS -> should return empty",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"GT": {
+						"sections_avg": 50
+					}
+				},
+				{
+					"IS": {
+						"sections_dept": "bIol"
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_dept",
+				"sections_id",
+				"sections_avg"
+			],
+			"ORDER": "sections_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": []
+}

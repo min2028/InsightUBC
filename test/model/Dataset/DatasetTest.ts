@@ -1,22 +1,20 @@
-import {Dataset} from "../src/model/Dataset/Dataset";
+import {Dataset} from "../../../src/model/Dataset/Dataset";
 
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
-import {InsightDatasetKind} from "../src/controller/IInsightFacade";
-import {Section} from "../src/model/Dataset/Section";
-import {Course} from "../src/model/Dataset/Course";
+import {InsightDatasetKind} from "../../../src/controller/IInsightFacade";
+import {Section} from "../../../src/model/Dataset/Section";
+import {Course} from "../../../src/model/Dataset/Course";
 import JSZip from "jszip";
-import {Disk} from "../src/Utility/Disk";
+import {Disk} from "../../../src/Utility/Disk";
 import path from "path";
-import {isValidId} from "../src/Utility/General";
+import {isValidId} from "../../../src/Utility/General";
 
 
 chai.use(chaiAsPromised);
 
-
 let dataset: Dataset;
-
 const persistDirectory = "./data";
 const datasetContents = new Map<string, string>();
 
@@ -40,12 +38,10 @@ const datasetsToLoad: {[key: string]: string} = {
 before(function () {
 	console.info("\n-----------------------------");
 
-	// This section runs once and loads all datasets specified in the datasetsToLoad object
 	for (const key of Object.keys(datasetsToLoad)) {
 		const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
 		datasetContents.set(key, content);
 	}
-	// Just in case there is anything hanging around from a previous run of the test suite
 	// fs.removeSync(persistDirectory);
 });
 
@@ -57,9 +53,6 @@ after(function () {
 beforeEach(function () {
 	fs.removeSync(persistDirectory);
 });
-
-// afterEach(function () {
-// });
 
 it("Should parse the Dataset : Small", async function () {
 	dataset = await Dataset.parseDataset(
