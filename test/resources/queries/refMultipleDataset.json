@@ -9,9 +9,9 @@
     "OPTIONS": {
       "COLUMNS": [
         "sections_dept",
-        "rooms_avg"
+        "boss_avg"
       ],
-      "ORDER": "rooms_avg"
+      "ORDER": "boss_avg"
     }
   },
   "errorExpected": true,

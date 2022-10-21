@@ -3,6 +3,7 @@ import {InsightError, InsightResult, ResultTooLargeError} from "../../controller
 import {ISection} from "../Dataset/Section";
 import {processFILTER, processOptions} from "./QueryProcessor";
 import {getDatasetId, validateQuery} from "./QueryValidator";
+import {isValidId} from "../../Utility/General";
 
 const tooLargeThreshold = 5000;
 
@@ -30,7 +31,7 @@ export class Query {
 
 	public static parseQuery(json: any): Promise<QueryProps> {
 		const targetDatasetId = getDatasetId(json);
-		if (targetDatasetId === false) {
+		if (targetDatasetId === false || !isValidId(targetDatasetId)) {
 			return Promise.reject(new InsightError("Invalid Query: invalid Dataset ID"));
 		}
 		const validationResults = validateQuery(json, targetDatasetId);

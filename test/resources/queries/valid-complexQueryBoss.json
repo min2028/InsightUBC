@@ -1,0 +1,319 @@
+{
+	"title": "complex valid query on Boss dataset -> should return data",
+	"input": {
+		"WHERE": {
+			"OR": [
+				{
+					"AND": [
+						{
+							"GT": {
+								"boss_avg": 90
+							}
+						},
+						{
+							"IS": {
+								"boss_dept": "adhe"
+							}
+						}
+					]
+				},
+				{
+					"EQ": {
+						"boss_avg": 95
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"boss_dept",
+				"boss_id",
+				"boss_avg"
+			],
+			"ORDER": "boss_avg"
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"boss_dept": "adhe",
+			"boss_id": "329",
+			"boss_avg": 90.02
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "412",
+			"boss_avg": 90.16
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 90.17
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "412",
+			"boss_avg": 90.18
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 90.5
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 90.72
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "329",
+			"boss_avg": 90.82
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 90.85
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 91.29
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 91.33
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 91.33
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "330",
+			"boss_avg": 91.48
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "329",
+			"boss_avg": 92.54
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "329",
+			"boss_avg": 93.33
+		},
+		{
+			"boss_dept": "sowk",
+			"boss_id": "570",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "rhsc",
+			"boss_id": "501",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "psyc",
+			"boss_id": "501",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "psyc",
+			"boss_id": "501",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "obst",
+			"boss_id": "549",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "nurs",
+			"boss_id": "424",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "nurs",
+			"boss_id": "424",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "musc",
+			"boss_id": "553",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "mtrl",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "mtrl",
+			"boss_id": "564",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "mtrl",
+			"boss_id": "564",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "math",
+			"boss_id": "532",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "math",
+			"boss_id": "532",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "kin",
+			"boss_id": "500",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "kin",
+			"boss_id": "500",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "kin",
+			"boss_id": "499",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "epse",
+			"boss_id": "682",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "epse",
+			"boss_id": "682",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "epse",
+			"boss_id": "606",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "edcp",
+			"boss_id": "473",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "edcp",
+			"boss_id": "473",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "econ",
+			"boss_id": "516",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "econ",
+			"boss_id": "516",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "crwr",
+			"boss_id": "599",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "cpsc",
+			"boss_id": "589",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "cpsc",
+			"boss_id": "589",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "cnps",
+			"boss_id": "535",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "cnps",
+			"boss_id": "535",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "bmeg",
+			"boss_id": "597",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "bmeg",
+			"boss_id": "597",
+			"boss_avg": 95
+		},
+		{
+			"boss_dept": "adhe",
+			"boss_id": "329",
+			"boss_avg": 96.11
+		}
+	]
+}
