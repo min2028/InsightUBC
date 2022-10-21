@@ -119,15 +119,67 @@
 // 	console.log(sectionlist);
 // });
 //
-//
-// it("a simple query, should return results -> testing processOPTIONS", async function () {
+// it("testing sort by number", async function () {
 // 	let insightresultlist: InsightResult[];
 // 	let sectionlist: ISection[];
 // 	dataset = await Dataset.parseDataset(
-// 		"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
+// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
+// 	sectionlist = processFILTER({
+// 		AND:[
+// 			{
+// 				GT: {
+// 					sections_avg: 78
+// 				}
+// 			},
+// 			{
+// 				LT: {
+// 					sections_avg: 83
+// 				}
+// 			}
+// 		]
+// 	}, dataset);
+// 	insightresultlist = processOptions(
+// 		{
+// 			COLUMNS: [
+// 				"sections_avg",
+// 			],
+// 			ORDER: "sections_avg"
+// 		}, sectionlist
+// 	);
+// 	console.log(insightresultlist);
+// 	expect(insightresultlist).to.deep.equals(
+// 		[
+// 			{sections_avg: 78.22},
+// 			{sections_avg: 78.32},
+// 			{sections_avg: 78.68},
+// 			{sections_avg: 78.68},
+// 			{sections_avg: 78.69},
+// 			{sections_avg: 79.04},
+// 			{sections_avg: 79.12},
+// 			{sections_avg: 79.12},
+// 			{sections_avg: 79.5},
+// 			{sections_avg: 80.24},
+// 			{sections_avg: 80.32},
+// 			{sections_avg: 80.34},
+// 			{sections_avg: 80.34},
+// 			{sections_avg: 80.35},
+// 			{sections_avg: 81.17},
+// 			{sections_avg: 81.17},
+// 			{sections_avg: 81.18},
+// 			{sections_avg: 81.88},
+// 			{sections_avg: 81.88}
+// 		]
+// 	);
+// });
+//
+// it("a simple query, should return results -> testing processOPTIONS number", async function () {
+// 	let insightresultlist: InsightResult[];
+// 	let sectionlist: ISection[];
+// 	dataset = await Dataset.parseDataset(
+// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 // 	sectionlist = processFILTER({
 // 		GT: {
-// 			sections_avg: 99
+// 			sections_avg: 78
 // 		}
 // 	}, dataset);
 // 	insightresultlist = processOptions(
@@ -136,10 +188,85 @@
 // 				"sections_dept",
 // 				"sections_avg"
 // 			],
-// 			ORDER: "sections_dept"
+// 			ORDER: "sections_avg"
 // 		}, sectionlist
 // 	);
 // 	console.log(insightresultlist);
+// });
+//
+// it("a simple query, should return results -> testing processOPTIONS number", async function () {
+// 	let insightresultlist: InsightResult[];
+// 	let sectionlist: ISection[];
+// 	dataset = await Dataset.parseDataset(
+// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
+// 	sectionlist = processFILTER({
+// 		GT: {
+// 			sections_avg: 78
+// 		}
+// 	}, dataset);
+// 	insightresultlist = processOptions(
+// 		{
+// 			COLUMNS: [
+// 				"sections_dept",
+// 				"sections_avg"
+// 			],
+// 			ORDER: "sections_avg"
+// 		}, sectionlist
+// 	);
+// 	console.log(insightresultlist);
+// });
+//
+// it("testing sort by string", async function () {
+// 	let insightresultlist: InsightResult[];
+// 	let sectionlist: ISection[];
+// 	dataset = await Dataset.parseDataset(
+// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
+// 	sectionlist = processFILTER({
+// 		AND:[
+// 			{
+// 				GT: {
+// 					sections_avg: 78
+// 				}
+// 			},
+// 			{
+// 				LT: {
+// 					sections_avg: 83
+// 				}
+// 			}
+// 		]
+// 	}, dataset);
+// 	insightresultlist = processOptions(
+// 		{
+// 			COLUMNS: [
+// 				"sections_instructor",
+// 			],
+// 			ORDER: "sections_instructor"
+// 		}, sectionlist
+// 	);
+// 	console.log(insightresultlist);
+// 	expect(insightresultlist).to.deep.equals(
+// 		[
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: ""},
+// 			{sections_instructor: "allen, meghan"},
+// 			{sections_instructor: "allen, meghan"},
+// 			{sections_instructor: "allen, meghan"},
+// 			{sections_instructor: "allen, meghan"},
+// 			{sections_instructor: "allen, meghan"},
+// 			{sections_instructor: "baniassad, elisa"},
+// 			{sections_instructor: "baniassad, elisa"},
+// 			{sections_instructor: "baniassad, elisa"},
+// 			{sections_instructor: "holmes, reid"},
+// 			{sections_instructor: "palyart-lamarche, marc"},
+// 			{sections_instructor: "wohlstadter, eric"}
+// 		]
+// 	);
 // });
 //
 // it("valid simple query -> Should pass the validation", function () {
@@ -160,141 +287,3 @@
 // 		}, "sections");
 // 	return expect(result).to.be.true;
 // });
-//
-// it("valid complex query -> Should pass the validation", function () {
-// 	const result = validateQuery(
-// 		{
-// 			WHERE: {
-// 				OR: [
-// 					{
-// 						AND: [
-// 							{
-// 								GT: {
-// 									sections_avg: 90
-// 								}
-// 							},
-// 							{
-// 								IS: {
-// 									sections_dept: "adhe"
-// 								}
-// 							}
-// 						]
-// 					},
-// 					{
-// 						EQ: {
-// 							sections_avg: 95
-// 						}
-// 					}
-// 				]
-// 			},
-// 			OPTIONS: {
-// 				COLUMNS: [
-// 					"sections_dept",
-// 					"sections_id",
-// 					"sections_avg"
-// 				],
-// 				ORDER: "sections_avg"
-// 			}
-// 		}, "sections");
-// 	return expect(result).to.be.true;
-// });
-//
-// it("valid query key -> Should pass the validation", function () {
-// 	const result = isValidQueryKey("section_dept", "section");
-// 	return expect(result).to.be.true;
-// });
-//
-// it("valid keyValuePair string -> Should pass the validation", function () {
-// 	const result = isValidKeyValuePair({sections_dept: "cpsc"}, "sections", "s");
-// 	return expect(result).to.be.true;
-// });
-//
-// it("valid keyValuePair numeric -> Should pass the validation", function () {
-// 	const result = isValidKeyValuePair({sections_avg: 97.4}, "sections", "n");
-// 	return expect(result).to.be.true;
-// });
-//
-// it("a simple query, should reject with ResultTooLargeError", async function () {
-// 	let insightFacade: InsightFacade = new InsightFacade();
-// 	return insightFacade.addDataset("sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections)
-// 		.then(() => {
-// 			return insightFacade.performQuery({
-//
-// 				WHERE: {
-//
-// 					GT: {
-//
-// 						sections_avg: 70
-//
-// 					}
-//
-// 				},
-//
-// 				OPTIONS: {
-//
-// 					COLUMNS: [
-//
-// 						"sections_dept",
-//
-// 						"sections_avg"
-//
-// 					],
-//
-// 					ORDER: "sections_avg"
-//
-// 				}
-//
-// 			});
-// 		}).catch((err) => {
-// 			expect(err).to.be.instanceOf(ResultTooLargeError);
-// 		});
-// });
-//
-// it("a simple query, but with different ids", function () {
-// 	let insightFacade: InsightFacade = new InsightFacade();
-// 	return insightFacade.addDataset("ubc", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections)
-// 		.then(() => {
-// 			return insightFacade.performQuery({
-// 				WHERE: {
-// 					GT: {
-// 						sections_avg: 70
-// 					}
-// 				},
-// 				OPTIONS: {
-// 					COLUMNS: [
-// 						"sections_dept",
-// 						"sections_avg"
-// 					],
-// 					ORDER: "sections_avg"
-// 				}
-// 			});
-// 		}).catch((err) => {
-// 			expect(err).to.be.instanceOf(InsightError);
-// 		});
-// });
-//
-//
-// it("SCOMP test, *sc, should return length 39", async function () {
-// 	let sectionlist: ISection[];
-// 	dataset = await Dataset.parseDataset(
-// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
-// 	sectionlist = processFILTER({
-// 		IS: {
-// 			sections_dept: "*sc"
-// 		}
-// 	}, dataset);
-// 	console.log(sectionlist.length);
-// });
-//
-// it("SCOMP test, adhe, should return empty list", async function () {
-// 	let sectionlist: ISection[];
-// 	dataset = await Dataset.parseDataset(
-// 		"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
-// 	sectionlist = processFILTER({
-// 		IS: {
-// 			sections_dept: "adhe"
-// 		}
-// 	}, dataset);
-// 	console.log(sectionlist.length);
-// });
-

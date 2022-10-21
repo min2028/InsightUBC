@@ -9,7 +9,7 @@ import {
 } from "./IInsightFacade";
 import {IDataset, Dataset} from "../model/Dataset/Dataset";
 import {Disk} from "../Utility/Disk";
-import {isValidId} from "../Utility/General";
+import {isIdInList, isValidId} from "../Utility/General";
 import {Query} from "../model/Query/Query";
 
 /**
@@ -19,25 +19,24 @@ import {Query} from "../model/Query/Query";
  */
 
 export default class InsightFacade implements IInsightFacade {
-	protected latestDataset: IDataset;
+	protected cachedDataset: IDataset;
 	protected insightDatasetList: InsightDataset[];
 
 	constructor() {
-		// ead the list of metadata from the file in .data
 		this.insightDatasetList = Disk.readDatasetMeta();
-		this.latestDataset = {} as IDataset;
+		this.cachedDataset = {} as IDataset;
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if (!isValidId(id, this.insightDatasetList.map((item) => item.id))) {
+		if (!(isValidId(id) && !isIdInList(id, this.insightDatasetList.map((item) => item.id)))){
 			return Promise.reject(new InsightError("Id is already used"));
 		}
 		return Dataset.parseDataset(id, content, kind)
 			.then((dataset) => {
-				this.latestDataset = dataset;
+				this.cachedDataset = dataset;
 				this.insightDatasetList.push( {id: id, kind: kind, numRows: dataset.numRows} );
 				Disk.writeDatasetMeta(this.insightDatasetList);
-				Disk.writeDataset(this.latestDataset);
+				Disk.writeDataset(this.cachedDataset);
 				return this.insightDatasetList.map((item) => item.id);
 			}).catch((err) => {
 				return Promise.reject(new InsightError(err));
@@ -55,8 +54,8 @@ export default class InsightFacade implements IInsightFacade {
 		this.insightDatasetList.splice(index, 1);
 		Disk.writeDatasetMeta(this.insightDatasetList);
 		Disk.removeDataset(id);
-		if (this.latestDataset.id === id) {
-			this.latestDataset = {} as IDataset;
+		if (this.cachedDataset.id === id) {
+			this.cachedDataset = {} as IDataset;
 		}
 		return Promise.resolve(id);
 	}
@@ -64,17 +63,17 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: unknown): Promise<InsightResult[]> {
 		return Query.parseQuery(query)
 			.then((queryProps) => {
-				if (this.latestDataset.id !== queryProps.datasetID) {
-					if (!isValidId(queryProps.datasetID, this.insightDatasetList.map((item) => item.id))) {
-						return Promise.reject(new InsightError("Dataset is not added"));
+				if (this.cachedDataset.id !== queryProps.datasetID) {
+					if (!isIdInList(queryProps.datasetID, this.insightDatasetList.map((item) => item.id))) {
+						return Promise.reject(new InsightError("The queried dataset does not exist"));
 					}
 					const diskDataset = Disk.readDataset(queryProps.datasetID);
 					if (diskDataset === null) {
 						return Promise.reject(new InsightError("Dataset is missing from the disk"));
 					}
-					this.latestDataset = diskDataset;
+					this.cachedDataset = diskDataset;
 				}
-				return Query.processQuery(queryProps.query, this.latestDataset);
+				return Query.processQuery(queryProps.query, this.cachedDataset);
 			}).catch((err) => {
 				return Promise.reject(err);
 			});

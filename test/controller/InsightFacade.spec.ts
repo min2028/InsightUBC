@@ -1,8 +1,8 @@
 import {
-	InsightDatasetKind,
 	InsightDataset,
-	InsightResult,
+	InsightDatasetKind,
 	InsightError,
+	InsightResult,
 	NotFoundError,
 	ResultTooLargeError
 } from "../../src/controller/IInsightFacade";
@@ -688,6 +688,16 @@ describe("InsightFacade Combined test suite", function () {
 					datasetContents.get("sections") ?? "",
 					InsightDatasetKind.Sections
 				),
+				insightFacade.addDataset(
+					"boss",
+					datasetContents.get("sections") ?? "",
+					InsightDatasetKind.Sections
+				),
+				insightFacade.addDataset(
+					"validSmall",
+					datasetContents.get("valid_small") ?? "",
+					InsightDatasetKind.Sections
+				)
 			];
 
 			return Promise.all(loadDatasetPromises);

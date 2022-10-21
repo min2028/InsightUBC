@@ -112,30 +112,34 @@ export function processAND(andQuery: FILTER[], dataset: IDataset): ISection[] {
 }
 
 export function processOptions(options: {COLUMNS: string[], ORDER?: string}, sections: ISection[]): InsightResult[] {
+	let results: InsightResult[] = processCOLUMNS(options.COLUMNS, sections);
+	results = processORDER(results, options.ORDER);
+	return results;
+}
+
+export function processCOLUMNS(columns: string[], sections: ISection[]): InsightResult[] {
 	let results: InsightResult[] = [];
 	let field: string;
 	sections.forEach((section) => {
 		let result: InsightResult = {} as InsightResult;
-		options.COLUMNS.forEach((key) => {
+		columns.forEach((key) => {
 			field = extractField(key);
 			result[key] = section[field as FieldT];
 		});
 		results.push(result);
 	});
-	if (options.ORDER) {
-		field = extractField(options.ORDER);
+	return results;
+}
+
+export function processORDER(results: InsightResult[], order?: string) {
+	if (order) {
+		const field = extractField(order);
 		if (Section.fieldName[field as FieldT][1] === "s") {
 			results.sort((a, b) => {
-				if (a[field] < b[field]) {
-					return -1;
-				}
-				if (a[field] > b[field]) {
-					return 1;
-				}
-				return 0;
+				return (a[order] as string).localeCompare(b[order] as string);
 			});
 		} else {
-			results.sort((a, b) => Number(a[field]) - Number(b[field]));
+			results.sort((a, b) => Number(a[order]) - Number(b[order]));
 		}
 	}
 	return results;

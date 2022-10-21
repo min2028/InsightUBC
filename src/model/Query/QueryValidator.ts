@@ -108,18 +108,7 @@ export function isValidKeyValuePair(pair: any, targetDatasetId: string, expected
 }
 
 export function checkWildCard(value: string): boolean {
-	let valueSubstring: string;
-	if (value.startsWith("*") && value.endsWith("*") && value.length > 2) {
-		valueSubstring = value.substring(1, value.length - 1);
-		return !valueSubstring.includes("*");
-	} else if (value.startsWith("*") && value.length > 1) {
-		valueSubstring = value.substring(1);
-		return !valueSubstring.includes("*");
-	} else if (value.endsWith("*") && value.length > 1) {
-		valueSubstring = value.substring(0, value.length - 1);
-		return !valueSubstring.includes("*");
-	}
-	return true;
+	return !/.+\*.+/.test(value);
 }
 
 export function isValidQueryKey(key: string, targetDatasetID: string, expectedFieldType?: string): boolean {
