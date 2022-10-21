@@ -9,7 +9,6 @@ import {checkWildCard, isValidKeyValuePair,
 
 chai.use(chaiAsPromised);
 
-let dataset: IDataset;
 const persistDirectory = "./data";
 const datasetContents = new Map<string, string>();
 const datasetsToLoad: {[key: string]: string} = {
