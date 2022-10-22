@@ -460,52 +460,52 @@ describe("InsightFacade Combined test suite", function () {
 				expect(list).to.deep.equal([]);
 			});
 
-			// it("multiple alternating add and remove -> should remove dataset", async function () {
-			// 	let added: string[], removed: string, list: InsightDataset[];
-			//
-			// 	for (let i = 0; i < 5; i++) {
-			// 		added = await insightFacade.addDataset("sameID", smallContent, InsightDatasetKind.Sections);
-			// 		expect(added).to.deep.equal(["sameID"]);
-			//
-			// 		removed = await insightFacade.removeDataset("sameID");
-			// 		expect(removed).to.equals("sameID");
-			//
-			// 		list = await insightFacade.listDatasets();
-			// 		expect(list).to.deep.equal([]);
-			// 	}
-			// });
+			it("[Modified] multiple alternating add and remove -> should remove dataset", function () {
+				let promiseList: Array<Promise<any>> = [];
+				for (let i = 0; i < 5; i++) {
+					promiseList.push(insightFacade.addDataset("sameID", smallContent, InsightDatasetKind.Sections)
+						.then(()=> insightFacade.removeDataset("sameID"))
+						.then(()=> insightFacade.listDatasets())
+						.catch(() => expect.fail("Should have not thrown an error."))
+					);
+				}
+				const results = Promise.all(promiseList);
+				return expect(results).to.eventually.deep.equal([[],[],[],[],[]]);
+			});
 
-			// it("[Modified] multiple consecutive removes -> should remove dataset", async function () {
-			// 	let list: InsightDataset[], expectedList: InsightDataset[] = [];
-			//
-			// 	for (let i = 1; i <= 5; i++) {
-			// 		insightFacade.addDataset(i.toString(), smallContent, InsightDatasetKind.Sections)
-			// 			.then((added) => {
-			// 				expect(added).to.have.deep.members(expectedList.map((item) => item.id));
-			// 				expect(added).to.have.length(i);
-			// 			});
-			// 		expectedList.push({
-			// 			id: i.toString(),
-			// 			kind: InsightDatasetKind.Sections,
-			// 			numRows: 39
-			// 		} as InsightDataset);
-			//
-			// 	}
-			//
-			// 	list = await insightFacade.listDatasets();
-			// 	expect(list).to.have.deep.members(expectedList as InsightDataset[]);
-			// 	expect(list).to.have.length(5);
-			//
-			// 	for (let i = 1; i <= 5; i++) {
-			// 		insightFacade.removeDataset(i.toString())
-			// 			.then((removed) => {
-			// 				expect(removed).to.equals(i.toString());
-			// 			});
-			// 	}
-			//
-			// 	list = await insightFacade.listDatasets();
-			// 	expect(list).to.deep.equal([]);
-			// });
+			it("[Modified] multiple consecutive removes -> should remove dataset", async function () {
+				let expectedList: any[] = [];
+				let promiseList: Array<Promise<any>> = [];
+				let resultsList: any[];
+
+				for (let i = 1; i <= 5; i++) {
+					promiseList.push(insightFacade.addDataset(i.toString(), smallContent, InsightDatasetKind.Sections));
+					expectedList.push({
+						id: i.toString(),
+						kind: InsightDatasetKind.Sections,
+						numRows: 39
+					} as InsightDataset);
+				}
+				resultsList = await Promise.all(promiseList);
+				expect(resultsList).to.deep.include(expectedList.map((item) => item.id));
+				expect(resultsList).to.have.length(5);
+				let list: InsightDataset[] = await insightFacade.listDatasets();
+				expect(list).to.have.deep.members(expectedList as InsightDataset[]);
+				expect(list).to.have.length(5);
+
+				promiseList = [];
+				expectedList = [];
+
+				for (let i = 1; i <= 5; i++) {
+					promiseList.push(insightFacade.removeDataset(i.toString()));
+					expectedList.push(i.toString());
+				}
+				resultsList = await Promise.all(promiseList);
+				expect(resultsList).to.deep.equals(expectedList);
+				expect(resultsList).to.have.length(5);
+				list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([]);
+			});
 
 			it("remove invalid id (whitespace) -> should reject with InsightError", async function () {
 				await insightFacade.addDataset("id", smallContent, InsightDatasetKind.Sections);
@@ -553,12 +553,6 @@ describe("InsightFacade Combined test suite", function () {
 				return insightFacade.listDatasets().then((insightDatasets) => {
 					expect(insightDatasets).to.deep.equal([]);
 				});
-
-				// expect([]).to.equal([]) will always fail because asserting equality on two different objects
-				// two different arrays that happen to have equal
-				// deep.equal check if both are same kind of object and check individual properties
-				// could do expect(insightDatasets).to.be.an.instanceof(Array);
-				// expect(insightDatasets).to.have.length(0);
 			});
 
 			it("should list one dataset", function () {
@@ -687,13 +681,13 @@ describe("InsightFacade Combined test suite", function () {
 					InsightDatasetKind.Sections
 				),
 				insightFacade.addDataset(
-					"boss",
-					datasetContents.get("sections") ?? "",
+					"validSmall",
+					datasetContents.get("valid_small") ?? "",
 					InsightDatasetKind.Sections
 				),
 				insightFacade.addDataset(
-					"validSmall",
-					datasetContents.get("valid_small") ?? "",
+					"boss",
+					datasetContents.get("sections") ?? "",
 					InsightDatasetKind.Sections
 				)
 			];
