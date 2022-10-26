@@ -10,32 +10,35 @@ export class Course {
 		const course: ICourse = {sections:[]};
 		let skippedSectionsCount: number = 0;
 		let promises: Array<Promise<any>> = [];
+		let results: object[];
 
-		return getContent(file)
-			.then(async function (results) {
-				results.forEach((item) => {
-					promises.push(Section.parseSection(item)
-						.then((section) => {
-							course.sections.push(section);
-						}).catch((err)=> {
-							// console.log("Invalid Section: " + err);
-							// skipping
-							skippedSectionsCount++;
-						})
-					);
-				});
-				await Promise.all(promises);
-				// console.log(`Skipped ${skippedSectionsCount} sections`);
-
-				// Checking if the dataset.courses is empty
-				if (course.sections.length > 0) {
-					// console.log(`Returning a course with ${course.sections.length} sections.`);
-					return course;
-				}
-				return Promise.reject("No valid Sections in the course");
-			}).catch((err) => {
-				return Promise.reject(err);
-			});
+		try {
+			results = await getContent(file);
+		} catch (err) {
+			return Promise.reject(err);
+		}
+		results.forEach((item) => {
+			promises.push(Section.parseSection(item)
+				.then((section) => {
+					course.sections.push(section);
+				}).catch((err)=> {
+					// console.log("Invalid Section: " + err);
+					// skipping
+					skippedSectionsCount++;
+				})
+			);
+		});
+		try {
+			await Promise.all(promises);
+		} catch (err) {
+			return Promise.reject(err);
+		}
+		// console.log(`Skipped ${skippedSectionsCount} sections`);
+		if (course.sections.length > 0) {
+			// console.log(`Returning a course with ${course.sections.length} sections.`);
+			return course;
+		}
+		return Promise.reject("No valid Sections in the course");
 	}
 }
 

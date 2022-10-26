@@ -16,7 +16,7 @@ import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiAsPromised);
 
-describe("InsightFacade Combined test suite", function () {
+describe("[ InsightFacade.spec.ts ]", function () {
 	let insightFacade: InsightFacade;
 	let smallContent: string;
 
@@ -26,23 +26,21 @@ describe("InsightFacade Combined test suite", function () {
 	// Reference any datasets you've added to test/resources/archives here and they will
 	// automatically be loaded in the 'before' hook.
 	const datasetsToLoad: {[key: string]: string} = {
-		sections: "./test/resources/archives/pair.zip",
-		invalidDir: "./test/resources/archives/rtdirwrong.zip",
-		notInJsonfile: "./test/resources/archives/notinjson.zip",
-		noValidSec: "./test/resources/archives/novalidsec.zip",
-		skipFiles: "./test/resources/archives/skipfiles.zip",
-		valid_small: "./test/resources/archives/courses-valid-small.zip",
-		valid_singleSection: "./test/resources/archives/courses-valid-singleSection.zip",
-		invalid_course: "./test/resources/archives/courses-invalid-course.zip",
-		invalid_empty: "./test/resources/archives/courses-invalid-empty.zip",
-		invalid_name: "./test/resources/archives/courses-invalid-name.zip",
-		invalid_section: "./test/resources/archives/courses-invalid-section.zip",
-		invalid_structure: "./test/resources/archives/courses-invalid-structure.zip",
+		sections: "./test/resources/archives/courses/pair.zip",
+		invalidDir: "./test/resources/archives/courses/rtdirwrong.zip",
+		notInJsonfile: "./test/resources/archives/courses/notinjson.zip",
+		noValidSec: "./test/resources/archives/courses/novalidsec.zip",
+		skipFiles: "./test/resources/archives/courses/skipfiles.zip",
+		valid_small: "./test/resources/archives/courses/valid-small.zip",
+		valid_singleSection: "./test/resources/archives/courses/valid-singleSection.zip",
+		invalid_course: "./test/resources/archives/courses/invalid-course.zip",
+		invalid_empty: "./test/resources/archives/courses/invalid-empty.zip",
+		invalid_name: "./test/resources/archives/courses/invalid-name.zip",
+		invalid_section: "./test/resources/archives/courses/invalid-section.zip",
+		invalid_structure: "./test/resources/archives/courses/invalid-structure.zip",
 	};
 
 	before(function () {
-		console.info("\n-----------------------------");
-
 		// This section runs once and loads all datasets specified in the datasetsToLoad object
 		for (const key of Object.keys(datasetsToLoad)) {
 			const content = fs.readFileSync(datasetsToLoad[key]).toString("base64");
@@ -53,15 +51,18 @@ describe("InsightFacade Combined test suite", function () {
 		fs.removeSync(persistDirectory);
 	});
 
-	describe("[ addDataset() ]", function () {
+	after(function () {
+		console.info("==========================================================\n");
+	});
+
+	describe("addDataset", function () {
 		after(function () {
-			console.info("\n-----------------------------");
+			console.info();
 		});
 
 		beforeEach(function () {
 			// This section resets the insightFacade instance
 			// This runs before each test
-			// fs.removeSync(persistDirectory);
 			insightFacade = new InsightFacade();
 		});
 
@@ -390,9 +391,9 @@ describe("InsightFacade Combined test suite", function () {
 		});
 	});
 
-	describe("[ removeDataset() ]", function () {
+	describe("removeDataset", function () {
 		after(function () {
-			console.info("\n-----------------------------");
+			console.info();
 		});
 
 		beforeEach(function () {
@@ -460,7 +461,7 @@ describe("InsightFacade Combined test suite", function () {
 				expect(list).to.deep.equal([]);
 			});
 
-			it("[Modified] multiple alternating add and remove -> should remove dataset", function () {
+			it("multiple alternating add and remove -> should remove dataset", function () {
 				let promiseList: Array<Promise<any>> = [];
 				for (let i = 0; i < 5; i++) {
 					promiseList.push(insightFacade.addDataset("sameID", smallContent, InsightDatasetKind.Sections)
@@ -473,7 +474,7 @@ describe("InsightFacade Combined test suite", function () {
 				return expect(results).to.eventually.deep.equal([[],[],[],[],[]]);
 			});
 
-			it("[Modified] multiple consecutive removes -> should remove dataset", async function () {
+			it("multiple consecutive removes -> should remove dataset", async function () {
 				let expectedList: any[] = [];
 				let promiseList: Array<Promise<any>> = [];
 				let resultsList: any[];
@@ -538,9 +539,9 @@ describe("InsightFacade Combined test suite", function () {
 		});
 	});
 
-	describe("[ listDatasets() ]", function () {
+	describe("listDatasets", function () {
 		after(function () {
-			console.info("\n-----------------------------");
+			console.info();
 		});
 
 		beforeEach(function () {
@@ -632,13 +633,13 @@ describe("InsightFacade Combined test suite", function () {
 		});
 	});
 
-	describe("[ performQuery() ] - special case", function () {
+	describe("performQuery - special case", function () {
 		before(function () {
 			insightFacade = new InsightFacade();
 		});
 
 		after(function () {
-			console.info("\n-----------------------------");
+			console.info();
 			fs.removeSync(persistDirectory);
 		});
 
@@ -668,7 +669,7 @@ describe("InsightFacade Combined test suite", function () {
 	 * You should not need to modify it; instead, add additional files to the queries directory.
 	 * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
 	 */
-	describe("[ performQuery() ]", () => {
+	describe("performQuery", () => {
 		before(function () {
 			insightFacade = new InsightFacade();
 
@@ -696,7 +697,6 @@ describe("InsightFacade Combined test suite", function () {
 		});
 
 		after(function () {
-			console.info("\n-----------------------------");
 			fs.removeSync(persistDirectory);
 		});
 
