@@ -13,14 +13,14 @@ As a student, I want to be able to give a department code and see a list of all 
 
 
 #### Definitions of Done(s)
-Scenario 1: Valid department code
-Given: The user is on the application's Courses section
-When: The user enters a valid department code and clicks on the "search" button
+Scenario 1: Valid department code<br/>
+Given: The user is on the application's Courses section<br/>
+When: The user enters a valid department code and clicks on the "search" button<br/>
 Then: The application displays a list of all courses offered by that department on the dashboard. The list contains the course id, course title and the total number of sections offered for that course in the past.
 
-Scenario 2: Invalid department code
-Given: The user is on the application's Courses section
-When: The user enters an invalid department code and clicks on the "search" button
+Scenario 2: Invalid department code<br/>
+Given: The user is on the application's Courses section<br/>
+When: The user enters an invalid department code and clicks on the "search" button<br/>
 Then: The application displays an error message on the dashboard saying that the requested department code is invalid.
 
 
@@ -29,14 +29,14 @@ As a student, I want to be able to search for a room by its name and get its bui
 
 
 #### Definitions of Done(s)
-Scenario 1: Correct room name
-Given: The user is on the application's Rooms section
-When: The user enters a valid room name and clicks on "get info" button
+Scenario 1: Correct room name<br/>
+Given: The user is on the application's Rooms section<br/>
+When: The user enters a valid room name and clicks on "get info" button<br/>
 Then: The application displays the building's full name and address as well as room's type, furniture and number of seats on the dashboard.
 
-Scenario 2: Incorrect room name
-Given: The user is on the application's Rooms section
-When: The user enters a room name that is invalid or does not exist and clicks on "get info" button
+Scenario 2: Incorrect room name<br/>
+Given: The user is on the application's Rooms section<br/>
+When: The user enters a room name that is invalid or does not exist and clicks on "get info" button<br/>
 Then: The application displays an error on the dashboard telling the user that the requested room does not exist.
 
 
