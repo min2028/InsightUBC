@@ -136,7 +136,7 @@ export function processORDER(results: InsightResult[], order?: string) {
 		const field = extractField(order);
 		if (Section.fieldName[field as FieldT][1] === "s") {
 			results.sort((a, b) => {
-				return (a[order] as string).localeCompare(b[order] as string);
+				return (a[order] as string) < (b[order] as string) ? -1 : 1;
 			});
 		} else {
 			results.sort((a, b) => Number(a[order]) - Number(b[order]));

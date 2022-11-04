@@ -8,8 +8,6 @@ import {Section} from "../../../src/model/Dataset/Section";
 import {Course} from "../../../src/model/Dataset/Course";
 import JSZip from "jszip";
 import {Disk} from "../../../src/Utility/Disk";
-import path from "path";
-import {isValidId} from "../../../src/Utility/General";
 
 chai.use(chaiAsPromised);
 

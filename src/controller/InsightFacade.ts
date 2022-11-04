@@ -19,8 +19,8 @@ import {Query} from "../model/Query/Query";
  */
 
 export default class InsightFacade implements IInsightFacade {
-	protected cachedDataset: IDataset;
-	protected insightDatasetList: InsightDataset[];
+	private cachedDataset: IDataset;
+	private insightDatasetList: InsightDataset[];
 
 	constructor() {
 		this.insightDatasetList = Disk.readDatasetMeta();
