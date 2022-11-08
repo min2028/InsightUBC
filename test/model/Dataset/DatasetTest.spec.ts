@@ -1,18 +1,18 @@
-import {Dataset} from "../../../src/model/Dataset/Dataset";
+import {CDataset} from "../../../src/model/CourseDataset/CDataset";
 
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {InsightDatasetKind} from "../../../src/controller/IInsightFacade";
-import {Section} from "../../../src/model/Dataset/Section";
-import {Course} from "../../../src/model/Dataset/Course";
+import {Section} from "../../../src/model/CourseDataset/Section";
+import {Course} from "../../../src/model/CourseDataset/Course";
 import JSZip from "jszip";
 import {Disk} from "../../../src/Utility/Disk";
 
 chai.use(chaiAsPromised);
 
 describe("[ DatasetTest.spec.ts ]", function () {
-	let dataset: Dataset;
+	let dataset: CDataset;
 	const persistDirectory = "./data";
 	const datasetContents = new Map<string, string>();
 
@@ -44,7 +44,7 @@ describe("[ DatasetTest.spec.ts ]", function () {
 
 	describe("parse Dataset", function() {
 		it("Should parse the Dataset : Small", async function () {
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections
 			).catch((err) => {
 				expect.fail("Should have not thrown an error");
@@ -52,20 +52,20 @@ describe("[ DatasetTest.spec.ts ]", function () {
 		});
 
 		it("Should parse the Dataset : Large", async function () {
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"ubc", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections
 			);
 		});
 
 		it("Should not parse the Dataset : Invalid syntax", function () {
-			const err = Dataset.parseDataset(
+			const err = CDataset.parseDataset(
 				"ubc", datasetContents.get("invalid_course") ?? "", InsightDatasetKind.Sections
 			);
 			return expect(err).eventually.to.be.rejected;
 		});
 
 		it("Should not parse the Dataset : Invalid file", function () {
-			const err = Dataset.parseDataset(
+			const err = CDataset.parseDataset(
 				"ubc", datasetContents.get("notInJsonfile") ?? "", InsightDatasetKind.Sections
 			);
 			return expect(err).eventually.to.be.rejected;
@@ -73,7 +73,7 @@ describe("[ DatasetTest.spec.ts ]", function () {
 
 		it("Should reject with InsightError, not start with courses", function () {
 			// const dataset1 : Promise<Dataset>;
-			const err = Dataset.parseDataset(
+			const err = CDataset.parseDataset(
 				"ubc", datasetContents.get("rtdirwrong") ?? "", InsightDatasetKind.Sections
 			);
 			return expect(err).eventually.to.be.rejected;
@@ -148,7 +148,8 @@ describe("[ DatasetTest.spec.ts ]", function () {
 		});
 
 		it ("write Dataset", function () {
-			return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+			return CDataset.parseDataset(
+				"ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
 				.then((small_dataset) => {
 					Disk.writeDataset(small_dataset);
 					const content = Disk.readDataset("ubc");
@@ -157,9 +158,10 @@ describe("[ DatasetTest.spec.ts ]", function () {
 		});
 
 		it ("write multiple Datasets", function () {
-			return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+			return CDataset.parseDataset(
+				"ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
 				.then(() => {
-					return Dataset.parseDataset(
+					return CDataset.parseDataset(
 						"small", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections
 					)
 						.then((small_dataset) => {
@@ -173,7 +175,8 @@ describe("[ DatasetTest.spec.ts ]", function () {
 
 	describe("remove from disk", function () {
 		it("should remove a dataset, testing writeDataset", function () {
-			return Dataset.parseDataset("ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
+			return CDataset.parseDataset(
+				"ubc", datasetContents.get("validquerytest") ?? "", InsightDatasetKind.Sections)
 				.then((small_dataset) => {
 					Disk.writeDataset(small_dataset);
 					Disk.removeDataset("ubc");

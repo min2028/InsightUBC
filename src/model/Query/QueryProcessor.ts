@@ -1,10 +1,10 @@
-import {IDataset} from "../Dataset/Dataset";
-import {FieldT, ISection, Section} from "../Dataset/Section";
+import {ICDataset} from "../CourseDataset/CDataset";
+import {FieldT, ISection, Section} from "../CourseDataset/Section";
 import {InsightResult} from "../../controller/IInsightFacade";
 import {FILTER, KeyValuePair} from "./Query";
 import {extractField} from "./QueryValidator";
 
-export function processFILTER(filter: any, dataset: IDataset): ISection[]{
+export function processFILTER(filter: any, dataset: ICDataset): ISection[]{
 	const child = Object.keys(filter)[0];
 	switch (child) {
 		case "AND":
@@ -24,7 +24,7 @@ export function processFILTER(filter: any, dataset: IDataset): ISection[]{
 	}
 }
 
-export function processSCOMP(key: KeyValuePair, dataset: IDataset): ISection[] {
+export function processSCOMP(key: KeyValuePair, dataset: ICDataset): ISection[] {
 	let field: string = extractField(key);
 	let sections: ISection[] = [];
 	let value: string = String(Object.values(key)[0]);
@@ -53,7 +53,7 @@ export function processSCOMP(key: KeyValuePair, dataset: IDataset): ISection[] {
 	return sections;
 }
 
-export function processMComp(key: KeyValuePair, dataset: IDataset, operator: "LT" | "GT" | "EQ" ): ISection[] {
+export function processMComp(key: KeyValuePair, dataset: ICDataset, operator: "LT" | "GT" | "EQ" ): ISection[] {
 	let field: string = extractField(key);
 	let sections: ISection[] = [];
 	dataset.courses.forEach((course) =>
@@ -80,7 +80,7 @@ export function processMComp(key: KeyValuePair, dataset: IDataset, operator: "LT
 	return sections;
 }
 
-export function processNOT(notQuery: FILTER, dataset: IDataset): ISection[] {
+export function processNOT(notQuery: FILTER, dataset: ICDataset): ISection[] {
 	let results: ISection[] = [];
 	let temp = processFILTER(notQuery, dataset);
 	dataset.courses.forEach((course) => results = [...results, ...course.sections]);
@@ -88,7 +88,7 @@ export function processNOT(notQuery: FILTER, dataset: IDataset): ISection[] {
 	return results;
 }
 
-export function processOR(orQuery: FILTER[], dataset: IDataset): ISection[] {
+export function processOR(orQuery: FILTER[], dataset: ICDataset): ISection[] {
 	let results: ISection[] = [];
 	orQuery.forEach((filter) => {
 		let temp = processFILTER(filter, dataset);
@@ -97,7 +97,7 @@ export function processOR(orQuery: FILTER[], dataset: IDataset): ISection[] {
 	return results;
 }
 
-export function processAND(andQuery: FILTER[], dataset: IDataset): ISection[] {
+export function processAND(andQuery: FILTER[], dataset: ICDataset): ISection[] {
 	let results: ISection[] = [];
 	let temp: ISection[];
 	andQuery.forEach((filter, index) => {

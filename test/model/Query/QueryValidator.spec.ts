@@ -1,4 +1,4 @@
-import {IDataset} from "../../../src/model/Dataset/Dataset";
+import {ICDataset} from "../../../src/model/CourseDataset/CDataset";
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";

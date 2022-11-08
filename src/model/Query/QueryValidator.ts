@@ -1,4 +1,4 @@
-import {FieldT, Section} from "../Dataset/Section";
+import {FieldT, Section} from "../CourseDataset/Section";
 import {FILTER, IQuery, KeyValuePair, LOGICCOMPARISON} from "./Query";
 
 export function getDatasetId(json: any): string | false {

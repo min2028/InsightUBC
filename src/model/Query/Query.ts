@@ -1,6 +1,6 @@
-import {IDataset} from "../Dataset/Dataset";
+import {ICDataset} from "../CourseDataset/CDataset";
 import {InsightError, InsightResult, ResultTooLargeError} from "../../controller/IInsightFacade";
-import {ISection} from "../Dataset/Section";
+import {ISection} from "../CourseDataset/Section";
 import {processFILTER, processOptions} from "./QueryProcessor";
 import {getDatasetId, validateQuery} from "./QueryValidator";
 import {isValidId} from "../../Utility/General";
@@ -18,7 +18,19 @@ export interface IQuery {
 		COLUMNS: string[],
 		ORDER?: string
 	}
+	TRANSFORMATION?: {
+		GROUP: string[],
+		APPLY: APPLYRULE[];
+	}
 }
+
+export interface APPLYRULE {
+	[applyKey: string]: APPLYTOKEN;
+}
+
+export type APPLYTOKEN = {
+	[applyToken in "MAX" | "MIN" | "AVG" | "COUNT" | "SUM"]: string[];
+};
 
 export interface KeyValuePair {[key: string]: string | number};
 export type FILTER = {
@@ -43,7 +55,7 @@ export class Query {
 		}
 	}
 
-	public static processQuery(query: IQuery, dataset: IDataset): Promise<InsightResult[]> {
+	public static processQuery(query: IQuery, dataset: ICDataset): Promise<InsightResult[]> {
 		let filteredResults: ISection[] = [];
 		let results: InsightResult[];
 		if (Object.keys(query.WHERE).length) {

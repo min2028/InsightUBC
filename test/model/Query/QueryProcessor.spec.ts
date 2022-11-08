@@ -1,9 +1,9 @@
-import {Dataset, IDataset} from "../../../src/model/Dataset/Dataset";
+import {CDataset, ICDataset} from "../../../src/model/CourseDataset/CDataset";
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {InsightDatasetKind, InsightResult, ResultTooLargeError,} from "../../../src/controller/IInsightFacade";
-import {ISection} from "../../../src/model/Dataset/Section";
+import {ISection} from "../../../src/model/CourseDataset/Section";
 import InsightFacade from "../../../src/controller/InsightFacade";
 import {processFILTER, processOptions} from "../../../src/model/Query/QueryProcessor";
 import {IQuery, Query, QueryProps} from "../../../src/model/Query/Query";
@@ -11,7 +11,7 @@ import {IQuery, Query, QueryProps} from "../../../src/model/Query/Query";
 chai.use(chaiAsPromised);
 
 describe("[ QueryProcessor.spec.ts ]", function () {
-	let dataset: IDataset;
+	let dataset: ICDataset;
 	const persistDirectory = "./data";
 	const datasetContents = new Map<string, string>();
 	const datasetsToLoad: {[key: string]: string} = {
@@ -39,7 +39,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 		it("testing sort by number", async function () {
 			let insightresultlist: InsightResult[];
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND:[
@@ -83,7 +83,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 		it("testing sort by string", async function () {
 			let insightresultlist: InsightResult[];
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND:[
@@ -179,7 +179,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 	describe("process individual FILTER", function () {
 		it("testing processFILTER valid_small -> should return empty results", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				GT: {sections_avg: 97}
@@ -189,7 +189,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing AND with one item in the list", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND: [
@@ -203,7 +203,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing OR with one item in the list", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				OR: [
@@ -217,7 +217,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing AND with three item in the list", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND: [
@@ -237,7 +237,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing NOT with one item in the list", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND: [
@@ -251,7 +251,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing AND", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				AND: [
@@ -272,7 +272,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("testing OR", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				OR: [
@@ -293,7 +293,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test, cpsc", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -310,7 +310,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test, *cpsc*, should return length 39", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -327,7 +327,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test on pair, adhe, should return length 232", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -344,7 +344,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test on pair, abcd, should return length 0", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -356,7 +356,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test on pair, a*, should return length 4652", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -373,7 +373,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test, *a, should return length 1996", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -390,7 +390,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 
 		it("SCOMP test, *ps*, should return length 226", async function () {
 			let sectionlist: ISection[];
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = processFILTER({
 				IS: {
@@ -631,7 +631,7 @@ describe("[ QueryProcessor.spec.ts ]", function () {
 				}
 			});
 			query = queryProps.query;
-			dataset = await Dataset.parseDataset(
+			dataset = await CDataset.parseDataset(
 				"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections);
 			sectionlist = await Query.processQuery(query, dataset);
 			expect(sectionlist).to.have.length(3);

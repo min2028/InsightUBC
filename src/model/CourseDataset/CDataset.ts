@@ -3,16 +3,16 @@ import {InsightDatasetKind} from "../../controller/IInsightFacade";
 import JSZip, {JSZipObject} from "jszip";
 import {isValidId} from "../../Utility/General";
 
-export interface IDataset {
+export interface ICDataset {
 	id: string,
 	kind: InsightDatasetKind,
 	courses: ICourse[],
 	numRows: number
 }
 
-export class Dataset {
-	public static async parseDataset(id: string, content: string, kind: InsightDatasetKind): Promise<IDataset> {
-		const dataset: IDataset = {id: "", kind: InsightDatasetKind.Sections, courses: [], numRows: 0};
+export class CDataset {
+	public static async parseDataset(id: string, content: string, kind: InsightDatasetKind): Promise<ICDataset> {
+		const dataset: ICDataset = {id: "", kind: InsightDatasetKind.Sections, courses: [], numRows: 0};
 		let skippedCoursesCount = 0;
 		let promises: Array<Promise<any>> = [];
 		let sectionsCount = 0;

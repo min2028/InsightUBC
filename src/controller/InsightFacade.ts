@@ -7,7 +7,7 @@ import {
 	NotFoundError,
 	ResultTooLargeError
 } from "./IInsightFacade";
-import {IDataset, Dataset} from "../model/Dataset/Dataset";
+import {ICDataset, CDataset} from "../model/CourseDataset/CDataset";
 import {Disk} from "../Utility/Disk";
 import {isIdInList, isValidId} from "../Utility/General";
 import {Query} from "../model/Query/Query";
@@ -19,19 +19,19 @@ import {Query} from "../model/Query/Query";
  */
 
 export default class InsightFacade implements IInsightFacade {
-	private cachedDataset: IDataset;
+	private cachedDataset: ICDataset;
 	private insightDatasetList: InsightDataset[];
 
 	constructor() {
 		this.insightDatasetList = Disk.readDatasetMeta();
-		this.cachedDataset = {} as IDataset;
+		this.cachedDataset = {} as ICDataset;
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
 		if (!(isValidId(id) && !isIdInList(id, this.insightDatasetList.map((item) => item.id)))){
 			return Promise.reject(new InsightError("Id is already used"));
 		}
-		return Dataset.parseDataset(id, content, kind)
+		return CDataset.parseDataset(id, content, kind)
 			.then((dataset) => {
 				this.cachedDataset = dataset;
 				this.insightDatasetList.push( {id: id, kind: kind, numRows: dataset.numRows} );
@@ -55,7 +55,7 @@ export default class InsightFacade implements IInsightFacade {
 		Disk.writeDatasetMeta(this.insightDatasetList);
 		Disk.removeDataset(id);
 		if (this.cachedDataset.id === id) {
-			this.cachedDataset = {} as IDataset;
+			this.cachedDataset = {} as ICDataset;
 		}
 		return Promise.resolve(id);
 	}
