@@ -3,6 +3,8 @@ import {FieldT, ISection, Section} from "../CourseDataset/Section";
 import {InsightResult} from "../../controller/IInsightFacade";
 import {FILTER, KeyValuePair} from "./Query";
 import {extractField} from "./QueryValidator";
+import {applyResults, QueryTransformer} from "./QueryTransformer";
+
 
 export function processFILTER(filter: any, dataset: ICDataset): ISection[]{
 	const child = Object.keys(filter)[0];
@@ -115,6 +117,18 @@ export function processOptions(options: {COLUMNS: string[], ORDER?: string}, sec
 	let results: InsightResult[] = processCOLUMNS(options.COLUMNS, sections);
 	results = processORDER(results, options.ORDER);
 	return results;
+}
+export function processOptions2(keys: any, sections: any[]): InsightResult[] {
+	let result: InsightResult[] = [];
+	if (keys["TRANSFORMATIONS"]) {
+		let solutions: any[][] = QueryTransformer(sections, keys["TRANSFORMATIONS"]["GROUP"]);
+		result = applyResults(solutions, keys.OPTIONS.COLUMNS, keys);
+		result = processORDER(result, keys.OPTIONS.ORDER);
+	} else {
+		result = processCOLUMNS(keys.OPTIONS.COLUMNS, sections);
+		result = processORDER(result, keys.OPTIONS.ORDER);
+	}
+	return result;
 }
 
 export function processCOLUMNS(columns: string[], sections: ISection[]): InsightResult[] {
