@@ -121,8 +121,8 @@ export function processOptions(options: {COLUMNS: string[], ORDER?: string}, sec
 export function processOptions2(keys: any, sections: any[]): InsightResult[] {
 	let result: InsightResult[] = [];
 	if (keys["TRANSFORMATIONS"]) {
-		let solutions: any[][] = QueryTransformer(sections, keys["TRANSFORMATIONS"]["GROUP"]);
-		result = applyResults(solutions, keys.OPTIONS.COLUMNS, keys);
+		let solutions: any[][] = QueryTransformer(sections, keys.TRANSFORMATION.GROUP);
+		result = applyResults(solutions, keys.OPTIONS.COLUMNS, keys.TRANSFORMATION.APPLY);
 		result = processORDER(result, keys.OPTIONS.ORDER);
 	} else {
 		result = processCOLUMNS(keys.OPTIONS.COLUMNS, sections);
@@ -154,6 +154,48 @@ export function processORDER(results: InsightResult[], order?: string) {
 			});
 		} else {
 			results.sort((a, b) => Number(a[order]) - Number(b[order]));
+		}
+	}
+	return results;
+}
+
+export function processORDER2(results: InsightResult[], order?: string|any) {
+	if (order) {
+		if (typeof order === "string") {
+			const field = extractField(order);
+			if (Section.fieldName[field as FieldT][1] === "s") {
+				results.sort((a, b) => {
+					return (a[order] as string) < (b[order] as string) ? -1 : 1;
+				});
+			} else {
+				results.sort((a, b) => Number(a[order]) - Number(b[order]));
+			}
+		} else {
+			if (order["keys"]) {
+				results.sort((a, b) => {
+					for (let key of order["keys"]) {
+						const field = extractField(key);
+						if (order["dir"] === "DOWN") {
+							if (a[field] > b[field]) {
+								return 1;
+							}
+							if (a[field] < b[field]) {
+								return -1;
+							}
+							return 0;
+						} else {
+							if (a[field] > b[field]) {
+								return -1;
+							}
+							if (a[field] < b[field]) {
+								return 1;
+							}
+							return 0;
+						}
+					}
+					return 0;
+				});
+			}
 		}
 	}
 	return results;

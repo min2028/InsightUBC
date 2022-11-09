@@ -24,7 +24,7 @@ export function validateQuery(json: any, targetDatasetId: string): string | true
 	if (!("WHERE" in json && "OPTIONS" in json)) {
 		return "Missing Where|Options clause";
 	}
-	if (Object.keys(json).length > 2) {
+	if (Object.keys(json).length > 3) {
 		return "Extra parameters other than Where and Options provided";
 	}
 	const query = json as IQuery;
@@ -34,8 +34,19 @@ export function validateQuery(json: any, targetDatasetId: string): string | true
 	if (Object.keys(query.WHERE).length && !isFilter(query.WHERE, targetDatasetId)) {
 		return "Invalid WHERE";
 	}
+	if ("TRANSFORMATION" in json) {
+		if (!checkTransformations(query.TRANSFORMATION, query.OPTIONS.COLUMNS, targetDatasetId)) {
+			return  "Invalid Transformations";
+		}
+	}
 	return true;
 }
+
+export function checkTransformations(transforms: any, columns: any, targerDatasetID: string): boolean {
+	// if (Object.keys(transforms).length !== 2 &&  )
+	return true;
+}
+
 
 export function checkOptions(options: any, targetDatasetId: string): boolean {
 	if (!(
