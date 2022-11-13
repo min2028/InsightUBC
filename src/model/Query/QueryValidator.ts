@@ -42,8 +42,18 @@ export function validateQuery(json: any, targetDatasetId: string): string | true
 	return true;
 }
 
-export function checkTransformations(transforms: any, columns: any, targerDatasetID: string): boolean {
-	// if (Object.keys(transforms).length !== 2 &&  )
+export function checkTransformations(transforms: any, columns: any[], targerDatasetID: string): boolean {
+	if (!(Object.keys(transforms).length !== 2 &&  "GROUP" in transforms
+		&& Array.isArray(transforms.GROUP) && "APPLY" in transforms)) {
+		return false;
+	}
+	if (!(columns.includes(transforms.GROUP) && columns.includes(Object.keys(transforms.APPLY)))) {
+		return false;
+	}
+	for (let apply of Object.keys(transforms.APPLY)) {
+		// todo:
+		return true;
+	}
 	return true;
 }
 
