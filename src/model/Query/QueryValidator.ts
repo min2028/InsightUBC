@@ -51,8 +51,31 @@ export function checkTransformations(transforms: any, columns: any[], targerData
 		return false;
 	}
 	for (let apply of Object.keys(transforms.APPLY)) {
-		// todo:
-		return true;
+		if (apply.includes("_")) {
+			return false;
+		}
+		let key = transforms.APPLY[apply];
+		let token = Object.keys(key)[0];
+		if (Object.values(key[token]).length > 1) {
+			return false;
+		}
+		if (token === "MAX" || token === "MIN" || token === "AVG" || token === "SUM") {
+			let applyRow = Object.values(key[token])[0];
+			if (isValidQueryKey(applyRow as string, targerDatasetID, "n")) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (token === "COUNT") {
+			let applyRow = Object.values(key[token])[0];
+			if (isValidQueryKey(applyRow as string, targerDatasetID)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		};
 	}
 	return true;
 }
