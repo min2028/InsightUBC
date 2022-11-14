@@ -1,9 +1,8 @@
-import {ICDataset} from "../CourseDataset/CDataset";
 import {InsightError, InsightResult, ResultTooLargeError} from "../../controller/IInsightFacade";
-import {ISection} from "../CourseDataset/Section";
-import {processFILTER, processOptions, processOptions2} from "./QueryProcessor";
-import {getDatasetId, validateQuery} from "./QueryValidator";
+import {processFILTER, processOptions, processOptionsWithTransformation} from "./QueryProcessor";
+import {getDatasetId, getDatasetType, validateQuery} from "./QueryValidator";
 import {isValidId} from "../../Utility/General";
+import {IData, IDataset} from "../Dataset/IDataset";
 
 const tooLargeThreshold = 5000;
 
@@ -12,13 +11,15 @@ export interface QueryProps {
 	datasetID: string
 }
 
+export interface OPTIONS {
+	COLUMNS: string[],
+	ORDER?: string | DIRECTION
+}
+
 export interface IQuery {
 	WHERE: FILTER,
-	OPTIONS: {
-		COLUMNS: string[],
-		ORDER?: string | DIRECTION
-	}
-	TRANSFORMATION?: {
+	OPTIONS: OPTIONS,
+	TRANSFORMATIONS?: {
 		GROUP: string[],
 		APPLY: APPLYRULE[];
 	}
@@ -51,7 +52,11 @@ export class Query {
 		if (targetDatasetId === false || !isValidId(targetDatasetId)) {
 			return Promise.reject(new InsightError("Invalid Query: invalid Dataset ID"));
 		}
-		const validationResults = validateQuery(json, targetDatasetId);
+		const targetDatasetType = getDatasetType(json);
+		if (targetDatasetType === false) {
+			return Promise.reject(new InsightError("Invalid Query: invalid Dataset key"));
+		}
+		const validationResults = validateQuery(json, targetDatasetId, targetDatasetType);
 		if (validationResults === true) {
 			const jsonObj: any = JSON.parse(JSON.stringify(json));
 			return Promise.resolve({query: jsonObj as IQuery, datasetID: targetDatasetId});
@@ -60,22 +65,22 @@ export class Query {
 		}
 	}
 
-	public static processQuery(query: IQuery, dataset: ICDataset): Promise<InsightResult[]> {
-		let filteredResults: ISection[] = [];
+	public static processQuery(query: IQuery, dataset: IDataset): Promise<InsightResult[]> {
+		let filteredResults: IData[] = [];
 		let results: InsightResult[];
 		if (Object.keys(query.WHERE).length) {
 			filteredResults = processFILTER(query.WHERE, dataset);
 		} else {
-			dataset.courses.forEach((course) =>
-				course.sections.forEach((section) =>  {
-					filteredResults.push(section);
-				})
-			);
+			dataset.dataList.forEach((data) => filteredResults.push(data));
 		}
-		if (filteredResults.length > tooLargeThreshold) {
+		if (query.TRANSFORMATIONS) {
+			results = processOptionsWithTransformation(query.OPTIONS, query.TRANSFORMATIONS, filteredResults);
+		} else {
+			results = processOptions(query.OPTIONS, filteredResults);
+		}
+		if (results.length > tooLargeThreshold) {
 			return Promise.reject(new ResultTooLargeError(`results > ${tooLargeThreshold}`));
 		}
-		results = processOptions2(query, filteredResults);
 		return Promise.resolve(results);
 	}
 }

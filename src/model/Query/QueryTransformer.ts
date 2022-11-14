@@ -1,13 +1,10 @@
-import {FieldT, ISection} from "../CourseDataset/Section";
-import {APPLYRULE, FILTER, IQuery} from "./Query";
-import {processAND} from "./QueryProcessor";
-import {query} from "express";
 import {InsightResult} from "../../controller/IInsightFacade";
 import Decimal from "decimal.js";
 import {extractField} from "./QueryValidator";
+import {IData} from "../Dataset/IDataset";
 
-export function QueryTransformer(filteredResults: any[], keys: string[]) {
-	let results: any[][] = [];
+export function QueryTransformer(filteredResults: IData[], keys: string[]) {
+	let results: IData[][] = [];
 	for (let section of filteredResults) {
 		let location = findLocation(section, results, keys);
 		if (location === -1) {

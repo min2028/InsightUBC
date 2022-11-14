@@ -7,10 +7,12 @@ import {
 	NotFoundError,
 	ResultTooLargeError
 } from "./IInsightFacade";
-import {ICDataset, CDataset} from "../model/CourseDataset/CDataset";
+import {CDataset} from "../model/Dataset/CourseDataset/CDataset";
 import {Disk} from "../Utility/Disk";
 import {isIdInList, isValidId} from "../Utility/General";
 import {Query} from "../model/Query/Query";
+import {RDataset} from "../model/Dataset/RoomDataset/RDataset";
+import {IDataset, IDatasetParser} from "../model/Dataset/IDataset";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -19,19 +21,22 @@ import {Query} from "../model/Query/Query";
  */
 
 export default class InsightFacade implements IInsightFacade {
-	private cachedDataset: ICDataset;
+	private cachedDataset: IDataset;
 	private insightDatasetList: InsightDataset[];
 
 	constructor() {
 		this.insightDatasetList = Disk.readDatasetMeta();
-		this.cachedDataset = {} as ICDataset;
+		this.cachedDataset = {} as IDataset;
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if (!(isValidId(id) && !isIdInList(id, this.insightDatasetList.map((item) => item.id)))){
+		if (!isValidId(id)){
+			return Promise.reject(new InsightError("Invalid Id"));
+		} else if (isIdInList(id, this.insightDatasetList.map((item) => item.id))){
 			return Promise.reject(new InsightError("Id is already used"));
 		}
-		return CDataset.parseDataset(id, content, kind)
+		const parser: IDatasetParser = (kind === InsightDatasetKind.Sections) ? new CDataset() : new RDataset();
+		return parser.parseDataset(id, content)
 			.then((dataset) => {
 				this.cachedDataset = dataset;
 				this.insightDatasetList.push( {id: id, kind: kind, numRows: dataset.numRows} );
@@ -55,7 +60,7 @@ export default class InsightFacade implements IInsightFacade {
 		Disk.writeDatasetMeta(this.insightDatasetList);
 		Disk.removeDataset(id);
 		if (this.cachedDataset.id === id) {
-			this.cachedDataset = {} as ICDataset;
+			this.cachedDataset = {} as IDataset;
 		}
 		return Promise.resolve(id);
 	}

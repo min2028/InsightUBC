@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import path from "path";
 import {InsightDataset} from "../controller/IInsightFacade";
-import {ICDataset} from "../model/CourseDataset/CDataset";
+import {IDataset} from "../model/Dataset/IDataset";
 
 const persistDirectory = "./data";
 const idsPath = "/_METADATA.json";
@@ -20,7 +20,7 @@ export class Disk {
 		fs.writeJSONSync(persistDirectory + idsPath, insDatasetList);
 	}
 
-	public static writeDataset(dataset: ICDataset): void {
+	public static writeDataset(dataset: IDataset): void {
 		const fileName = Buffer.from(dataset.id).toString("hex");
 		if (!fs.existsSync(	persistDirectory + contentPath)) {
 			fs.mkdirSync(path.join(persistDirectory + contentPath), {recursive: true});
@@ -37,7 +37,7 @@ export class Disk {
 		return idsFileContent ? idsFileContent : [];
 	}
 
-	public static readDataset(id: string): ICDataset | null {
+	public static readDataset(id: string): IDataset | null {
 		const fileName = Buffer.from(id).toString("hex");
 		if (!fs.existsSync(persistDirectory + contentPath + `/${fileName}.json`)) {
 			return null;
