@@ -16,12 +16,17 @@ export interface IQuery {
 	WHERE: FILTER,
 	OPTIONS: {
 		COLUMNS: string[],
-		ORDER?: string
+		ORDER?: string | DIRECTION
 	}
 	TRANSFORMATION?: {
 		GROUP: string[],
 		APPLY: APPLYRULE[];
 	}
+}
+
+export interface DIRECTION {
+	dir: "DOWN" | "UP";
+	keys: string[];
 }
 
 export interface APPLYRULE {
