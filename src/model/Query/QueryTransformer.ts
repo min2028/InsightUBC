@@ -1,9 +1,10 @@
 import {FieldT, ISection} from "../CourseDataset/Section";
-import {FILTER, IQuery} from "./Query";
+import {APPLYRULE, FILTER, IQuery} from "./Query";
 import {processAND} from "./QueryProcessor";
 import {query} from "express";
 import {InsightResult} from "../../controller/IInsightFacade";
 import Decimal from "decimal.js";
+import {extractField} from "./QueryValidator";
 
 export function QueryTransformer(filteredResults: any[], keys: string[]) {
 	let results: any[][] = [];
@@ -23,7 +24,7 @@ export function findLocation(section: any, results: any[][], keys: string[]): nu
 	let count = 0;
 	for (let result of results) {
 		for (let key of keys) {
-			let realkey = key.split("_")[1];
+			let realkey = extractField(key);
 			if (section[realkey] === result[0][realkey]) {
 				count += 1;
 			}
@@ -41,7 +42,7 @@ export function applyResults(results: any[][], columns: string[], keys: any): In
 		let insightResult: InsightResult = {};
 		for (let column of columns) {
 			if (column.includes("_")) {
-				insightResult[column] = element[0][column.split("_")[1]];
+				insightResult[column] = element[0][extractField(column)];
 			} else {
 				insightResult[column] = applyrules(element, keys[column]);
 			}
@@ -53,7 +54,7 @@ export function applyResults(results: any[][], columns: string[], keys: any): In
 
 export function applyrules(results: any[], keys: any) {
 	let field: string = Object.values(keys)[0] as string;
-	let fieldName = field.split("_")[1];
+	let fieldName = extractField(field);
 	let max = results[0][fieldName], min = results[0][fieldName], sums = 0, sum = 0, count = 0, con: any[] = [];
 	let total = new Decimal (0), avg = 0;
 	switch (Object.keys(keys)[0]) {

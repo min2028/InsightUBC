@@ -1,5 +1,6 @@
 import {FieldT, Section} from "../CourseDataset/Section";
 import {FILTER, IQuery, KeyValuePair, LOGICCOMPARISON} from "./Query";
+import {Room} from "../RoomDataset/Room";
 
 export function getDatasetId(json: any): string | false {
 	if ("OPTIONS" in json && "COLUMNS" in json.OPTIONS
@@ -24,7 +25,7 @@ export function validateQuery(json: any, targetDatasetId: string): string | true
 	if (!("WHERE" in json && "OPTIONS" in json)) {
 		return "Missing Where|Options clause";
 	}
-	if (Object.keys(json).length > 2) {
+	if (Object.keys(json).length > 3) {
 		return "Extra parameters other than Where and Options provided";
 	}
 	const query = json as IQuery;
@@ -34,22 +35,75 @@ export function validateQuery(json: any, targetDatasetId: string): string | true
 	if (Object.keys(query.WHERE).length && !isFilter(query.WHERE, targetDatasetId)) {
 		return "Invalid WHERE";
 	}
+	if ("TRANSFORMATION" in json) {
+		if (!checkTransformations(query.TRANSFORMATION, query.OPTIONS.COLUMNS, targetDatasetId)) {
+			return  "Invalid Transformations";
+		}
+	}
+	return true;
+}
+
+export function checkTransformations(transforms: any, columns: any[], targerDatasetID: string): boolean {
+	if (!(Object.keys(transforms).length !== 2 &&  "GROUP" in transforms
+		&& Array.isArray(transforms.GROUP) && "APPLY" in transforms && Array.isArray(transforms.APPLY))) {
+		return false;
+	}
+	if (!(transforms.APPLY && transforms.GROUP)) {
+		return false;
+	}
+	if (!(columns.includes(transforms.GROUP) && columns.includes(Object.keys(transforms.APPLY)) )) {
+		return false;
+	}
+	for (let apply of Object.keys(transforms.APPLY)) {
+		if (apply.includes("_")) {
+			return false;
+		}
+		let key = transforms.APPLY[apply];
+		let token = Object.keys(key)[0];
+		if (Object.values(key[token]).length > 1) {
+			return false;
+		}
+		if (token === "MAX" || token === "MIN" || token === "AVG" || token === "SUM") {
+			let applyRow = Object.values(key[token])[0];
+			if (isValidQueryKey(applyRow as string, targerDatasetID, "n")) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (token === "COUNT") {
+			let applyRow = Object.values(key[token])[0];
+			if (isValidQueryKey(applyRow as string, targerDatasetID)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		};
+	}
 	return true;
 }
 
 export function checkOptions(options: any, targetDatasetId: string): boolean {
-	if (!(
-		options && typeof options === "object" && Object.keys(options).length <= 2
-		&& "COLUMNS" in options && Array.isArray(options.COLUMNS) && options.COLUMNS.length
-	)) {
+	if (!(options && typeof options === "object" && Object.keys(options).length <= 2
+		&& "COLUMNS" in options && Array.isArray(options.COLUMNS) && options.COLUMNS.length)) {
 		return false;
 	}
-	if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
-		return false;
+	if (typeof options.ORDER === "string") {
+		if (options.ORDER && !options.COLUMNS.includes(options.ORDER)) {
+			return false;
+		}
+	} else {
+		if (!(Object.keys(options).length === 2 && "dir" in options && "keys" in options
+			&& (options["dir"] === "UP" || options["dir"] === "DOWN") && options.COLUMNS.includes(options["keys"]))) {
+			return false;
+		}
 	}
 	for (let col of options.COLUMNS) {
-		if (!isValidQueryKey(col, targetDatasetId)) {
-			return false;
+		if (col.includes("_")) {
+			if (!isValidQueryKey(col, targetDatasetId)) {
+				return false;
+			}
 		}
 	}
 	return true;
@@ -119,6 +173,11 @@ export function isValidQueryKey(key: string, targetDatasetID: string, expectedFi
 				if (expectedFieldType && Section.fieldName[keyParts[1] as FieldT][1] !== expectedFieldType) {
 					return false;
 				}
+				return true;
+			} else if (keyParts[1] in Room.fieldName) {
+				// if (expectedFieldType && Room.fieldName[keyParts[1]][1] !== expectedFieldType) {
+				// 	return false;
+				// }
 				return true;
 			}
 		}

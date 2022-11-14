@@ -1,7 +1,7 @@
 import {ICDataset} from "../CourseDataset/CDataset";
 import {InsightError, InsightResult, ResultTooLargeError} from "../../controller/IInsightFacade";
 import {ISection} from "../CourseDataset/Section";
-import {processFILTER, processOptions} from "./QueryProcessor";
+import {processFILTER, processOptions, processOptions2} from "./QueryProcessor";
 import {getDatasetId, validateQuery} from "./QueryValidator";
 import {isValidId} from "../../Utility/General";
 
@@ -16,12 +16,17 @@ export interface IQuery {
 	WHERE: FILTER,
 	OPTIONS: {
 		COLUMNS: string[],
-		ORDER?: string
+		ORDER?: string | DIRECTION
 	}
 	TRANSFORMATION?: {
 		GROUP: string[],
 		APPLY: APPLYRULE[];
 	}
+}
+
+export interface DIRECTION {
+	dir: "DOWN" | "UP";
+	keys: string[];
 }
 
 export interface APPLYRULE {
@@ -70,7 +75,7 @@ export class Query {
 		if (filteredResults.length > tooLargeThreshold) {
 			return Promise.reject(new ResultTooLargeError(`results > ${tooLargeThreshold}`));
 		}
-		results = processOptions(query.OPTIONS, filteredResults);
+		results = processOptions2(query, filteredResults);
 		return Promise.resolve(results);
 	}
 }
