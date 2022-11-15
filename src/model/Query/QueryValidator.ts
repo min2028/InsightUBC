@@ -164,8 +164,10 @@ export function checkOptions(options: any, targetDatasetId: string, targetDatase
 		} else if (typeof options.ORDER === "object") {
 			const order: any = options.ORDER;
 			if (!(Object.keys(order).length === 2 && "dir" in order && "keys" in order
-				&& (order["dir"] === "UP" || order["dir"] === "DOWN"))
-			) {
+				&& order["keys"] && (order["dir"] === "UP" || order["dir"] === "DOWN"))) {
+				return false;
+			}
+			if (order["keys"].length === 0) {
 				return false;
 			}
 			for (let key of order["keys"]) {
