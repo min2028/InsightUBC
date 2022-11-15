@@ -8,8 +8,9 @@ export function QueryTransformer(filteredResults: IData[], keys: string[]) {
 	for (let section of filteredResults) {
 		let location = findLocation(section, results, keys);
 		if (location === -1) {
-			results[results.length] = [];
-			results[results.length].push(section);
+			results.push([]);
+			// results[results.length] = [];
+			results[results.length - 1].push(section);
 		} else {
 			results[location].push(section);
 		}
@@ -18,8 +19,9 @@ export function QueryTransformer(filteredResults: IData[], keys: string[]) {
 }
 
 export function findLocation(section: any, results: any[][], keys: string[]): number {
-	let count = 0;
+	// let count = 0;
 	for (let result of results) {
+		let count = 0;
 		for (let key of keys) {
 			let realkey = extractField(key);
 			if (section[realkey] === result[0][realkey]) {
@@ -41,7 +43,13 @@ export function applyResults(results: any[][], columns: string[], keys: any): In
 			if (column.includes("_")) {
 				insightResult[column] = element[0][extractField(column)];
 			} else {
-				insightResult[column] = applyrules(element, keys[column]);
+				// let int = keys.indexOf(column);
+				for (let applykey of keys) {
+					if (column === Object.keys(applykey)[0]) {
+						insightResult[column] = applyrules(element, applykey);
+					}
+				}
+				// insightResult[column] = applyrules(element, keys[int]);
 			}
 		}
 		result.push(insightResult);
@@ -50,11 +58,12 @@ export function applyResults(results: any[][], columns: string[], keys: any): In
 }
 
 export function applyrules(results: any[], keys: any) {
-	let field: string = Object.values(keys)[0] as string;
+	let keyName: string = Object.keys(keys)[0];
+	let field: string = Object.values(keys[keyName])[0] as string;
 	let fieldName = extractField(field);
 	let max = results[0][fieldName], min = results[0][fieldName], sums = 0, sum = 0, count = 0, con: any[] = [];
 	let total = new Decimal (0), avg = 0;
-	switch (Object.keys(keys)[0]) {
+	switch (Object.keys(keys[keyName])[0]) {
 		case "MAX":
 			results.forEach((result) => {
 				if (result[fieldName] > max) {

@@ -3,6 +3,8 @@ import {FILTER, IQuery, KeyValuePair, LOGICCOMPARISON} from "./Query";
 import {Room, RoomFieldType} from "../Dataset/RoomDataset/Room";
 import {InsightDatasetKind} from "../../controller/IInsightFacade";
 
+let transformkeys: string[] = [];
+
 export function getDatasetId(json: any): string | false {
 	const key: string = getTargetKeyField(json);
 	const keyParts = key.split("_");
@@ -79,36 +81,67 @@ export function validateQuery(
 
 export function checkTransformations(transforms: any, columns: any[], targetDatasetID: string,
 									 targetDatasetType: InsightDatasetKind): boolean {
-	if (!(Object.keys(transforms).length !== 2 &&  "GROUP" in transforms
-		&& Array.isArray(transforms.GROUP) && "APPLY" in transforms && Array.isArray(transforms.APPLY))) {
+	transformkeys = [];
+	if (!(Object.keys(transforms).length === 2 &&  "GROUP" in transforms
+		&& Array.isArray(transforms.GROUP) && "APPLY" in transforms  && Array.isArray(transforms.APPLY))) {
 		return false;
 	}
 	if (!(transforms.APPLY && transforms.GROUP)) {
 		return false;
 	}
-	if (!(columns.includes(transforms.GROUP) && columns.includes(Object.keys(transforms.APPLY)) )) {
+	for (let groupkey of transforms.GROUP) {
+		if (typeof groupkey !== "string") {
+			return false;
+		}
+		if (!groupkey.includes("_")) {
+			return false;
+		}
+		if (!columns.includes(groupkey)) {
+			return false;
+		}
+		transformkeys.push(groupkey);
+	}
+	if (!checkApply(transforms.APPLY, columns, targetDatasetID, targetDatasetType)) {
 		return false;
 	}
-	for (let apply of Object.keys(transforms.APPLY)) {
-		if (apply.includes("_")) {
+	if (Array.from(new Set(transformkeys)).length !== Array.from(new Set(columns)).length) {
+		return false;
+	}
+
+	return true;
+}
+
+
+export function checkApply(apply: any, columns: string[], targetDatasetId: string,
+						   targetDatasetType: InsightDatasetKind): boolean {
+	for (let applykey of apply) {
+		if (Object.keys(applykey).length !== 1) {
 			return false;
 		}
-		let keyValuePair = transforms.APPLY[apply];
-		if (Object.keys(keyValuePair).length !== 1) {
+		let key = Object.keys(applykey)[0];
+		transformkeys.push(key);
+		if (key.includes("_")) {
 			return false;
 		}
+		if (!columns.includes(key)) {
+			return false;
+		}
+		if (Object.keys(applykey[key]).length !== 1) {
+			return false;
+		}
+		let keyValuePair = applykey[key];
 		let token = Object.keys(keyValuePair)[0];
 		if (!(typeof keyValuePair[token] === "string")){
 			return false;
 		}
 		if (token === "MAX" || token === "MIN" || token === "AVG" || token === "SUM") {
 			let applyRow: string = keyValuePair[token] as string;
-			if (!isValidQueryKey(applyRow, targetDatasetID, targetDatasetType, "n")) {
+			if (!isValidQueryKey(applyRow, targetDatasetId, targetDatasetType, "n")) {
 				return false;
 			}
 		} else if (token === "COUNT") {
 			let applyRow: string = keyValuePair[token] as string;
-			if (!isValidQueryKey(applyRow, targetDatasetID, targetDatasetType)) {
+			if (!isValidQueryKey(applyRow, targetDatasetId, targetDatasetType)) {
 				return false;
 			}
 		} else {
@@ -144,7 +177,6 @@ export function checkOptions(options: any, targetDatasetId: string, targetDatase
 			return false;
 		}
 	}
-
 	for (let col of options.COLUMNS) {
 		if (col.includes("_")) {
 			if (!isValidQueryKey(col, targetDatasetId, targetDatasetType)) {
