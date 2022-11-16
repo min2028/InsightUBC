@@ -1,4 +1,4 @@
-import {InsightDatasetKind} from "../../../controller/IInsightFacade";
+import {InsightDatasetKind, InsightError} from "../../../controller/IInsightFacade";
 import JSZip from "jszip";
 import {parse} from "parse5";
 import {IRoomAndBuilding, Room} from "./Room";
@@ -109,25 +109,47 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		return buildingFiles[0].async("string");
 	}
 
+// {
+// 	hostname: "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149",
+// 	port: 80,
+// 	path: `/${urlEncodedAddress}`,
+// 	agent: false
+// },
 	public async getGeoLocation(address: string): Promise<IGeoLocation> {
 		let geoLocation: IGeoLocation = {lat: 0, lon: 0};
 		const urlEncodedAddress: string = encodeURIComponent(address);
-		// const url: string = `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149/${urlEncodedAddress}`;
-		http.get({
-			hostname: "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149",
-			port: 80,
-			path: `/${urlEncodedAddress}`,
-			agent: false
-		}, (res) => {
-			const result = JSON.parse(JSON.stringify(res));
-			if (!result.error) {
-				geoLocation.lat = result.lat;
-				geoLocation.lon = result.lon;
-			} else {
-				throw Error(result.error);
-			}
-		});
-		return geoLocation as IGeoLocation;
+		const url: string = `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149/${urlEncodedAddress}`;
+		// console.log(url);
+		return new Promise((resolve, reject) => {
+			http.get(url, (res) => {
+					// console.log(res);
+				let contents = "";
+				res.on("data", function (content) {
+					contents += content;
+				});
+				console.log(contents);
+				res.on("end", function () {
+					try {
+						let result = JSON.parse(contents);
+						console.log(result);
+						geoLocation.lat = result.lat;
+						geoLocation.lon = result.lon;
+						// if (!result.error) {
+						// 	geoLocation.lat = result.lat;
+						// 	geoLocation.lon = result.lon;
+						// } // else {
+						// throw Error(result.error);
+						// }
+						return resolve((geoLocation as IGeoLocation));
+					} catch (e) {
+						reject(new InsightError(""));
+					}
+				});
+			}).on("error", function () {
+				reject(new InsightError("parsing error"));
+			});
+		}
+		);
 	}
 
 	protected extractDataInRow(trChildNodes: any[]): IBuildingData {
