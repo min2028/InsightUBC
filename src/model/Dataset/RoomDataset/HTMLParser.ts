@@ -11,23 +11,27 @@ export abstract class HTMLParser {
 	 */
 	protected abstract extractDataInRow(trChildNodes: any[]): IBuildingData | IRoomData;
 
-	protected readLinkAndTextData(tdChildNodes: any[]): {text: string, link: string} {
+	public readLinkAndTextData(tdChildNodes: any[]): {text: string, link: string} {
 		let result = {text: "", link: ""};
 		const anchors = tdChildNodes.filter((childNode) => childNode.nodeName === "a" && childNode.tagName === "a"
 			&& this.checkNodeAttributes(childNode.attrs, "href", "/"));
 		if (anchors.length === 0) {
 			throw Error("Missing anchor");
 		}
-		result.text = this.readTextData(anchors[0].childNodes);
+		try {
+			result.text = this.readTextData(anchors[0].childNodes);
+		} catch (err) {
+			throw(Error("Missing data in text field"));
+		}
 		result.link = this.getHref(anchors[0].attrs);
 		return result;
 	}
 
 	protected getHref(anchorAttributes: any[]): string {
 		if (anchorAttributes && Array.isArray(anchorAttributes) && anchorAttributes.length) {
-			let hrefs: string[] = anchorAttributes.filter((attribute: any) => attribute.name === "href");
+			let hrefs: any[] = anchorAttributes.filter((attribute: any) => attribute.name === "href");
 			if (hrefs.length > 0) {
-				return hrefs[0];
+				return hrefs[0].value;
 			}
 		}
 		throw Error ("Link (href) is missing");
@@ -47,26 +51,40 @@ export abstract class HTMLParser {
 		if (!(attributes && Array.isArray(attributes) && attributes.length)) {
 			return false;
 		}
-		const arrayResult = attributes.filter((attribute)=> attribute.name === name && attribute.value.contains(value));
+		const arrayResult = attributes.filter((attribute)=> attribute.name === name
+			&& (attribute.value as string).includes(value));
 		return arrayResult.length > 0;
 	}
 
-	public traverseHTML(htmlElement: any): Array<IBuildingData | IRoomData> {
-		if (!(htmlElement && htmlElement.nodeName && htmlElement.tagName
-			&& htmlElement.childNodes && Array.isArray(htmlElement.childNodes))) {
+	public traverseJsonOfHTML(jsonOfHTMLElement: any): Array<IBuildingData | IRoomData> {
+		let deeperData: Array<IBuildingData | IRoomData> = [];
+		// console.log(jsonOfHTMLElement);
+		// console.log(`\nNodeName: ${jsonOfHTMLElement.nodeName}`);
+		// console.log(`ParentNode: ${jsonOfHTMLElement.parentNode}`);
+		if (!(jsonOfHTMLElement && jsonOfHTMLElement.nodeName
+			// && htmlElement.tagName
+			&& jsonOfHTMLElement.childNodes
+			&& Array.isArray(jsonOfHTMLElement.childNodes) && jsonOfHTMLElement.childNodes.length)) {
+			// console.log("deadEnd");
 			return [];
 		}
-		if (htmlElement.nodeName === "tr" && htmlElement.tagName === "tr") {
+		// console.log("Going inside");
+		if (jsonOfHTMLElement.nodeName === "tr" && jsonOfHTMLElement.tagName === "tr") {
+			console.log("***** Found TR");
 			try {
-				return [this.extractDataInRow(htmlElement.childNodes)];
+				const res = this.extractDataInRow(jsonOfHTMLElement.childNodes);
+				console.log(res);
+				return [res];
 			} catch (err) {
 				// Skip and proceed because data may be more nested
 			}
 		}
-		let deeperData: Array<IBuildingData | IRoomData> = [];
-		htmlElement.childNodes.forEach((child: any)=> {
-			deeperData = [...deeperData, ...this.traverseHTML(child)];
+		// if (htmlElement.childNodes) {
+		// console.log(`childNodes: ${jsonOfHTMLElement.childNodes}`);
+		jsonOfHTMLElement.childNodes.forEach((child: any)=> {
+			deeperData = [...deeperData, ...this.traverseJsonOfHTML(child)];
 		});
+		// }
 		return deeperData;
 	}
 

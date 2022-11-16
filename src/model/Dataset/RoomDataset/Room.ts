@@ -1,7 +1,6 @@
 import {IBuildingData, IGeoLocation} from "./RDataset";
 import {parse} from "parse5";
 import {HTMLParser} from "./HTMLParser";
-import {Section} from "../CourseDataset/Section";
 import {IData} from "../IDataset";
 
 export interface IRoomAndBuilding extends IData {
@@ -54,7 +53,7 @@ export class Room extends HTMLParser{
 		let instance: Room = new Room();
 		let result: IRoomAndBuilding[] = [];
 		const document = parse(buildingHtmlFile);
-		let rooms: IRoomData[] = instance.traverseHTML(document) as IRoomData[];
+		let rooms: IRoomData[] = instance.traverseJsonOfHTML(document) as IRoomData[];
 		rooms.forEach((roomData) => {
 			let roomAndBuilding: any = {};
 			roomAndBuilding.fullname = buildingInfo.fullname;
@@ -79,8 +78,8 @@ export class Room extends HTMLParser{
 	}
 
 	// Read room Number and the link
-	private readRoomNumberAndHref(datacell: any, room: any) {
-		if (this.checkNodeAttributes(datacell.attr, "class", "views-field views-field-field-room-number")) {
+	public readRoomNumberAndHref(datacell: any, room: any) {
+		if (this.checkNodeAttributes(datacell.attrs, "class", "views-field views-field-field-room-number")) {
 			let roomNumberAndLink: {text: string, link: string};
 			roomNumberAndLink = this.readLinkAndTextData(datacell.childNodes);
 			room.number = roomNumberAndLink.text;
@@ -89,14 +88,14 @@ export class Room extends HTMLParser{
 	}
 
 	// Read room capacity, funiture and type
-	private readRoomPhysicalProps(datacell: any, room: any) {
+	public readRoomPhysicalProps(datacell: any, room: any) {
 		if (this.checkNodeAttributes(datacell.attrs, "class", "views-field views-field-field-room-type")) {
 			try {
 				room.type = this.readTextData(datacell.childNodes);
 			} catch (err) {
 				throw Error("Room type data not available");
 			}
-		} else if (this.checkNodeAttributes(datacell.attrs, "class", "views-field-field-room-furniture")) {
+		} else if (this.checkNodeAttributes(datacell.attrs, "class", "views-field views-field-field-room-furniture")) {
 			try {
 				room.furniture = this.readTextData(datacell.childNodes);
 			} catch (err) {

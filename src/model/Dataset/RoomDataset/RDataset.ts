@@ -50,8 +50,8 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		} catch (err) {
 			return Promise.reject(err);
 		}
-		const indexJson = parse(indexFile);
-		let buildings = this.traverseHTML(indexJson) as IBuildingData[];
+		const indexJson = parse(indexFile); // return JSON of HTML
+		let buildings = this.traverseJsonOfHTML(indexJson) as IBuildingData[];
 		for(const buildingInfo of buildings) {
 			let buildingFile: string;
 			promises.push(this.findBuildingFile(zip, buildingInfo.href ?? "")
@@ -109,7 +109,7 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		return buildingFiles[0].async("string");
 	}
 
-	private getGeoLocation(address: string): IGeoLocation {
+	public async getGeoLocation(address: string): Promise<IGeoLocation> {
 		let geoLocation: IGeoLocation = {lat: 0, lon: 0};
 		const urlEncodedAddress: string = encodeURIComponent(address);
 		// const url: string = `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149/${urlEncodedAddress}`;

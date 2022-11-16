@@ -3,6 +3,21 @@
 	"mode": "quirks",
 	"childNodes": [
 		{
+			"nodeName": "#documentType",
+			"name": "html",
+			"publicId": "",
+			"systemId": "",
+			"parentNode": "[Circular ~]",
+			"sourceCodeLocation": {
+				"startLine": 1,
+				"startCol": 1,
+				"startOffset": 0,
+				"endLine": 1,
+				"endCol": 16,
+				"endOffset": 15
+			}
+		},
+		{
 			"nodeName": "html",
 			"tagName": "html",
 			"attrs": [],
