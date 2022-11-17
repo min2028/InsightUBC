@@ -155,14 +155,14 @@ describe("[ RoomDataset.spec.ts ]", function () {
 			expect(result).to.deep.equal("ACU");
 		});
 
-		it("should parse building, testing parseRoom", function () {
+		it("parse room -> should return list of rooms", function () {
 			let contents: string = fs.readFileSync("./test/resources/files/SRC.htm", "utf8");
 			const buildingInfo = {
 				fullname: "building1", shortname: "BLD", address: "CAMPUS", href: ""
 			} as IBuildingData;
 			const geoInfo = {lon: -14.52, lat: 24.5} as IGeoLocation;
 			const results = Room.parseRoom(contents, buildingInfo, geoInfo);
-			console.log(results);
+			expect(results).to.have.length(3);
 		});
 
 		it("testing traverseHTML", function () {
@@ -170,8 +170,7 @@ describe("[ RoomDataset.spec.ts ]", function () {
 			let instance: Room = new Room();
 			const json = JSON.parse(contents);
 			const results = instance.traverseJsonOfHTML(json);
-			// expect(results)
-			console.log(results);
+			expect(results).to.have.length(6);
 		});
 
 		it("testing readLinkAndTextData", function () {
@@ -267,20 +266,6 @@ describe("[ RoomDataset.spec.ts ]", function () {
 				"http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/FNH-320 + 320");
 		});
 
-		it("parse room -> should return list of rooms", function () {
-			const filesPath = path.join("./test/resources/files/SRC.htm");
-			const content = fs.readFileSync(filesPath).toString("base64");
-			const zip = new JSZip();
-			zip.loadAsync(content, {base64: true});
-			console.log(zip.files);
-			// const indexFile = await zip.file("index.htm")?.async("string") ?? "";
-			//
-			//
-			// !fs.existsSync(persistDirectory + idsPath)) {
-			// 	return [];
-			// }
-			// const idsFileContent = fs.readJSONSync(persistDirectory + idsPath);
-		});
 		describe("testing readRoomPhysicalProps seats/capacity", function () {
 			it("testing readRoomPhysicalProps, seats/capacity pass", function () {
 				const content = {
@@ -480,9 +465,13 @@ describe("[ RoomDataset.spec.ts ]", function () {
 			it("should return an object with buildingInfo, RDataset.ts", function () {
 				let buffer: string = fs.readFileSync("./test/resources/files/simpleIndexTr.json", "utf8");
 				let content = JSON.parse(buffer);
-				// console.log(content);
 				let result = rDatasetParser.extractDataInRow(content);
-				console.log(result);
+				expect(result).to.deep.equal({
+					shortname: "BUTO",
+					fullname: "Buchanan Tower",
+					address: "1873 East Mall",
+					href: "./campus/discover/buildings-and-classrooms/BUTO.htm"
+				});
 			});
 
 			// it("should return an object with buildingInfo, RDataset.ts", function () {
