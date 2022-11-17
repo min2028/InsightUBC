@@ -725,7 +725,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			type Output = any[];
 
 			function assertResult(actual: any, expected: Output): void {
-				expect(actual).to.have.members(expected);
+				expect(actual).to.have.deep.members(expected);
 			}
 
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
@@ -870,11 +870,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 						InsightDatasetKind.Rooms
 					)
 				];
-				try {
-					return Promise.all(loadDatasetPromises);
-				} catch (err) {
-					console.error(err);
-				}
+				return Promise.all(loadDatasetPromises);
 			});
 
 			after(function () {
