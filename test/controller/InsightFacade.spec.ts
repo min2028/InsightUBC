@@ -39,6 +39,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		invalid_name: "./test/resources/archives/courses/invalid-name.zip",
 		invalid_section: "./test/resources/archives/courses/invalid-section.zip",
 		invalid_structure: "./test/resources/archives/courses/invalid-structure.zip",
+
 		// Rooms Test Datasets
 		rooms: "./test/resources/archives/rooms/rooms.zip"
 	};
@@ -58,7 +59,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		console.info("==========================================================\n");
 	});
 
-	describe("Sections Dataset", function () {
+	describe("~~~~~Sections Dataset~~~~~", function () {
 		describe("addDataset", function () {
 			after(function () {
 				console.info();
@@ -716,6 +717,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			});
 
 			after(function () {
+				console.info();
 				fs.removeSync(persistDirectory);
 			});
 
@@ -723,13 +725,13 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			type Output = any[];
 
 			function assertResult(actual: any, expected: Output): void {
-				expect(actual).to.deep.equal(expected);
+				expect(actual).to.have.deep.members(expected);
 			}
 
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
 				"Dynamic InsightFacade PerformQuery tests",
 				(input) => insightFacade.performQuery(input),
-				"./test/resources/queries/rooms",
+				"./test/resources/queries/courses",
 				{
 					assertOnResult: assertResult,
 					errorValidator: (error): error is PQErrorKind =>
@@ -746,16 +748,17 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		});
 	});
 
-	describe("Rooms Dataset", function () {
-		after(function () {
-			console.info();
-		});
+	describe("~~~~~Rooms Dataset~~~~~", function () {
+		describe("addDataset", function () {
+			after(function () {
+				console.info();
+			});
 
-		beforeEach(function () {
-			fs.removeSync(persistDirectory);
-			insightFacade = new InsightFacade();
-		});
-		describe("addDataset: Rooms", function () {
+			beforeEach(function () {
+				fs.removeSync(persistDirectory);
+				insightFacade = new InsightFacade();
+			});
+
 			it("should add RoomsDataset successfully, 1", async function () {
 				const insightDatasets = await insightFacade.addDataset(
 					"rooms", datasetContents.get("rooms") ?? "", InsightDatasetKind.Rooms
@@ -814,7 +817,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				return expect(result).eventually.to.deep.equal(["ABC abc 0123 @.,&^%$#@!-=+?<>:[]{}() "]);
 			});
 
-			it("invalid dataset type -> should reject",  function () {
+			it("invalid dataset type (room content) -> should reject",  function () {
 				const result = insightFacade.addDataset(
 					"wrongType",
 					datasetContents.get("rooms") ?? "",
@@ -824,7 +827,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
 
-			it("invalid dataset type 2 -> should reject", function () {
+			it("invalid dataset type (section content) -> should reject", function () {
 				const result = insightFacade.addDataset(
 					"wrongType",
 					smallSectionsContent,
@@ -832,6 +835,73 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				);
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
+		});
+
+		/*
+		 * This test suite dynamically generates tests from the JSON files in test/resources/queries.
+		 * You should not need to modify it; instead, add additional files to the queries directory.
+		 * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
+		 */
+		describe("performQuery", () => {
+			before(function () {
+				insightFacade = new InsightFacade();
+
+				// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+				// Will *fail* if there is a problem reading ANY dataset.
+				const loadDatasetPromises = [
+					insightFacade.addDataset(
+						"sections",
+						datasetContents.get("sections") ?? "",
+						InsightDatasetKind.Sections
+					),
+					insightFacade.addDataset(
+						"validSmall",
+						datasetContents.get("valid_small") ?? "",
+						InsightDatasetKind.Sections
+					),
+					insightFacade.addDataset(
+						"boss",
+						datasetContents.get("rooms") ?? "",
+						InsightDatasetKind.Rooms
+					),
+					insightFacade.addDataset(
+						"rooms",
+						datasetContents.get("rooms") ?? "",
+						InsightDatasetKind.Rooms
+					)
+				];
+				return Promise.all(loadDatasetPromises);
+			});
+
+			after(function () {
+				console.info();
+				fs.removeSync(persistDirectory);
+			});
+
+			type PQErrorKind = "ResultTooLargeError" | "InsightError";
+			type Output = any[];
+
+			function assertResult(actual: any, expected: Output): void {
+				expect(actual).to.deep.equal(expected);
+			}
+
+			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
+				"Dynamic InsightFacade PerformQuery tests",
+				(input) => insightFacade.performQuery(input),
+				"./test/resources/queries/rooms",
+				{
+					assertOnResult: assertResult,
+					errorValidator: (error): error is PQErrorKind =>
+						error === "ResultTooLargeError" || error === "InsightError",
+					assertOnError: (actual, expected) => {
+						if (expected === "ResultTooLargeError") {
+							expect(actual).to.be.instanceof(ResultTooLargeError);
+						} else {
+							expect(actual).to.be.instanceof(InsightError);
+						}
+					},
+				}
+			);
 		});
 	});
 });

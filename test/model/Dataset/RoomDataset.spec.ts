@@ -4,8 +4,6 @@ import chaiAsPromised from "chai-as-promised";
 import {IDataset} from "../../../src/model/Dataset/IDataset";
 import {IBuildingData, IGeoLocation, RDataset} from "../../../src/model/Dataset/RoomDataset/RDataset";
 import {IRoomData, Room} from "../../../src/model/Dataset/RoomDataset/Room";
-import JSZip from "jszip";
-import path from "path";
 
 chai.use(chaiAsPromised);
 
@@ -427,24 +425,24 @@ describe("[ RoomDataset.spec.ts ]", function () {
 			});
 		});
 
-		it("test get geo location, valid address 1" , async function () {
-			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("2211 Wesbrook Mall");
-			expect(geoLocation).to.deep.equal({lat: 49.26408, lon: -123.24605});
+		it("test get geo location, valid address 1" , function () {
+			let geoLocation = rDatasetParser.getGeoLocation("2211 Wesbrook Mall");
+			return expect(geoLocation).to.eventually.deep.equal({lat: 49.26408, lon: -123.24605});
 		});
 
-		it("test get geo location, valid address 2 with zip code" , async function () {
-			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4");
-			expect(geoLocation).to.deep.equal({lat: 49.26125, lon: -123.24807});
+		it("test get geo location, valid address 2 with zip code" , function () {
+			let geoLocation = rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4");
+			return expect(geoLocation).to.eventually.deep.equal({lat: 49.26125, lon: -123.24807});
 		});
 
-		it("test get geo location, invalid address 1" , async function () {
-			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("1234 Wesbrook Mall");
-			expect(geoLocation).to.deep.equal({lat: undefined, lon: undefined});
+		it("test get geo location, invalid address 1" , function () {
+			let geoLocation = rDatasetParser.getGeoLocation("1234 Wesbrook Mall");
+			return expect(geoLocation).to.eventually.be.rejected;
 		});
 
-		it("test get geo location, invalid address 2 with whitespace at the end" , async function () {
-			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4 ");
-			expect(geoLocation).to.deep.equal({lat: undefined, lon: undefined});
+		it("test get geo location, invalid address 2 with whitespace at the end" , function () {
+			let geoLocation = rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4 ");
+			return expect(geoLocation).to.eventually.be.rejected;
 		});
 
 		describe("testing extractDataInRow", function () {

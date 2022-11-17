@@ -1,8 +1,8 @@
 import {Section, SectionFieldType} from "../Dataset/CourseDataset/Section";
 import {InsightResult} from "../../controller/IInsightFacade";
-import {DIRECTION, FILTER, KeyValuePair, OPTIONS} from "./Query";
+import {DIRECTION, FILTER, KeyValuePair, OPTIONS, TRANSFORMATION} from "./Query";
 import {extractField} from "./QueryValidator";
-import {applyResults, QueryTransformer} from "./QueryTransformer";
+import {applyGroupFunctions, groupData, IGroups} from "./QueryTransformer";
 import {IData, IDataset} from "../Dataset/IDataset";
 import {Room, RoomFieldType} from "../Dataset/RoomDataset/Room";
 
@@ -116,11 +116,14 @@ export function processOptions(options: OPTIONS, dataList: IData[]): InsightResu
 	return results;
 }
 
-export function processOptionsWithTransformation(option: OPTIONS,
-												 transformation: any, dataList: IData[]): InsightResult[] {
+export function processOptionsWithTransformation(
+	option: OPTIONS,
+	transformation: TRANSFORMATION,
+	dataList: IData[]
+): InsightResult[] {
 	let result: InsightResult[] = [];
-	let solutions: any[][] = QueryTransformer(dataList, transformation.GROUP);
-	result = applyResults(solutions, option.COLUMNS, transformation.APPLY);
+	let groupedData: IGroups = groupData(dataList, transformation.GROUP);
+	result = applyGroupFunctions(groupedData, option.COLUMNS, transformation.APPLY);
 	result = processORDER(result, option.ORDER);
 	return result;
 }
@@ -171,12 +174,11 @@ export function processORDER(results: InsightResult[], order?: string | any) {
 			if (order["keys"]) {
 				results.sort((a, b) => {
 					for (let key of order["keys"]) {
-						const field = extractField(key);
 						let dir = order["dir"] === "DOWN" ? -1 : 1;
 						if (a[key] > b[key]) {
-							return (order["dir"] === "DOWN" ? -1 : 1);
+							return dir;
 						} else if (a[key] < b[key]) {
-							return (order["dir"] === "DOWN" ? 1 : -1);
+							return dir * -1;
 						}
 					}
 					return 0;
