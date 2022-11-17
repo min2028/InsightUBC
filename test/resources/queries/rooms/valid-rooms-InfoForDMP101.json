@@ -1,0 +1,29 @@
+{
+	"title": "valid-rooms-info for DMP_101 -> should return 1 item",
+	"input": {
+		"WHERE": {
+			"IS": {
+				"rooms_name": "DMP_101"
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_fullname",
+				"rooms_address",
+				"rooms_seats",
+				"rooms_type",
+				"rooms_furniture"
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"rooms_fullname": "Hugh Dempster Pavilion",
+			"rooms_address": "6245 Agronomy Road V6T 1Z4",
+			"rooms_seats": 40,
+			"rooms_type": "Small Group",
+			"rooms_furniture": "Classroom-Movable Tables & Chairs"
+		}
+	]
+}

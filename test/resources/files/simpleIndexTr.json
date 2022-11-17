@@ -1,0 +1,823 @@
+[
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 161,
+			"startCol": 27,
+			"startOffset": 12825,
+			"endLine": 162,
+			"endCol": 19,
+			"endOffset": 12844
+		}
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-building-image"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.1]",
+				"sourceCodeLocation": {
+					"startLine": 162,
+					"startCol": 76,
+					"startOffset": 12901,
+					"endLine": 163,
+					"endCol": 13,
+					"endOffset": 12914
+				}
+			},
+			{
+				"nodeName": "a",
+				"tagName": "a",
+				"attrs": [
+					{
+						"name": "href",
+						"value": "./campus/discover/buildings-and-classrooms/BUTO"
+					},
+					{
+						"name": "title",
+						"value": "Building Details and Map"
+					}
+				],
+				"namespaceURI": "http://www.w3.org/1999/xhtml",
+				"childNodes": [
+					{
+						"nodeName": "img",
+						"tagName": "img",
+						"attrs": [
+							{
+								"name": "src",
+								"value": "https://ssc.adm.ubc.ca/classroomservices/image/viewimage?userEvent=ShowBuildingImage&buildingID=BUTO"
+							},
+							{
+								"name": "width",
+								"value": "60px"
+							},
+							{
+								"name": "height",
+								"value": "60px"
+							},
+							{
+								"name": "alt",
+								"value": "building image"
+							}
+						],
+						"namespaceURI": "http://www.w3.org/1999/xhtml",
+						"childNodes": [],
+						"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.1.childNodes.1]",
+						"sourceCodeLocation": {
+							"startLine": 163,
+							"startCol": 104,
+							"startOffset": 13005,
+							"endLine": 163,
+							"endCol": 268,
+							"endOffset": 13169,
+							"attrs": {
+								"src": {
+									"startLine": 163,
+									"startCol": 109,
+									"startOffset": 13010,
+									"endLine": 163,
+									"endCol": 219,
+									"endOffset": 13120
+								},
+								"width": {
+									"startLine": 163,
+									"startCol": 220,
+									"startOffset": 13121,
+									"endLine": 163,
+									"endCol": 232,
+									"endOffset": 13133
+								},
+								"height": {
+									"startLine": 163,
+									"startCol": 233,
+									"startOffset": 13134,
+									"endLine": 163,
+									"endCol": 246,
+									"endOffset": 13147
+								},
+								"alt": {
+									"startLine": 163,
+									"startCol": 247,
+									"startOffset": 13148,
+									"endLine": 163,
+									"endCol": 267,
+									"endOffset": 13168
+								}
+							},
+							"startTag": {
+								"startLine": 163,
+								"startCol": 104,
+								"startOffset": 13005,
+								"endLine": 163,
+								"endCol": 268,
+								"endOffset": 13169,
+								"attrs": {
+									"src": {
+										"startLine": 163,
+										"startCol": 109,
+										"startOffset": 13010,
+										"endLine": 163,
+										"endCol": 219,
+										"endOffset": 13120
+									},
+									"width": {
+										"startLine": 163,
+										"startCol": 220,
+										"startOffset": 13121,
+										"endLine": 163,
+										"endCol": 232,
+										"endOffset": 13133
+									},
+									"height": {
+										"startLine": 163,
+										"startCol": 233,
+										"startOffset": 13134,
+										"endLine": 163,
+										"endCol": 246,
+										"endOffset": 13147
+									},
+									"alt": {
+										"startLine": 163,
+										"startCol": 247,
+										"startOffset": 13148,
+										"endLine": 163,
+										"endCol": 267,
+										"endOffset": 13168
+									}
+								}
+							}
+						}
+					}
+				],
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.1]",
+				"sourceCodeLocation": {
+					"startLine": 163,
+					"startCol": 13,
+					"startOffset": 12914,
+					"endLine": 163,
+					"endCol": 272,
+					"endOffset": 13173,
+					"attrs": {
+						"href": {
+							"startLine": 163,
+							"startCol": 16,
+							"startOffset": 12917,
+							"endLine": 163,
+							"endCol": 70,
+							"endOffset": 12971
+						},
+						"title": {
+							"startLine": 163,
+							"startCol": 71,
+							"startOffset": 12972,
+							"endLine": 163,
+							"endCol": 103,
+							"endOffset": 13004
+						}
+					},
+					"startTag": {
+						"startLine": 163,
+						"startCol": 13,
+						"startOffset": 12914,
+						"endLine": 163,
+						"endCol": 104,
+						"endOffset": 13005,
+						"attrs": {
+							"href": {
+								"startLine": 163,
+								"startCol": 16,
+								"startOffset": 12917,
+								"endLine": 163,
+								"endCol": 70,
+								"endOffset": 12971
+							},
+							"title": {
+								"startLine": 163,
+								"startCol": 71,
+								"startOffset": 12972,
+								"endLine": 163,
+								"endCol": 103,
+								"endOffset": 13004
+							}
+						}
+					},
+					"endTag": {
+						"startLine": 163,
+						"startCol": 268,
+						"startOffset": 13169,
+						"endLine": 163,
+						"endCol": 272,
+						"endOffset": 13173
+					}
+				}
+			},
+			{
+				"nodeName": "#text",
+				"value": "          ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.1]",
+				"sourceCodeLocation": {
+					"startLine": 163,
+					"startCol": 272,
+					"startOffset": 13173,
+					"endLine": 163,
+					"endCol": 282,
+					"endOffset": 13183
+				}
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 162,
+			"startCol": 19,
+			"startOffset": 12844,
+			"endLine": 163,
+			"endCol": 287,
+			"endOffset": 13188,
+			"attrs": {
+				"class": {
+					"startLine": 162,
+					"startCol": 23,
+					"startOffset": 12848,
+					"endLine": 162,
+					"endCol": 75,
+					"endOffset": 12900
+				}
+			},
+			"startTag": {
+				"startLine": 162,
+				"startCol": 19,
+				"startOffset": 12844,
+				"endLine": 162,
+				"endCol": 76,
+				"endOffset": 12901,
+				"attrs": {
+					"class": {
+						"startLine": 162,
+						"startCol": 23,
+						"startOffset": 12848,
+						"endLine": 162,
+						"endCol": 75,
+						"endOffset": 12900
+					}
+				}
+			},
+			"endTag": {
+				"startLine": 163,
+				"startCol": 282,
+				"startOffset": 13183,
+				"endLine": 163,
+				"endCol": 287,
+				"endOffset": 13188
+			}
+		}
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 163,
+			"startCol": 287,
+			"startOffset": 13188,
+			"endLine": 164,
+			"endCol": 19,
+			"endOffset": 13207
+		}
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-building-code"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            BUTO          ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.3]",
+				"sourceCodeLocation": {
+					"startLine": 164,
+					"startCol": 75,
+					"startOffset": 13263,
+					"endLine": 165,
+					"endCol": 27,
+					"endOffset": 13290
+				}
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 164,
+			"startCol": 19,
+			"startOffset": 13207,
+			"endLine": 165,
+			"endCol": 32,
+			"endOffset": 13295,
+			"attrs": {
+				"class": {
+					"startLine": 164,
+					"startCol": 23,
+					"startOffset": 13211,
+					"endLine": 164,
+					"endCol": 74,
+					"endOffset": 13262
+				}
+			},
+			"startTag": {
+				"startLine": 164,
+				"startCol": 19,
+				"startOffset": 13207,
+				"endLine": 164,
+				"endCol": 75,
+				"endOffset": 13263,
+				"attrs": {
+					"class": {
+						"startLine": 164,
+						"startCol": 23,
+						"startOffset": 13211,
+						"endLine": 164,
+						"endCol": 74,
+						"endOffset": 13262
+					}
+				}
+			},
+			"endTag": {
+				"startLine": 165,
+				"startCol": 27,
+				"startOffset": 13290,
+				"endLine": 165,
+				"endCol": 32,
+				"endOffset": 13295
+			}
+		}
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 165,
+			"startCol": 32,
+			"startOffset": 13295,
+			"endLine": 166,
+			"endCol": 19,
+			"endOffset": 13314
+		}
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-title"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.5]",
+				"sourceCodeLocation": {
+					"startLine": 166,
+					"startCol": 61,
+					"startOffset": 13356,
+					"endLine": 167,
+					"endCol": 13,
+					"endOffset": 13369
+				}
+			},
+			{
+				"nodeName": "a",
+				"tagName": "a",
+				"attrs": [
+					{
+						"name": "href",
+						"value": "./campus/discover/buildings-and-classrooms/BUTO.htm"
+					},
+					{
+						"name": "title",
+						"value": "Building Details and Map"
+					}
+				],
+				"namespaceURI": "http://www.w3.org/1999/xhtml",
+				"childNodes": [
+					{
+						"nodeName": "#text",
+						"value": "Buchanan Tower",
+						"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.5.childNodes.1]",
+						"sourceCodeLocation": {
+							"startLine": 167,
+							"startCol": 108,
+							"startOffset": 13464,
+							"endLine": 167,
+							"endCol": 122,
+							"endOffset": 13478
+						}
+					}
+				],
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.5]",
+				"sourceCodeLocation": {
+					"startLine": 167,
+					"startCol": 13,
+					"startOffset": 13369,
+					"endLine": 167,
+					"endCol": 126,
+					"endOffset": 13482,
+					"attrs": {
+						"href": {
+							"startLine": 167,
+							"startCol": 16,
+							"startOffset": 13372,
+							"endLine": 167,
+							"endCol": 74,
+							"endOffset": 13430
+						},
+						"title": {
+							"startLine": 167,
+							"startCol": 75,
+							"startOffset": 13431,
+							"endLine": 167,
+							"endCol": 107,
+							"endOffset": 13463
+						}
+					},
+					"startTag": {
+						"startLine": 167,
+						"startCol": 13,
+						"startOffset": 13369,
+						"endLine": 167,
+						"endCol": 108,
+						"endOffset": 13464,
+						"attrs": {
+							"href": {
+								"startLine": 167,
+								"startCol": 16,
+								"startOffset": 13372,
+								"endLine": 167,
+								"endCol": 74,
+								"endOffset": 13430
+							},
+							"title": {
+								"startLine": 167,
+								"startCol": 75,
+								"startOffset": 13431,
+								"endLine": 167,
+								"endCol": 107,
+								"endOffset": 13463
+							}
+						}
+					},
+					"endTag": {
+						"startLine": 167,
+						"startCol": 122,
+						"startOffset": 13478,
+						"endLine": 167,
+						"endCol": 126,
+						"endOffset": 13482
+					}
+				}
+			},
+			{
+				"nodeName": "#text",
+				"value": "          ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.5]",
+				"sourceCodeLocation": {
+					"startLine": 167,
+					"startCol": 126,
+					"startOffset": 13482,
+					"endLine": 167,
+					"endCol": 136,
+					"endOffset": 13492
+				}
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 166,
+			"startCol": 19,
+			"startOffset": 13314,
+			"endLine": 167,
+			"endCol": 141,
+			"endOffset": 13497,
+			"attrs": {
+				"class": {
+					"startLine": 166,
+					"startCol": 23,
+					"startOffset": 13318,
+					"endLine": 166,
+					"endCol": 60,
+					"endOffset": 13355
+				}
+			},
+			"startTag": {
+				"startLine": 166,
+				"startCol": 19,
+				"startOffset": 13314,
+				"endLine": 166,
+				"endCol": 61,
+				"endOffset": 13356,
+				"attrs": {
+					"class": {
+						"startLine": 166,
+						"startCol": 23,
+						"startOffset": 13318,
+						"endLine": 166,
+						"endCol": 60,
+						"endOffset": 13355
+					}
+				}
+			},
+			"endTag": {
+				"startLine": 167,
+				"startCol": 136,
+				"startOffset": 13492,
+				"endLine": 167,
+				"endCol": 141,
+				"endOffset": 13497
+			}
+		}
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 167,
+			"startCol": 141,
+			"startOffset": 13497,
+			"endLine": 168,
+			"endCol": 19,
+			"endOffset": 13516
+		}
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-building-address"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            1873 East Mall          ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.7]",
+				"sourceCodeLocation": {
+					"startLine": 168,
+					"startCol": 78,
+					"startOffset": 13575,
+					"endLine": 169,
+					"endCol": 37,
+					"endOffset": 13612
+				}
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 168,
+			"startCol": 19,
+			"startOffset": 13516,
+			"endLine": 169,
+			"endCol": 42,
+			"endOffset": 13617,
+			"attrs": {
+				"class": {
+					"startLine": 168,
+					"startCol": 23,
+					"startOffset": 13520,
+					"endLine": 168,
+					"endCol": 77,
+					"endOffset": 13574
+				}
+			},
+			"startTag": {
+				"startLine": 168,
+				"startCol": 19,
+				"startOffset": 13516,
+				"endLine": 168,
+				"endCol": 78,
+				"endOffset": 13575,
+				"attrs": {
+					"class": {
+						"startLine": 168,
+						"startCol": 23,
+						"startOffset": 13520,
+						"endLine": 168,
+						"endCol": 77,
+						"endOffset": 13574
+					}
+				}
+			},
+			"endTag": {
+				"startLine": 169,
+				"startCol": 37,
+				"startOffset": 13612,
+				"endLine": 169,
+				"endCol": 42,
+				"endOffset": 13617
+			}
+		}
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 169,
+			"startCol": 42,
+			"startOffset": 13617,
+			"endLine": 170,
+			"endCol": 19,
+			"endOffset": 13636
+		}
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-nothing"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.9]",
+				"sourceCodeLocation": {
+					"startLine": 170,
+					"startCol": 63,
+					"startOffset": 13680,
+					"endLine": 171,
+					"endCol": 13,
+					"endOffset": 13693
+				}
+			},
+			{
+				"nodeName": "a",
+				"tagName": "a",
+				"attrs": [
+					{
+						"name": "href",
+						"value": "./campus/discover/buildings-and-classrooms/BUTO.htm"
+					}
+				],
+				"namespaceURI": "http://www.w3.org/1999/xhtml",
+				"childNodes": [
+					{
+						"nodeName": "#text",
+						"value": "More info",
+						"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.9.childNodes.1]",
+						"sourceCodeLocation": {
+							"startLine": 171,
+							"startCol": 75,
+							"startOffset": 13755,
+							"endLine": 171,
+							"endCol": 84,
+							"endOffset": 13764
+						}
+					}
+				],
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.9]",
+				"sourceCodeLocation": {
+					"startLine": 171,
+					"startCol": 13,
+					"startOffset": 13693,
+					"endLine": 171,
+					"endCol": 88,
+					"endOffset": 13768,
+					"attrs": {
+						"href": {
+							"startLine": 171,
+							"startCol": 16,
+							"startOffset": 13696,
+							"endLine": 171,
+							"endCol": 74,
+							"endOffset": 13754
+						}
+					},
+					"startTag": {
+						"startLine": 171,
+						"startCol": 13,
+						"startOffset": 13693,
+						"endLine": 171,
+						"endCol": 75,
+						"endOffset": 13755,
+						"attrs": {
+							"href": {
+								"startLine": 171,
+								"startCol": 16,
+								"startOffset": 13696,
+								"endLine": 171,
+								"endCol": 74,
+								"endOffset": 13754
+							}
+						}
+					},
+					"endTag": {
+						"startLine": 171,
+						"startCol": 84,
+						"startOffset": 13764,
+						"endLine": 171,
+						"endCol": 88,
+						"endOffset": 13768
+					}
+				}
+			},
+			{
+				"nodeName": "#text",
+				"value": "          ",
+				"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25.childNodes.9]",
+				"sourceCodeLocation": {
+					"startLine": 171,
+					"startCol": 88,
+					"startOffset": 13768,
+					"endLine": 171,
+					"endCol": 98,
+					"endOffset": 13778
+				}
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 170,
+			"startCol": 19,
+			"startOffset": 13636,
+			"endLine": 171,
+			"endCol": 103,
+			"endOffset": 13783,
+			"attrs": {
+				"class": {
+					"startLine": 170,
+					"startCol": 23,
+					"startOffset": 13640,
+					"endLine": 170,
+					"endCol": 62,
+					"endOffset": 13679
+				}
+			},
+			"startTag": {
+				"startLine": 170,
+				"startCol": 19,
+				"startOffset": 13636,
+				"endLine": 170,
+				"endCol": 63,
+				"endOffset": 13680,
+				"attrs": {
+					"class": {
+						"startLine": 170,
+						"startCol": 23,
+						"startOffset": 13640,
+						"endLine": 170,
+						"endCol": 62,
+						"endOffset": 13679
+					}
+				}
+			},
+			"endTag": {
+				"startLine": 171,
+				"startCol": 98,
+				"startOffset": 13778,
+				"endLine": 171,
+				"endCol": 103,
+				"endOffset": 13783
+			}
+		}
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n              ",
+		"parentNode": "[Circular ~.childNodes.0.childNodes.1.childNodes.0.childNodes.3.childNodes.25]",
+		"sourceCodeLocation": {
+			"startLine": 171,
+			"startCol": 103,
+			"startOffset": 13783,
+			"endLine": 172,
+			"endCol": 15,
+			"endOffset": 13798
+		}
+	}
+]

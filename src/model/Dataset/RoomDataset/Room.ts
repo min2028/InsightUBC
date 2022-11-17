@@ -19,7 +19,6 @@ export interface IRoomAndBuilding extends IData {
 
 export interface IRoomData {
 	number?: string;        // The room number (e.g., "201").
-	name?: string; 		   // The room id; should be rooms_shortname+"_"+rooms_number.
 	seats?: number;		   // The number of seats in the room. The default value for this field is 0.
 	type?: string;		   // The room type (e.g., "Small Group").
 	furniture?: string;     // The room furniture (e.g., "Classroom-Movable Tables & Chairs").
@@ -52,7 +51,12 @@ export class Room extends HTMLParser{
 	): IRoomAndBuilding[] {
 		let instance: Room = new Room();
 		let result: IRoomAndBuilding[] = [];
-		const document = parse(buildingHtmlFile);
+		let document;
+		try {
+			document = parse(buildingHtmlFile);
+		} catch (err) {
+			throw Error("Invalid building html file");
+		}
 		let rooms: IRoomData[] = instance.traverseJsonOfHTML(document) as IRoomData[];
 		rooms.forEach((roomData) => {
 			let roomAndBuilding: any = {};
@@ -112,7 +116,7 @@ export class Room extends HTMLParser{
 		}
 	}
 
-	protected extractDataInRow(trChildNodes: any[]): IRoomData {
+	public extractDataInRow(trChildNodes: any[]): IRoomData {
 		let roomData: IRoomData = {};
 		trChildNodes.forEach((child) => {
 			if (child.nodeName === "td" && child.tagName === "td") {
@@ -125,7 +129,7 @@ export class Room extends HTMLParser{
 				}
 			}
 		});
-		if (Object.keys(roomData).length === 6 && this.isValidRoomData(roomData)) {
+		if (Object.keys(roomData).length === 5 && this.isValidRoomData(roomData)) {
 			return roomData;
 		}
 		throw Error("Missing or invalid information of the Room");

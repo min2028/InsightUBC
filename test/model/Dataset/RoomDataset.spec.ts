@@ -6,9 +6,6 @@ import {IBuildingData, IGeoLocation, RDataset} from "../../../src/model/Dataset/
 import {IRoomData, Room} from "../../../src/model/Dataset/RoomDataset/Room";
 import JSZip from "jszip";
 import path from "path";
-import {parse} from "parse5";
-import doc = Mocha.reporters.doc;
-import {InsightError} from "../../../src/controller/IInsightFacade";
 
 chai.use(chaiAsPromised);
 
@@ -169,13 +166,11 @@ describe("[ RoomDataset.spec.ts ]", function () {
 		});
 
 		it("testing traverseHTML", function () {
-			let contents: string = fs.readFileSync("./test/resources/files/fnh.json", "utf8");
+			let contents: string = fs.readFileSync("./test/resources/files/FNH_tableOnly.json", "utf8");
 			let instance: Room = new Room();
-			// console.log(contents);
 			const json = JSON.parse(contents);
-			// console.log(typeof json === "object");
-			// console.log(json);
 			const results = instance.traverseJsonOfHTML(json);
+			// expect(results)
 			console.log(results);
 		});
 
@@ -447,12 +442,55 @@ describe("[ RoomDataset.spec.ts ]", function () {
 			});
 		});
 
-		// ?????? What the hell is this
-		it("test get geo location" , async function () {
+		it("test get geo location, valid address 1" , async function () {
 			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("2211 Wesbrook Mall");
-			console.log(geoLocation.lon);
-			console.log(geoLocation.lat);
+			expect(geoLocation).to.deep.equal({lat: 49.26408, lon: -123.24605});
 		});
-		// test extractDataInRow
+
+		it("test get geo location, valid address 2 with zip code" , async function () {
+			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4");
+			expect(geoLocation).to.deep.equal({lat: 49.26125, lon: -123.24807});
+		});
+
+		it("test get geo location, invalid address 1" , async function () {
+			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("1234 Wesbrook Mall");
+			expect(geoLocation).to.deep.equal({lat: undefined, lon: undefined});
+		});
+
+		it("test get geo location, invalid address 2 with whitespace at the end" , async function () {
+			let geoLocation: IGeoLocation = await rDatasetParser.getGeoLocation("6245 Agronomy Road V6T 1Z4 ");
+			expect(geoLocation).to.deep.equal({lat: undefined, lon: undefined});
+		});
+
+		describe("testing extractDataInRow", function () {
+			it("should return an object with all the room fields, Room.ts", function () {
+				let contents: string = fs.readFileSync("./test/resources/files/extraDataInRows-Rooms.json", "utf8");
+				let instance: Room = new Room();
+				const json = JSON.parse(contents);
+				let result = instance.extractDataInRow(json);
+				expect(result).to.deep.equal({
+					number: "320",
+					href: "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/FNH-320",
+					seats: 27,
+					furniture: "Classroom-Movable Tablets",
+					type: "Small Group"
+				});
+			});
+
+			it("should return an object with buildingInfo, RDataset.ts", function () {
+				let buffer: string = fs.readFileSync("./test/resources/files/simpleIndexTr.json", "utf8");
+				let content = JSON.parse(buffer);
+				// console.log(content);
+				let result = rDatasetParser.extractDataInRow(content);
+				console.log(result);
+			});
+
+			// it("should return an object with buildingInfo, RDataset.ts", function () {
+			// 	let buffer: string = fs.readFileSync("./test/resources/files/simpleIndexTr.json", "utf8");
+			// 	let content = JSON.parse(buffer);
+			// 	let result = rDatasetParser.extractDataInRow(content);
+			// 	console.log(result);
+			// });
+		});
 	});
 });

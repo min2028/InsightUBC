@@ -44,13 +44,18 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		let skippedBuildingsCount = 0;
 		let zip: JSZip;
 		let indexFile: string;
+		let indexJson;
 		try {
 			zip = await this.validateAndGetZip(content);
 			indexFile = await zip.file("index.htm")?.async("string") ?? "";
 		} catch (err) {
-			return Promise.reject(err);
+			return Promise.reject("Invalid zip file");
 		}
-		const indexJson = parse(indexFile); // return JSON of HTML
+		try {
+			indexJson = parse(indexFile); // return JSON of HTML
+		} catch (err) {
+			return Promise.reject("Invalid index html file");
+		}
 		let buildings = this.traverseJsonOfHTML(indexJson) as IBuildingData[];
 		for(const buildingInfo of buildings) {
 			let buildingFile: string;
@@ -127,11 +132,11 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 				res.on("data", function (content) {
 					contents += content;
 				});
-				console.log(contents);
+				// console.log(contents);
 				res.on("end", function () {
 					try {
 						let result = JSON.parse(contents);
-						console.log(result);
+						// console.log(result);
 						geoLocation.lat = result.lat;
 						geoLocation.lon = result.lon;
 						// if (!result.error) {
@@ -142,7 +147,7 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 						// }
 						return resolve((geoLocation as IGeoLocation));
 					} catch (e) {
-						reject(new InsightError(""));
+						reject("Invalid JSON geolocation");
 					}
 				});
 			}).on("error", function () {
@@ -152,7 +157,7 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		);
 	}
 
-	protected extractDataInRow(trChildNodes: any[]): IBuildingData {
+	public extractDataInRow(trChildNodes: any[]): IBuildingData {
 		let buildingInfo: IBuildingData = {};
 		trChildNodes.forEach((child: any) => {
 			if (child.nodeName === "td" && child.tagName === "td") {
@@ -161,25 +166,25 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 					"class",
 					"views-field views-field-field-building-code"
 				)) {
-					buildingInfo.shortname = this.readTextData(child.childNode);
+					buildingInfo.shortname = this.readTextData(child.childNodes);
 				} else if (this.checkNodeAttributes(
 					child.attrs,
 					"class",
-					"views-field views-field-field-building-title"
+					"views-field views-field-title"
 				)) {
-					buildingInfo.fullname = this.readTextData(child.childNode);
+					buildingInfo.fullname = this.readLinkAndTextData(child.childNodes).text;
 				} else if (this.checkNodeAttributes(
 					child.attrs,
 					"class",
 					"views-field views-field-field-building-address"
 				)) {
-					buildingInfo.address = this.readTextData(child.childNode);
+					buildingInfo.address = this.readTextData(child.childNodes);
 				} else if (this.checkNodeAttributes(
 					child.attrs,
 					"class",
 					"views-field views-field-nothing"
 				)){
-					buildingInfo.href = this.readLinkAndTextData(child.childNode).link;
+					buildingInfo.href = this.readLinkAndTextData(child.childNodes).link;
 				}
 			}
 		});

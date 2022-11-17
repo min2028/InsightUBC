@@ -58,9 +58,6 @@ export abstract class HTMLParser {
 
 	public traverseJsonOfHTML(jsonOfHTMLElement: any): Array<IBuildingData | IRoomData> {
 		let deeperData: Array<IBuildingData | IRoomData> = [];
-		// console.log(jsonOfHTMLElement);
-		// console.log(`\nNodeName: ${jsonOfHTMLElement.nodeName}`);
-		// console.log(`ParentNode: ${jsonOfHTMLElement.parentNode}`);
 		if (!(jsonOfHTMLElement && jsonOfHTMLElement.nodeName
 			// && htmlElement.tagName
 			&& jsonOfHTMLElement.childNodes
@@ -70,10 +67,8 @@ export abstract class HTMLParser {
 		}
 		// console.log("Going inside");
 		if (jsonOfHTMLElement.nodeName === "tr" && jsonOfHTMLElement.tagName === "tr") {
-			console.log("***** Found TR");
 			try {
 				const res = this.extractDataInRow(jsonOfHTMLElement.childNodes);
-				console.log(res);
 				return [res];
 			} catch (err) {
 				// Skip and proceed because data may be more nested
