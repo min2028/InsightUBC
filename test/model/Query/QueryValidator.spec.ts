@@ -1,11 +1,14 @@
-import {IDataset} from "../../../src/model/Dataset/Dataset";
 import * as fs from "fs-extra";
 import chai, {expect} from "chai";
 import chaiAsPromised from "chai-as-promised";
 import {InsightDatasetKind, InsightError} from "../../../src/controller/IInsightFacade";
 import InsightFacade from "../../../src/controller/InsightFacade";
-import {checkWildCard, isValidKeyValuePair,
-	isValidQueryKey, validateQuery} from "../../../src/model/Query/QueryValidator";
+import {
+	checkWildCard,
+	isValidKeyValuePair,
+	isValidQueryKey,
+	validateQuery
+} from "../../../src/model/Query/QueryValidator";
 import {isValidId} from "../../../src/Utility/General";
 
 chai.use(chaiAsPromised);
@@ -69,7 +72,7 @@ describe("[ QueryValidator.spec.ts ]", function () {
 						],
 						ORDER: "sections_avg"
 					}
-				}, "sections");
+				}, "sections", InsightDatasetKind.Sections);
 			return expect(result).to.be.true;
 		});
 
@@ -89,7 +92,7 @@ describe("[ QueryValidator.spec.ts ]", function () {
 						],
 						ORDER: "sections_avg"
 					}
-				}, "sections");
+				}, "sections", InsightDatasetKind.Sections);
 			return expect(result).to.be.true;
 		});
 
@@ -125,17 +128,21 @@ describe("[ QueryValidator.spec.ts ]", function () {
 		});
 
 		it("valid query key -> Should pass the validation", function () {
-			const result = isValidQueryKey("section_dept", "section");
+			const result = isValidQueryKey("section_dept", "section", InsightDatasetKind.Sections);
 			return expect(result).to.be.true;
 		});
 
 		it("valid keyValuePair string -> Should pass the validation", function () {
-			const result = isValidKeyValuePair({sections_dept: "cpsc"}, "sections", "s");
+			const result = isValidKeyValuePair(
+				{sections_dept: "cpsc"}, "sections", InsightDatasetKind.Sections, "s"
+			);
 			return expect(result).to.be.true;
 		});
 
 		it("valid keyValuePair numeric -> Should pass the validation", function () {
-			const result = isValidKeyValuePair({sections_avg: 97.4}, "sections", "n");
+			const result = isValidKeyValuePair(
+				{sections_avg: 97.4}, "sections", InsightDatasetKind.Sections, "n"
+			);
 			return expect(result).to.be.true;
 		});
 

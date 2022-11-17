@@ -1,0 +1,71 @@
+{
+                                                          "nodeName": "th",
+                                                          "tagName": "th",
+                                                          "attrs": [
+                                                            {
+                                                              "name": "class",
+                                                              "value": "views-field views-field-field-room-type"
+                                                            }
+                                                          ],
+                                                          "namespaceURI": "http://www.w3.org/1999/xhtml",
+                                                          "childNodes": [
+                                                            {
+                                                              "nodeName": "#text",
+                                                              "value": "\n            Room type          ",
+                                                              "parentNode": "[Circular ~.childNodes.2.childNodes.2.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.7]",
+                                                              "sourceCodeLocation": {
+                                                                "startLine": 63,
+                                                                "startCol": 71,
+                                                                "startOffset": 2266,
+                                                                "endLine": 64,
+                                                                "endCol": 32,
+                                                                "endOffset": 2298
+                                                              }
+                                                            }
+                                                          ],
+                                                          "parentNode": "[Circular ~.childNodes.2.childNodes.2.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1.childNodes.1]",
+                                                          "sourceCodeLocation": {
+                                                            "startLine": 63,
+                                                            "startCol": 19,
+                                                            "startOffset": 2214,
+                                                            "endLine": 64,
+                                                            "endCol": 37,
+                                                            "endOffset": 2303,
+                                                            "attrs": {
+                                                              "class": {
+                                                                "startLine": 63,
+                                                                "startCol": 23,
+                                                                "startOffset": 2218,
+                                                                "endLine": 63,
+                                                                "endCol": 70,
+                                                                "endOffset": 2265
+                                                              }
+                                                            },
+                                                            "startTag": {
+                                                              "startLine": 63,
+                                                              "startCol": 19,
+                                                              "startOffset": 2214,
+                                                              "endLine": 63,
+                                                              "endCol": 71,
+                                                              "endOffset": 2266,
+                                                              "attrs": {
+                                                                "class": {
+                                                                  "startLine": 63,
+                                                                  "startCol": 23,
+                                                                  "startOffset": 2218,
+                                                                  "endLine": 63,
+                                                                  "endCol": 70,
+                                                                  "endOffset": 2265
+                                                                }
+                                                              }
+                                                            },
+                                                            "endTag": {
+                                                              "startLine": 64,
+                                                              "startCol": 32,
+                                                              "startOffset": 2298,
+                                                              "endLine": 64,
+                                                              "endCol": 37,
+                                                              "endOffset": 2303
+                                                            }
+                                                          }
+                                                        }

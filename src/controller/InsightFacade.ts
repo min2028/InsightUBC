@@ -7,10 +7,12 @@ import {
 	NotFoundError,
 	ResultTooLargeError
 } from "./IInsightFacade";
-import {IDataset, Dataset} from "../model/Dataset/Dataset";
+import {CDataset} from "../model/Dataset/CourseDataset/CDataset";
 import {Disk} from "../Utility/Disk";
 import {isIdInList, isValidId} from "../Utility/General";
 import {Query} from "../model/Query/Query";
+import {RDataset} from "../model/Dataset/RoomDataset/RDataset";
+import {IDataset, IDatasetParser} from "../model/Dataset/IDataset";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -19,8 +21,8 @@ import {Query} from "../model/Query/Query";
  */
 
 export default class InsightFacade implements IInsightFacade {
-	protected cachedDataset: IDataset;
-	protected insightDatasetList: InsightDataset[];
+	private cachedDataset: IDataset;
+	private insightDatasetList: InsightDataset[];
 
 	constructor() {
 		this.insightDatasetList = Disk.readDatasetMeta();
@@ -28,10 +30,13 @@ export default class InsightFacade implements IInsightFacade {
 	}
 
 	public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
-		if (!(isValidId(id) && !isIdInList(id, this.insightDatasetList.map((item) => item.id)))){
+		if (!isValidId(id)){
+			return Promise.reject(new InsightError("Invalid Id"));
+		} else if (isIdInList(id, this.insightDatasetList.map((item) => item.id))){
 			return Promise.reject(new InsightError("Id is already used"));
 		}
-		return Dataset.parseDataset(id, content, kind)
+		const parser: IDatasetParser = (kind === InsightDatasetKind.Sections) ? new CDataset() : new RDataset();
+		return parser.parseDataset(id, content)
 			.then((dataset) => {
 				this.cachedDataset = dataset;
 				this.insightDatasetList.push( {id: id, kind: kind, numRows: dataset.numRows} );

@@ -1,0 +1,118 @@
+{
+	"title": "sections-transformations",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"sections_dept": "cpsc"
+					}
+				},
+				{
+					"GT": {
+						"sections_avg": 87
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_id",
+				"maxPass"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"maxPass"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_id"
+			],
+			"APPLY": [
+				{
+					"maxPass": {
+						"MAX": "sections_pass"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"sections_id": "319",
+			"maxPass": 74
+		},
+		{
+			"sections_id": "540",
+			"maxPass": 59
+		},
+		{
+			"sections_id": "301",
+			"maxPass": 32
+		},
+		{
+			"sections_id": "547",
+			"maxPass": 25
+		},
+		{
+			"sections_id": "490",
+			"maxPass": 22
+		},
+		{
+			"sections_id": "503",
+			"maxPass": 19
+		},
+		{
+			"sections_id": "507",
+			"maxPass": 19
+		},
+		{
+			"sections_id": "521",
+			"maxPass": 18
+		},
+		{
+			"sections_id": "445",
+			"maxPass": 16
+		},
+		{
+			"sections_id": "543",
+			"maxPass": 15
+		},
+		{
+			"sections_id": "513",
+			"maxPass": 12
+		},
+		{
+			"sections_id": "527",
+			"maxPass": 9
+		},
+		{
+			"sections_id": "449",
+			"maxPass": 8
+		},
+		{
+			"sections_id": "501",
+			"maxPass": 8
+		},
+		{
+			"sections_id": "509",
+			"maxPass": 7
+		},
+		{
+			"sections_id": "522",
+			"maxPass": 7
+		},
+		{
+			"sections_id": "544",
+			"maxPass": 6
+		},
+		{
+			"sections_id": "589",
+			"maxPass": 3
+		}
+	]
+}

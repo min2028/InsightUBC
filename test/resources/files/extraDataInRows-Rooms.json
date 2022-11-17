@@ -1,0 +1,179 @@
+[
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.2.chil]"
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-room-number"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            ",
+				"parentNode": "[Circular ~.childNodes.2.childNodes.2.c]"
+			},
+			{
+				"nodeName": "a",
+				"tagName": "a",
+				"attrs": [
+					{
+						"name": "href",
+						"value": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/FNH-320"
+					},
+					{
+						"name": "title",
+						"value": "Room Details"
+					}
+				],
+				"namespaceURI": "http://www.w3.org/1999/xhtml",
+				"childNodes": [
+					{
+						"nodeName": "#text",
+						"value": "320",
+						"parentNode": "[Circular ~.childNodes]"
+					}
+				],
+				"parentNode": "[Circular ~.childNodes.2.childNodes.2.c]"
+			},
+			{
+				"nodeName": "#text",
+				"value": "          ",
+				"parentNode": "[Circular ~.childNodes.2.childNodes.]"
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.2.childN]"
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.2.child]"
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-room-capacity"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            27          ",
+				"parentNode": "[Circular ~.childNodes.2.childNode]"
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.2.childNod]"
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.2.childNod]"
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-room-furniture"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            Classroom-Movable Tablets          ",
+				"parentNode": "[Circular ~.childNodes.2.childNo]"
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.2.childNodes.2.c]"
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.2.childN]"
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-field-room-type"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            Small Group          ",
+				"parentNode": "[Circular ~.childNodes.2.ch]"
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.2]"
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n                  ",
+		"parentNode": "[Circular ~.childNodes.2.chil]"
+	},
+	{
+		"nodeName": "td",
+		"tagName": "td",
+		"attrs": [
+			{
+				"name": "class",
+				"value": "views-field views-field-nothing"
+			}
+		],
+		"namespaceURI": "http://www.w3.org/1999/xhtml",
+		"childNodes": [
+			{
+				"nodeName": "#text",
+				"value": "\n            ",
+				"parentNode": "[Circular ~.childNodes.2.childN]"
+			},
+			{
+				"nodeName": "a",
+				"tagName": "a",
+				"attrs": [
+					{
+						"name": "href",
+						"value": "http://students.ubc.ca/campus/discover/buildings-and-classrooms/room/FNH-320"
+					}
+				],
+				"namespaceURI": "http://www.w3.org/1999/xhtml",
+				"childNodes": [
+					{
+						"nodeName": "#text",
+						"value": "More info",
+						"parentNode": "[Circular ~.childNodes.2.]"
+					}
+				],
+				"parentNode": "[Circular ~.childNodes.]"
+			},
+			{
+				"nodeName": "#text",
+				"value": "          ",
+				"parentNode": "[Circular ~.childNode]"
+			}
+		],
+		"parentNode": "[Circular ~.childNodes.2.childNodes.2.c]"
+	},
+	{
+		"nodeName": "#text",
+		"value": "\n              ",
+		"parentNode": "[Circular ~.childNodes.2.child]"
+	}
+]

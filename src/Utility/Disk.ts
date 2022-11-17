@@ -1,7 +1,7 @@
 import * as fs from "fs-extra";
 import path from "path";
 import {InsightDataset} from "../controller/IInsightFacade";
-import {IDataset} from "../model/Dataset/Dataset";
+import {IDataset} from "../model/Dataset/IDataset";
 
 const persistDirectory = "./data";
 const idsPath = "/_METADATA.json";

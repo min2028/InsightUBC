@@ -1,0 +1,47 @@
+{
+	"title": "invalid-sections-twogroups-transformations",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"sections_dept": "cpsc"
+					}
+				},
+				{
+					"GT": {
+						"sections_avg": 87
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_id",
+				"sections_fail",
+				"maxPass"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"maxPass"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_d",
+				"sections_fil"
+			],
+			"APPLY": [
+				{
+					"maxPass": {
+						"MAX": "sections_pass"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
