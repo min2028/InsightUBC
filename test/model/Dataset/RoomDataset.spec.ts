@@ -169,7 +169,7 @@ describe("[ RoomDataset.spec.ts ]", function () {
 		});
 
 		it("testing traverseHTML", function () {
-			let contents: string = fs.readFileSync("./test/resources/files/FNH_tableOnly.json", "utf8");
+			let contents: string = fs.readFileSync("./test/resources/files/fnh.json", "utf8");
 			let instance: Room = new Room();
 			// console.log(contents);
 			const json = JSON.parse(contents);

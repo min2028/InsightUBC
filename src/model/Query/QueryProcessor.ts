@@ -172,12 +172,11 @@ export function processORDER(results: InsightResult[], order?: string | any) {
 				results.sort((a, b) => {
 					for (let key of order["keys"]) {
 						const field = extractField(key);
-						const dir = order["dir"] === "DOWN" ? 1 : -1;
-
-						if (a[field] > b[field]) {
-							return 1 * dir;
-						} else if (a[field] < b[field]) {
-							return -1 * dir;
+						let dir = order["dir"] === "DOWN" ? -1 : 1;
+						if (a[key] > b[key]) {
+							return (order["dir"] === "DOWN" ? -1 : 1);
+						} else if (a[key] < b[key]) {
+							return (order["dir"] === "DOWN" ? 1 : -1);
 						}
 					}
 					return 0;

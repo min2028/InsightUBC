@@ -713,7 +713,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			type Output = any[];
 
 			function assertResult(actual: any, expected: Output): void {
-				expect(actual).to.have.deep.members(expected);
+				expect(actual).to.deep.equal(expected);
 			}
 
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(

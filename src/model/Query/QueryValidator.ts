@@ -283,6 +283,9 @@ export function extractField (key: KeyValuePair | string){
 	if (typeof key !== "string") {
 		key = Object.keys(key)[0];
 	}
+	if (!key.includes("_")) {
+		return key;
+	}
 	const split = key.split("_");
 	return split.length === 2 ? split[1] : "";
 }
