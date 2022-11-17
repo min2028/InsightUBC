@@ -39,6 +39,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		invalid_name: "./test/resources/archives/courses/invalid-name.zip",
 		invalid_section: "./test/resources/archives/courses/invalid-section.zip",
 		invalid_structure: "./test/resources/archives/courses/invalid-structure.zip",
+
 		// Rooms Test Datasets
 		rooms: "./test/resources/archives/rooms/rooms.zip"
 	};
@@ -58,7 +59,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		console.info("==========================================================\n");
 	});
 
-	describe("Sections Dataset", function () {
+	describe("~~~~~Sections Dataset~~~~~", function () {
 		describe("addDataset", function () {
 			after(function () {
 				console.info();
@@ -716,6 +717,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			});
 
 			after(function () {
+				console.info();
 				fs.removeSync(persistDirectory);
 			});
 
@@ -746,16 +748,17 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		});
 	});
 
-	describe("Rooms Dataset", function () {
-		after(function () {
-			console.info();
-		});
+	describe("~~~~~Rooms Dataset~~~~~", function () {
+		describe("addDataset", function () {
+			after(function () {
+				console.info();
+			});
 
-		beforeEach(function () {
-			fs.removeSync(persistDirectory);
-			insightFacade = new InsightFacade();
-		});
-		describe("addDataset: Rooms", function () {
+			beforeEach(function () {
+				fs.removeSync(persistDirectory);
+				insightFacade = new InsightFacade();
+			});
+
 			it("should add RoomsDataset successfully, 1", async function () {
 				const insightDatasets = await insightFacade.addDataset(
 					"rooms", datasetContents.get("rooms") ?? "", InsightDatasetKind.Rooms
@@ -814,7 +817,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				return expect(result).eventually.to.deep.equal(["ABC abc 0123 @.,&^%$#@!-=+?<>:[]{}() "]);
 			});
 
-			it("invalid dataset type -> should reject",  function () {
+			it("invalid dataset type (room content) -> should reject",  function () {
 				const result = insightFacade.addDataset(
 					"wrongType",
 					datasetContents.get("rooms") ?? "",
@@ -824,7 +827,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
 
-			it("invalid dataset type 2 -> should reject", function () {
+			it("invalid dataset type (section content) -> should reject", function () {
 				const result = insightFacade.addDataset(
 					"wrongType",
 					smallSectionsContent,

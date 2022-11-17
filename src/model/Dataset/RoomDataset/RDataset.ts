@@ -19,7 +19,17 @@ export interface IGeoLocation {
 	lon: number;		   // The longitude of the building, as received via HTTP request.
 }
 
+interface IGeoResponse {
+	lat?: number;
+	lon?: number;
+	error?: string;
+}
+
+const geoURIBase = "http://cs310.students.cs.ubc.ca:11316/api/v1";
+const teamNumber = "project_team149";
+
 export class RDataset extends HTMLParser implements IDatasetParser{
+
 	public parseDataset(id: string, content: string): Promise<IDataset> {
 		if (!isValidId(id)) {
 			return Promise.reject("Invalid id");
@@ -120,38 +130,31 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 // 	path: `/${urlEncodedAddress}`,
 // 	agent: false
 // },
-	public async getGeoLocation(address: string): Promise<IGeoLocation> {
-		let geoLocation: IGeoLocation = {lat: 0, lon: 0};
+	public getGeoLocation(address: string): Promise<IGeoLocation> {
 		const urlEncodedAddress: string = encodeURIComponent(address);
-		const url: string = `http://cs310.students.cs.ubc.ca:11316/api/v1/project_team149/${urlEncodedAddress}`;
-		// console.log(url);
+		const url: string = `${geoURIBase}/${teamNumber}/${urlEncodedAddress}`;
 		return new Promise((resolve, reject) => {
 			http.get(url, (res) => {
-					// console.log(res);
 				let contents = "";
 				res.on("data", function (content) {
 					contents += content;
 				});
-				// console.log(contents);
 				res.on("end", function () {
+					let result;
 					try {
-						let result = JSON.parse(contents);
-						// console.log(result);
-						geoLocation.lat = result.lat;
-						geoLocation.lon = result.lon;
-						// if (!result.error) {
-						// 	geoLocation.lat = result.lat;
-						// 	geoLocation.lon = result.lon;
-						// } // else {
-						// throw Error(result.error);
-						// }
-						return resolve((geoLocation as IGeoLocation));
+						result = JSON.parse(contents) as IGeoResponse;
 					} catch (e) {
-						reject("Invalid JSON geolocation");
+						return reject("Invalid JSON geolocation");
+					}
+					if (result.error || !result.lon || !result.lat || (isNaN(result.lon) || isNaN(result.lat))) {
+						return reject(result.error ?? "Invalid Longitude or Latitude in geolocation");
+					} else {
+						const geoLocation: IGeoLocation = {lat: result.lat, lon: result.lon};
+						return resolve(geoLocation);
 					}
 				});
 			}).on("error", function () {
-				reject(new InsightError("parsing error"));
+				return reject("Geolocation server request error");
 			});
 		}
 		);
