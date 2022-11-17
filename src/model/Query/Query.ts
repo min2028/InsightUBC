@@ -1,6 +1,6 @@
-import {InsightError, InsightResult, ResultTooLargeError} from "../../controller/IInsightFacade";
+import {InsightDatasetKind, InsightError, InsightResult, ResultTooLargeError} from "../../controller/IInsightFacade";
 import {processFILTER, processOptions, processOptionsWithTransformation} from "./QueryProcessor";
-import {getDatasetId, getDatasetType, validateQuery} from "./QueryValidator";
+import {getDatasetId, getDatasetKind, validateQuery} from "./QueryValidator";
 import {isValidId} from "../../Utility/General";
 import {IData, IDataset} from "../Dataset/IDataset";
 
@@ -8,7 +8,8 @@ const tooLargeThreshold = 5000;
 
 export interface QueryProps {
 	query: IQuery,
-	datasetID: string
+	datasetID: string,
+	datasetKind: InsightDatasetKind
 }
 
 export interface OPTIONS {
@@ -16,13 +17,15 @@ export interface OPTIONS {
 	ORDER?: string | DIRECTION
 }
 
+export interface TRANSFORMATION {
+	GROUP: string[],
+	APPLY: APPLYRULE[];
+}
+
 export interface IQuery {
 	WHERE: FILTER,
 	OPTIONS: OPTIONS,
-	TRANSFORMATIONS?: {
-		GROUP: string[],
-		APPLY: APPLYRULE[];
-	}
+	TRANSFORMATIONS?: TRANSFORMATION
 }
 
 export interface DIRECTION {
@@ -31,11 +34,11 @@ export interface DIRECTION {
 }
 
 export interface APPLYRULE {
-	[applyKey: string]: APPLYTOKEN;
+	[applyKey: string]: APPLYTOKENFieldPair;
 }
 
-export type APPLYTOKEN = {
-	[applyToken in "MAX" | "MIN" | "AVG" | "COUNT" | "SUM"]: string[];
+export type APPLYTOKENFieldPair = {
+	[applyToken in "MAX" | "MIN" | "AVG" | "COUNT" | "SUM"]: string;
 };
 
 export interface KeyValuePair {[key: string]: string | number};
@@ -52,14 +55,18 @@ export class Query {
 		if (targetDatasetId === false || !isValidId(targetDatasetId)) {
 			return Promise.reject(new InsightError("Invalid Query: invalid Dataset ID"));
 		}
-		const targetDatasetType = getDatasetType(json);
-		if (targetDatasetType === false) {
+		const targetDatasetKind = getDatasetKind(json);
+		if (targetDatasetKind === false) {
 			return Promise.reject(new InsightError("Invalid Query: invalid Dataset key"));
 		}
-		const validationResults = validateQuery(json, targetDatasetId, targetDatasetType);
+		const validationResults = validateQuery(json, targetDatasetId, targetDatasetKind);
 		if (validationResults === true) {
 			const jsonObj: any = JSON.parse(JSON.stringify(json));
-			return Promise.resolve({query: jsonObj as IQuery, datasetID: targetDatasetId});
+			return Promise.resolve({
+				query: jsonObj as IQuery,
+				datasetID: targetDatasetId,
+				datasetKind: targetDatasetKind
+			});
 		} else {
 			return Promise.reject(new InsightError("Invalid Query: " + validationResults));
 		}

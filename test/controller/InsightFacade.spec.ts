@@ -725,13 +725,13 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			type Output = any[];
 
 			function assertResult(actual: any, expected: Output): void {
-				expect(actual).to.deep.equal(expected);
+				expect(actual).to.have.members(expected);
 			}
 
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
 				"Dynamic InsightFacade PerformQuery tests",
 				(input) => insightFacade.performQuery(input),
-				"./test/resources/queries/rooms",
+				"./test/resources/queries/courses",
 				{
 					assertOnResult: assertResult,
 					errorValidator: (error): error is PQErrorKind =>
@@ -835,6 +835,77 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				);
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
 			});
+		});
+
+		/*
+		 * This test suite dynamically generates tests from the JSON files in test/resources/queries.
+		 * You should not need to modify it; instead, add additional files to the queries directory.
+		 * You can still make tests the normal way, this is just a convenient tool for a majority of queries.
+		 */
+		describe("performQuery", () => {
+			before(function () {
+				insightFacade = new InsightFacade();
+
+				// Load the datasets specified in datasetsToQuery and add them to InsightFacade.
+				// Will *fail* if there is a problem reading ANY dataset.
+				const loadDatasetPromises = [
+					insightFacade.addDataset(
+						"sections",
+						datasetContents.get("sections") ?? "",
+						InsightDatasetKind.Sections
+					),
+					insightFacade.addDataset(
+						"validSmall",
+						datasetContents.get("valid_small") ?? "",
+						InsightDatasetKind.Sections
+					),
+					insightFacade.addDataset(
+						"boss",
+						datasetContents.get("rooms") ?? "",
+						InsightDatasetKind.Rooms
+					),
+					insightFacade.addDataset(
+						"rooms",
+						datasetContents.get("rooms") ?? "",
+						InsightDatasetKind.Rooms
+					)
+				];
+				try {
+					return Promise.all(loadDatasetPromises);
+				} catch (err) {
+					console.error(err);
+				}
+			});
+
+			after(function () {
+				console.info();
+				fs.removeSync(persistDirectory);
+			});
+
+			type PQErrorKind = "ResultTooLargeError" | "InsightError";
+			type Output = any[];
+
+			function assertResult(actual: any, expected: Output): void {
+				expect(actual).to.deep.equal(expected);
+			}
+
+			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
+				"Dynamic InsightFacade PerformQuery tests",
+				(input) => insightFacade.performQuery(input),
+				"./test/resources/queries/rooms",
+				{
+					assertOnResult: assertResult,
+					errorValidator: (error): error is PQErrorKind =>
+						error === "ResultTooLargeError" || error === "InsightError",
+					assertOnError: (actual, expected) => {
+						if (expected === "ResultTooLargeError") {
+							expect(actual).to.be.instanceof(ResultTooLargeError);
+						} else {
+							expect(actual).to.be.instanceof(InsightError);
+						}
+					},
+				}
+			);
 		});
 	});
 });

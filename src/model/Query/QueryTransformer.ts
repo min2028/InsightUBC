@@ -2,20 +2,30 @@ import {InsightResult} from "../../controller/IInsightFacade";
 import Decimal from "decimal.js";
 import {extractField} from "./QueryValidator";
 import {IData} from "../Dataset/IDataset";
+import {APPLYRULE, APPLYTOKENFieldPair} from "./Query";
 
-export function QueryTransformer(filteredResults: IData[], keys: string[]) {
-	let results: IData[][] = [];
-	for (let section of filteredResults) {
-		let location = findLocation(section, results, keys);
-		if (location === -1) {
-			results.push([]);
-			// results[results.length] = [];
-			results[results.length - 1].push(section);
-		} else {
-			results[location].push(section);
+export interface IGroups {
+	[groupKey: string]: IData[]
+}
+
+export function groupData(filteredResults: IData[], keys: string[]) {
+	let results: IGroups = {};
+	for (let data of filteredResults) {
+		const groupKey = createGroupKey(data, keys);
+		if (!results[groupKey]) {
+			results[groupKey] = [];
 		}
+		results[groupKey].push(data);
 	}
 	return results;
+}
+
+function createGroupKey(data: IData, keys: string[]) {
+	let groupKey = "";
+	keys.forEach((key) => {
+		groupKey += data[extractField(key)];
+	});
+	return groupKey;
 }
 
 export function findLocation(section: any, results: any[][], keys: string[]): number {
@@ -34,19 +44,21 @@ export function findLocation(section: any, results: any[][], keys: string[]): nu
 	}
 	return -1;
 }
+
 // second argument should be query[Transform], query[Columns], keys should be query[Transform]
-export function applyResults(results: any[][], columns: string[], keys: any): InsightResult[] {
+export function applyGroupFunctions(groupedData: IGroups, columns: string[], applyRules: APPLYRULE[]): InsightResult[] {
 	let result: InsightResult[] = [];
-	for (let element of results) {
+	for (let dataGroup of Object.values(groupedData)) {
 		let insightResult: InsightResult = {};
 		for (let column of columns) {
 			if (column.includes("_")) {
-				insightResult[column] = element[0][extractField(column)];
+				insightResult[column] = dataGroup[0][extractField(column)];
 			} else {
 				// let int = keys.indexOf(column);
-				for (let applykey of keys) {
-					if (column === Object.keys(applykey)[0]) {
-						insightResult[column] = applyrules(element, applykey);
+				for (let rule of applyRules) {
+					const applyKey = Object.keys(rule)[0];
+					if (column === applyKey) {
+						insightResult[column] = applySingleRule(dataGroup, rule[applyKey]);
 					}
 				}
 				// insightResult[column] = applyrules(element, keys[int]);
@@ -57,46 +69,58 @@ export function applyResults(results: any[][], columns: string[], keys: any): In
 	return result;
 }
 
-export function applyrules(results: any[], keys: any) {
-	let keyName: string = Object.keys(keys)[0];
-	let field: string = Object.values(keys[keyName])[0] as string;
-	let fieldName = extractField(field);
-	let max = results[0][fieldName], min = results[0][fieldName], sums = 0, sum = 0, count = 0, con: any[] = [];
-	let total = new Decimal (0), avg = 0;
-	switch (Object.keys(keys[keyName])[0]) {
+interface INumericData {
+	[key: string]: number;
+}
+
+export function applySingleRule(dataGroup: IData[], tokenFieldPair: APPLYTOKENFieldPair): number {
+	// let keyName: string = Object.keys(tokenFieldPair)[0];
+	// let field: string = Object.values(tokenFieldPair[keyName])[0] as string;
+	// let field = extractField(field);
+	let max: number, min: number, sum: number, avg: number;
+	let total = new Decimal (0);
+	const token = Object.keys(tokenFieldPair)[0];
+	const field = extractField(Object.values(tokenFieldPair)[0]);
+	if (!dataGroup.length) {
+		return -1;
+	}
+	if (token === "COUNT") {
+		const distinctItems = new Set(dataGroup.map((data) => data[field]));
+		return distinctItems.size;
+	}
+
+	const numericDataGroup = dataGroup as INumericData[];
+	switch (token) {
 		case "MAX":
-			results.forEach((result) => {
-				if (result[fieldName] > max) {
-					max = result[fieldName];
+			max = numericDataGroup[0][field];
+			numericDataGroup.forEach((data) => {
+				if (data[field] > max) {
+					max = data[field];
 				}
 			});
 			return max;
 		case "MIN":
-			results.forEach((result) => {
-				if (result[fieldName] < min) {
-					min = result[fieldName];
+			min = numericDataGroup[0][field];
+			numericDataGroup.forEach((data) => {
+				if (data[field] < min) {
+					min = data[field];
 				}
 			});
-			return max;
+			return min;
 		case "AVG":
-			results.forEach((result) => {
-				let value = new Decimal(result[fieldName]);
-				total.add(value);
+			numericDataGroup.forEach((data) => {
+				let value = new Decimal(data[field]);
+				total = total.add(value);
 			});
-			avg = total.toNumber() / results.length;
+			avg = total.toNumber() / dataGroup.length;
 			return Number(avg.toFixed(2));
-		case "COUNT":
-			results.forEach((result) => {
-				if (!con.includes(result[fieldName])) {
-					con.push(result[fieldName]);
-					count++;
-				}
-			});
-			return count;
 		case "SUM":
-			results.forEach((result) => {
-				sums += result[fieldName];
+			sum = 0;
+			numericDataGroup.forEach((data) => {
+				sum += data[field] as number;
 			});
 			return Number(sum.toFixed(2));
+		default:
+			return -1;
 	}
 }

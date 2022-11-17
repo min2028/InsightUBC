@@ -136,10 +136,11 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 		return new Promise((resolve, reject) => {
 			http.get(url, (res) => {
 				let contents = "";
+				// res.on("data", function (content) {
+				// 	contents += content;
+				// });
 				res.on("data", function (content) {
 					contents += content;
-				});
-				res.on("end", function () {
 					let result;
 					try {
 						result = JSON.parse(contents) as IGeoResponse;
@@ -156,8 +157,8 @@ export class RDataset extends HTMLParser implements IDatasetParser{
 			}).on("error", function () {
 				return reject("Geolocation server request error");
 			});
-		}
-		);
+		});
+		// return Promise.resolve({lon:1, lat:1});
 	}
 
 	public extractDataInRow(trChildNodes: any[]): IBuildingData {

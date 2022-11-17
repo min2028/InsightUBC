@@ -68,10 +68,14 @@ export default class InsightFacade implements IInsightFacade {
 	public performQuery(query: unknown): Promise<InsightResult[]> {
 		return Query.parseQuery(query)
 			.then((queryProps) => {
+				const filteredDataset = this.insightDatasetList.filter(
+					(item) => item.id === queryProps.datasetID && item.kind === queryProps.datasetKind
+				);
+				if (filteredDataset.length !== 1) {
+					return Promise.reject(new InsightError("The corresponding dataset is not added"));
+				}
+
 				if (this.cachedDataset.id !== queryProps.datasetID) {
-					if (!isIdInList(queryProps.datasetID, this.insightDatasetList.map((item) => item.id))) {
-						return Promise.reject(new InsightError("The queried dataset does not exist"));
-					}
 					const diskDataset = Disk.readDataset(queryProps.datasetID);
 					if (diskDataset === null) {
 						return Promise.reject(new InsightError("Dataset is missing from the disk"));

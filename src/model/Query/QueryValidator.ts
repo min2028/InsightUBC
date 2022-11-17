@@ -14,7 +14,7 @@ export function getDatasetId(json: any): string | false {
 	return false;
 }
 
-export function getDatasetType(json: any): InsightDatasetKind | false {
+export function getDatasetKind(json: any): InsightDatasetKind | false {
 	const key: string = getTargetKeyField(json);
 	const keyParts = key.split("_");
 	if (keyParts.length === 2) {
