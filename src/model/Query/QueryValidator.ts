@@ -96,9 +96,6 @@ export function checkTransformations(transforms: any, columns: any[], targetData
 		if (!groupkey.includes("_")) {
 			return false;
 		}
-		// if (!columns.includes(groupkey)) {
-		// 	return false;
-		// }
 		transformkeys.push(groupkey);
 	}
 	if (!checkApply(transforms.APPLY, columns, targetDatasetID, targetDatasetType)) {
