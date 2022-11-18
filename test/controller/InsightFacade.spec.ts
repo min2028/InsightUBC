@@ -725,13 +725,13 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			type Output = any[];
 
 			function assertResult(actual: any, expected: Output): void {
-				expect(actual).to.have.deep.equal(expected);
+				expect(actual).to.have.deep.members(expected);
 			}
 
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
 				"Dynamic InsightFacade PerformQuery tests",
 				(input) => insightFacade.performQuery(input),
-				"./test/resources/queries/rooms",
+				"./test/resources/queries/courses",
 				{
 					assertOnResult: assertResult,
 					errorValidator: (error): error is PQErrorKind =>
