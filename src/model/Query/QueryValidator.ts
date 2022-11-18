@@ -96,20 +96,22 @@ export function checkTransformations(transforms: any, columns: any[], targetData
 		if (!groupkey.includes("_")) {
 			return false;
 		}
-		if (!columns.includes(groupkey)) {
-			return false;
-		}
+		// if (!columns.includes(groupkey)) {
+		// 	return false;
+		// }
 		transformkeys.push(groupkey);
 	}
 	if (!checkApply(transforms.APPLY, columns, targetDatasetID, targetDatasetType)) {
 		return false;
 	}
-	if (Array.from(new Set(transformkeys)).length !== Array.from(new Set(columns)).length) {
+	// (Array.from(new Set(transformkeys)).length === Array.from(new Set(columns)).length &&
+	if (!Array.from(new Set(columns)).every((element) => {
+		return new Set(transformkeys).has(element);
+	})) {
 		return false;
 	}
 	return true;
 }
-
 
 export function checkApply(apply: any, columns: string[], targetDatasetId: string,
 						   targetDatasetType: InsightDatasetKind): boolean {
