@@ -731,7 +731,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 			folderTest<unknown, Promise<InsightResult[]>, PQErrorKind>(
 				"Dynamic InsightFacade PerformQuery tests",
 				(input) => insightFacade.performQuery(input),
-				"./test/resources/queries",
+				"./test/resources/queries/rooms",
 				{
 					assertOnResult: assertResult,
 					errorValidator: (error): error is PQErrorKind =>

@@ -1,0 +1,36 @@
+{
+	"title": "Aggregate key from transformation apply in Where clause",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"overallPass": 30
+			}
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_title",
+				"overallPass",
+				"overallAvg"
+			]
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"sections_title"
+			],
+			"APPLY": [
+				{
+					"overallAvg": {
+						"AVG": "sections_avg"
+					}
+				},
+				{
+					"overallPass": {
+						"AVG": "sections_pass"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
