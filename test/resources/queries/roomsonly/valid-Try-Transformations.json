@@ -1,0 +1,132 @@
+{
+	"title": "valid-try-transformations",
+	"input": {
+		"WHERE": {
+			"AND": [
+				{
+					"IS": {
+						"rooms_furniture": "*Tables*"
+					}
+				},
+				{
+					"GT": {
+						"rooms_seats": 100
+					}
+				}
+			]
+		},
+		"OPTIONS": {
+			"COLUMNS": [
+				"rooms_seats",
+				"maxSeats",
+				"maxSeats"
+			],
+			"ORDER": {
+				"dir": "DOWN",
+				"keys": [
+					"maxSeats",
+					"maxSeats"
+				]
+			}
+		},
+		"TRANSFORMATIONS": {
+			"GROUP": [
+				"rooms_seats"
+			],
+			"APPLY": [
+				{
+					"maxSeats": {
+						"AVG": "rooms_seats"
+					}
+				}
+			]
+		}
+	},
+	"errorExpected": false,
+	"expected": [
+		{
+			"rooms_seats": 442,
+			"maxSeats": 442
+		},
+		{
+			"rooms_seats": 375,
+			"maxSeats": 375
+		},
+		{
+			"rooms_seats": 350,
+			"maxSeats": 350
+		},
+		{
+			"rooms_seats": 299,
+			"maxSeats": 299
+		},
+		{
+			"rooms_seats": 260,
+			"maxSeats": 260
+		},
+		{
+			"rooms_seats": 236,
+			"maxSeats": 236
+		},
+		{
+			"rooms_seats": 205,
+			"maxSeats": 205
+		},
+		{
+			"rooms_seats": 200,
+			"maxSeats": 200
+		},
+		{
+			"rooms_seats": 190,
+			"maxSeats": 190
+		},
+		{
+			"rooms_seats": 188,
+			"maxSeats": 188
+		},
+		{
+			"rooms_seats": 187,
+			"maxSeats": 187
+		},
+		{
+			"rooms_seats": 183,
+			"maxSeats": 183
+		},
+		{
+			"rooms_seats": 167,
+			"maxSeats": 167
+		},
+		{
+			"rooms_seats": 160,
+			"maxSeats": 160
+		},
+		{
+			"rooms_seats": 154,
+			"maxSeats": 154
+		},
+		{
+			"rooms_seats": 136,
+			"maxSeats": 136
+		},
+		{
+			"rooms_seats": 125,
+			"maxSeats": 125
+		},
+		{
+			"rooms_seats": 123,
+			"maxSeats": 123
+		},
+		{
+			"rooms_seats": 120,
+			"maxSeats": 120
+		},
+		{
+			"rooms_seats": 112,
+			"maxSeats": 112
+		},
+		{
+			"rooms_seats": 108,
+			"maxSeats": 108
+		}
+	]
+}

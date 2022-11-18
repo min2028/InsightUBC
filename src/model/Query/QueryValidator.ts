@@ -107,14 +107,19 @@ export function checkTransformations(transforms: any, columns: any[], targetData
 	if (Array.from(new Set(transformkeys)).length !== Array.from(new Set(columns)).length) {
 		return false;
 	}
-
 	return true;
 }
 
 
 export function checkApply(apply: any, columns: string[], targetDatasetId: string,
 						   targetDatasetType: InsightDatasetKind): boolean {
+
+	let duplicate = new Set();
+	if (new Set(Object.keys(apply)).size !== Object.keys(apply).length) {
+		return false;
+	}
 	for (let applykey of apply) {
+		duplicate.add(Object.keys(applykey)[0]);
 		if (Object.keys(applykey).length !== 1) {
 			return false;
 		}
@@ -147,6 +152,9 @@ export function checkApply(apply: any, columns: string[], targetDatasetId: strin
 		} else {
 			return false;
 		}
+	}
+	if (duplicate.size !== apply.length) {
+		return false;
 	}
 	return true;
 }
@@ -234,7 +242,6 @@ export function isValidKeyValuePair(pair: any, targetDatasetId: string, targetDa
 	if (!isValidQueryKey(keys[0], targetDatasetId, targetDatasetType, expectedFieldType)) {
 		return false;
 	}
-
 	const value = pair[keys[0]];
 	if (expectedFieldType === "s") {
 		return typeof value === "string" && checkWildCard(value);
