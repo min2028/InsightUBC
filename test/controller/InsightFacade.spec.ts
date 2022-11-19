@@ -41,7 +41,14 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		invalid_structure: "./test/resources/archives/courses/invalid-structure.zip",
 
 		// Rooms Test Datasets
-		rooms: "./test/resources/archives/rooms/rooms.zip"
+		rooms: "./test/resources/archives/rooms/rooms.zip",
+		rooms_valid_oneRoom: "./test/resources/archives/rooms/valid-oneRoom.zip",
+		rooms_valid_small: "./test/resources/archives/rooms/valid-small.zip",
+		rooms_invalid_noIndex: "./test/resources/archives/rooms/invalid-noIndex.zip",
+		rooms_invalid_extraFolder: "./test/resources/archives/rooms/invalid-extraFolder.zip",
+		rooms_invalid_noRoom: "./test/resources/archives/rooms/invalid-noRoom.zip",
+		rooms_invalid_noBuidling: "./test/resources/archives/rooms/invalid-noBuilding.zip",
+		rooms_invalid_notRoot: "./test/resources/archives/rooms/invalid-notRoot.zip"
 	};
 
 	before(function () {
@@ -797,17 +804,6 @@ describe("[ InsightFacade.spec.ts ]", function () {
 					});
 			});
 
-			it("should remove RoomsDataset successfully", function () {
-				insightFacade.addDataset(
-					"rooms", datasetContents.get("rooms") ?? "", InsightDatasetKind.Rooms
-				);
-				insightFacade.removeDataset("rooms");
-				return insightFacade.listDatasets()
-					.then((result) => {
-						expect(result).to.deep.equal([]);
-					});
-			});
-
 			it("valid id of symbols -> should add the room dataset", function () {
 				const result = insightFacade.addDataset(
 					"ABC abc 0123 @.,&^%$#@!-=+?<>:[]{}() ",
@@ -834,6 +830,89 @@ describe("[ InsightFacade.spec.ts ]", function () {
 					InsightDatasetKind.Rooms
 				);
 				return expect(result).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid no index file -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_noIndex") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid folder structure -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_extraFolder") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid no Room in buildings -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_noRoom") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid no building file -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_noBuidling") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("invalid not in root -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_notRoot") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
+			it("valid with only one room -> should add a dataset with one room", async function () {
+				const validDataset = await insightFacade.addDataset(
+					"singleRoom", datasetContents.get("rooms_valid_oneRoom") ?? "", InsightDatasetKind.Rooms
+				);
+				expect(validDataset).to.deep.equal(["singleRoom"]);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "singleRoom",
+					kind: InsightDatasetKind.Rooms,
+					numRows: 1
+				} as InsightDataset]);
+			});
+
+			it("valid small index and building -> should add the small dataset", async function () {
+				const validDataset = await insightFacade.addDataset(
+					"small", datasetContents.get("rooms_valid_small") ?? "", InsightDatasetKind.Rooms
+				);
+				expect(validDataset).to.deep.equal(["small"]);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "small",
+					kind: InsightDatasetKind.Rooms,
+					numRows: 6
+				} as InsightDataset]);
+			});
+		});
+
+		describe("removeDataset", function () {
+			after(function () {
+				console.info();
+			});
+
+			beforeEach(function () {
+				fs.removeSync(persistDirectory);
+				insightFacade = new InsightFacade();
+			});
+
+			it("should remove RoomsDataset successfully", async function () {
+				await insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_valid_small") ?? "", InsightDatasetKind.Rooms
+				);
+				await insightFacade.removeDataset("rooms");
+				return insightFacade.listDatasets()
+					.then((result) => {
+						expect(result).to.deep.equal([]);
+					});
 			});
 		});
 
