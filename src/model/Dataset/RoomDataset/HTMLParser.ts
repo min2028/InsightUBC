@@ -74,8 +74,6 @@ export abstract class HTMLParser {
 				// Skip and proceed because data may be more nested
 			}
 		}
-		// if (htmlElement.childNodes) {
-		// console.log(`childNodes: ${jsonOfHTMLElement.childNodes}`);
 		jsonOfHTMLElement.childNodes.forEach((child: any)=> {
 			deeperData = [...deeperData, ...this.traverseJsonOfHTML(child)];
 		});
