@@ -25,8 +25,6 @@ export interface IRoomData {
 	href?: string           // The link to full rooms
 }
 
-// TODO: catch throw from readRoomsInfo subfunctions
-
 export type RoomFieldType = keyof typeof Room.fieldType;
 
 export class Room extends HTMLParser{
@@ -38,8 +36,7 @@ export class Room extends HTMLParser{
 		address: "s",
 		lat: "n",
 		lon: "n",
-		// todo: count or number
-		seats: "n",
+		seats: "n",		// TODO: can it be negative or non-integer?
 		type: "s",
 		furniture: "s",
 		href: "s"
@@ -91,7 +88,7 @@ export class Room extends HTMLParser{
 		}
 	}
 
-	// Read room capacity, funiture and type
+	// Read room capacity, furniture and type
 	public readRoomPhysicalProps(datacell: any, room: any) {
 		if (this.checkNodeAttributes(datacell.attrs, "class", "views-field views-field-field-room-type")) {
 			try {
@@ -121,7 +118,6 @@ export class Room extends HTMLParser{
 		trChildNodes.forEach((child) => {
 			if (child.nodeName === "td" && child.tagName === "td") {
 				try {
-					// TODO: Passing roomData in as a parameter, code integration testing necessary
 					this.readRoomNumberAndHref(child, roomData);
 					this.readRoomPhysicalProps(child, roomData);
 				} catch (err) {

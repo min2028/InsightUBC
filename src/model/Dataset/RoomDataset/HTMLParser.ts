@@ -59,13 +59,10 @@ export abstract class HTMLParser {
 	public traverseJsonOfHTML(jsonOfHTMLElement: any): Array<IBuildingData | IRoomData> {
 		let deeperData: Array<IBuildingData | IRoomData> = [];
 		if (!(jsonOfHTMLElement && jsonOfHTMLElement.nodeName
-			// && htmlElement.tagName
 			&& jsonOfHTMLElement.childNodes
 			&& Array.isArray(jsonOfHTMLElement.childNodes) && jsonOfHTMLElement.childNodes.length)) {
-			// console.log("deadEnd");
 			return [];
 		}
-		// console.log("Going inside");
 		if (jsonOfHTMLElement.nodeName === "tr" && jsonOfHTMLElement.tagName === "tr") {
 			try {
 				const res = this.extractDataInRow(jsonOfHTMLElement.childNodes);
@@ -74,12 +71,9 @@ export abstract class HTMLParser {
 				// Skip and proceed because data may be more nested
 			}
 		}
-		// if (htmlElement.childNodes) {
-		// console.log(`childNodes: ${jsonOfHTMLElement.childNodes}`);
 		jsonOfHTMLElement.childNodes.forEach((child: any)=> {
 			deeperData = [...deeperData, ...this.traverseJsonOfHTML(child)];
 		});
-		// }
 		return deeperData;
 	}
 
@@ -92,11 +86,6 @@ export abstract class HTMLParser {
 						return false;
 					}
 					break;
-				// case ("cnt"):
-				// 	if (!(typeof val === "number" && val >= 0)) {
-				// 		return false;
-				// 	}
-				// 	break;
 				case ("n"):
 					if(typeof val !== "number") {
 						return false;
