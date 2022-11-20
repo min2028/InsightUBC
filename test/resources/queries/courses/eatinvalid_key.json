@@ -1,0 +1,28 @@
+{
+	"title": "eatinvalid_key",
+	"input": {
+		"WHERE": {
+			"GT": {
+				"sections_avg": 97
+			}
+		},
+		"EAT": {},
+		"OPTIONS": {
+			"COLUMNS": [
+				"sections_year",
+				"sections_avg",
+				"sections_dept"
+			],
+			"ORDER": {
+				"dir": "UP",
+				"keys": [
+					"sections_year",
+					"sections_avg",
+					"sections_dept"
+				]
+			}
+		}
+	},
+	"errorExpected": true,
+	"expected": "InsightError"
+}
