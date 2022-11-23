@@ -1,6 +1,8 @@
 import express, {Application, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
+import InsightFacade from "../controller/InsightFacade";
+import {InsightDataset, InsightError} from "../controller/IInsightFacade";
 
 export default class Server {
 	private readonly port: number;
@@ -18,7 +20,7 @@ export default class Server {
 		// NOTE: you can serve static frontend files in from your express server
 		// by uncommenting the line below. This makes files in ./frontend/public
 		// accessible at http://localhost:<port>/
-		// this.express.use(express.static("./frontend/public"))
+		this.express.use(express.static("./frontend/public"));
 	}
 
 	/**
@@ -85,7 +87,31 @@ export default class Server {
 		this.express.get("/echo/:msg", Server.echo);
 
 		// TODO: your other endpoints should go here
+		this.express.get("/datasets", Server.listDatasetsCall);
+		this.express.delete("/dataset/:id", Server.removeDatasetCall);
+	}
 
+	private static removeDatasetCall(req: Request, res: Response) {
+		const insightFacade = new InsightFacade();
+		console.log(`Server::removeDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
+		const response: string = req.params.id;
+		insightFacade.removeDataset(response)
+			.then((removedDatasetID: string) => {
+				res.status(200).json({result: removedDatasetID});
+			})
+			.catch((err) =>
+				(err instanceof InsightError) ?
+					res.status(400).json({error: err}) :
+					res.status(404).json({error: err}));
+	}
+
+	private static listDatasetsCall(req: Request, res: Response) {
+		const insightFacade = new InsightFacade();
+		console.log(`Server::listDatasetsCall(..) - params: ${JSON.stringify(req.params)}`);
+		insightFacade.listDatasets()
+			.then((insightDatasetList: InsightDataset[]) => {
+				res.status(200).json({result: insightDatasetList});
+			});
 	}
 
 	// The next two methods handle the echo service.
