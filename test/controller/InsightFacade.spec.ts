@@ -44,11 +44,13 @@ describe("[ InsightFacade.spec.ts ]", function () {
 		rooms: "./test/resources/archives/rooms/rooms.zip",
 		rooms_valid_oneRoom: "./test/resources/archives/rooms/valid-oneRoom.zip",
 		rooms_valid_small: "./test/resources/archives/rooms/valid-small.zip",
+		rooms_valid_defaultSeat: "./test/resources/archives/rooms/valid-defaultSeat.zip",
 		rooms_invalid_noIndex: "./test/resources/archives/rooms/invalid-noIndex.zip",
 		rooms_invalid_extraFolder: "./test/resources/archives/rooms/invalid-extraFolder.zip",
 		rooms_invalid_noRoom: "./test/resources/archives/rooms/invalid-noRoom.zip",
 		rooms_invalid_noBuidling: "./test/resources/archives/rooms/invalid-noBuilding.zip",
-		rooms_invalid_notRoot: "./test/resources/archives/rooms/invalid-notRoot.zip"
+		rooms_invalid_notRoot: "./test/resources/archives/rooms/invalid-notRoot.zip",
+		rooms_invalid_wrongClassName: "./test/resources/archives/rooms/invalid-wrongClassName.zip"
 	};
 
 	before(function () {
@@ -867,6 +869,14 @@ describe("[ InsightFacade.spec.ts ]", function () {
 				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
 			});
 
+			// Payam: Asked a question about this on piazza @923. Not sure what the proper functionality should be
+			it("invalid wrong data classname -> should reject", function () {
+				const invalidDataset = insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_invalid_wrongClassName") ?? "", InsightDatasetKind.Rooms
+				);
+				return expect(invalidDataset).eventually.to.be.rejectedWith(InsightError);
+			});
+
 			it("valid with only one room -> should add a dataset with one room", async function () {
 				const validDataset = await insightFacade.addDataset(
 					"singleRoom", datasetContents.get("rooms_valid_oneRoom") ?? "", InsightDatasetKind.Rooms
@@ -878,6 +888,34 @@ describe("[ InsightFacade.spec.ts ]", function () {
 					kind: InsightDatasetKind.Rooms,
 					numRows: 1
 				} as InsightDataset]);
+			});
+
+			// Payam: not sure how to deal with seats number that is negative or non-integer
+			it("valid with bad room seat count -> rooms seat should default to 0", async function () {
+				const validDataset = await insightFacade.addDataset(
+					"rooms", datasetContents.get("rooms_valid_defaultSeat") ?? "", InsightDatasetKind.Rooms
+				);
+				expect(validDataset).to.deep.equal(["rooms"]);
+				const list = await insightFacade.listDatasets();
+				expect(list).to.deep.equal([{
+					id: "rooms",
+					kind: InsightDatasetKind.Rooms,
+					numRows: 5
+				} as InsightDataset]);
+				const queryResults = await insightFacade.performQuery({
+					WHERE: {},
+					OPTIONS: {
+						COLUMNS: [
+							"rooms_name",
+							"rooms_href",
+							"rooms_seats"
+						]
+					}
+				});
+				// console.log(queryResults);
+				for(let room of queryResults) {
+					expect(room.rooms_seats).to.equal(0);
+				}
 			});
 
 			it("valid small index and building -> should add the small dataset", async function () {
