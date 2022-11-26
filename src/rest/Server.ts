@@ -2,7 +2,7 @@ import express, {Application, Request, Response} from "express";
 import * as http from "http";
 import cors from "cors";
 import InsightFacade from "../controller/InsightFacade";
-import {InsightDataset, InsightError} from "../controller/IInsightFacade";
+import {InsightDataset, InsightDatasetKind, InsightError, InsightResult} from "../controller/IInsightFacade";
 
 export default class Server {
 	private readonly port: number;
@@ -85,10 +85,33 @@ export default class Server {
 		// This is an example endpoint this you can invoke by accessing this URL in your browser:
 		// http://localhost:4321/echo/hello
 		this.express.get("/echo/:msg", Server.echo);
-
-		// TODO: your other endpoints should go here
 		this.express.get("/datasets", Server.listDatasetsCall);
 		this.express.delete("/dataset/:id", Server.removeDatasetCall);
+		this.express.put("/dataset/:id/:kind", Server.addDatasetCall);
+		this.express.post("/query", Server.performQueryCall);
+	}
+
+	private static addDatasetCall(req: Request, res: Response) {
+		const insightFacade = new InsightFacade();
+		console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
+		const id: string = req.params.id;
+		const content: string = (req.body as Buffer).toString("base64");
+		let kind: InsightDatasetKind;
+		if (req.params.kind === "rooms") {
+			kind = InsightDatasetKind.Rooms;
+		} else if (req.params.kind === "sections") {
+			kind = InsightDatasetKind.Sections;
+		} else {
+			res.status(400).json({error: "Invalid dataset kind"});
+			return;
+		}
+		insightFacade.addDataset(id, content, kind)
+			.then((datasetIDs) => {
+				res.status(200).json({results: datasetIDs});
+			})
+			.catch((err) => {
+				res.status(400).json({error: err});
+			});
 	}
 
 	private static removeDatasetCall(req: Request, res: Response) {
@@ -98,11 +121,11 @@ export default class Server {
 		insightFacade.removeDataset(response)
 			.then((removedDatasetID: string) => {
 				res.status(200).json({result: removedDatasetID});
-			})
-			.catch((err) =>
+			}).catch((err) =>
 				(err instanceof InsightError) ?
 					res.status(400).json({error: err}) :
-					res.status(404).json({error: err}));
+					res.status(404).json({error: err})
+			);
 	}
 
 	private static listDatasetsCall(req: Request, res: Response) {
@@ -111,6 +134,21 @@ export default class Server {
 		insightFacade.listDatasets()
 			.then((insightDatasetList: InsightDataset[]) => {
 				res.status(200).json({result: insightDatasetList});
+			}).catch((err) =>
+				// The promise should not have been rejected
+				console.error(err)
+			);
+	}
+
+	private static performQueryCall(req: Request, res: Response) {
+		const insightFacade = new InsightFacade();
+		console.log(`Server::performQueryCall(..) - params: ${JSON.stringify(req.params)}`);
+		const query: unknown = req.params.body;
+		insightFacade.performQuery(query)
+			.then((results: InsightResult[]) => {
+				res.status(200).json({result: results});
+			}).catch((err) => {
+				res.status(400).json({error: err});
 			});
 	}
 
