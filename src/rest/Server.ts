@@ -105,12 +105,12 @@ export default class Server {
 			res.status(400).json({error: "Invalid dataset kind"});
 			return;
 		}
-		insightFacade.addDataset(id, content, kind)
+		return insightFacade.addDataset(id, content, kind)
 			.then((datasetIDs) => {
 				res.status(200).json({results: datasetIDs});
-			})
-			.catch((err) => {
-				res.status(400).json({error: err});
+			}).catch((err) => {
+				console.log(err.toString());
+				res.status(400).json({error: err.message});
 			});
 	}
 
@@ -118,20 +118,20 @@ export default class Server {
 		const insightFacade = new InsightFacade();
 		console.log(`Server::removeDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
 		const response: string = req.params.id;
-		insightFacade.removeDataset(response)
+		return insightFacade.removeDataset(response)
 			.then((removedDatasetID: string) => {
 				res.status(200).json({result: removedDatasetID});
 			}).catch((err) =>
 				(err instanceof InsightError) ?
-					res.status(400).json({error: err}) :
-					res.status(404).json({error: err})
+					res.status(400).json({error: err.message}) :
+					res.status(404).json({error: err.message})
 			);
 	}
 
 	private static listDatasetsCall(req: Request, res: Response) {
 		const insightFacade = new InsightFacade();
 		console.log(`Server::listDatasetsCall(..) - params: ${JSON.stringify(req.params)}`);
-		insightFacade.listDatasets()
+		return insightFacade.listDatasets()
 			.then((insightDatasetList: InsightDataset[]) => {
 				res.status(200).json({result: insightDatasetList});
 			}).catch((err) =>
@@ -143,12 +143,12 @@ export default class Server {
 	private static performQueryCall(req: Request, res: Response) {
 		const insightFacade = new InsightFacade();
 		console.log(`Server::performQueryCall(..) - params: ${JSON.stringify(req.params)}`);
-		const query: unknown = req.params.body;
-		insightFacade.performQuery(query)
+		const query: unknown = req.body;
+		return insightFacade.performQuery(query)
 			.then((results: InsightResult[]) => {
 				res.status(200).json({result: results});
 			}).catch((err) => {
-				res.status(400).json({error: err});
+				res.status(400).json({error: err.message});
 			});
 	}
 
