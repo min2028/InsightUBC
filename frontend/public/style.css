@@ -1,7 +1,12 @@
 .main-container{
-	height: 1000px;
+	height: 100vh;
 }
+.body-container {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 3%;
+}
+.row{
 
-.body-container{
-	padding: 1vh;
 }
