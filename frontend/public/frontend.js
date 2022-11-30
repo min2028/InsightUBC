@@ -51,9 +51,10 @@ function clearFields() {
 function showCourseTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
-	for (let key of data) {
+	for (let field of ["Department", "Course ID", "Course name", "Total number of sections offered"]) {
+		console.log(field);
 		let th = document.createElement("th");
-		let text = document.createTextNode(key);
+		let text = document.createTextNode(field);
 		th.appendChild(text);
 		row.appendChild(th);
 	}
