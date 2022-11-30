@@ -23,10 +23,34 @@
 			</nav>
 		</header>
 	</div>
-	<div class="container body-container">
+
+	<div id = "result" class="container body-container">
 		<div class="row">
-			<div class="col">ABC</div>
-			<div class="col">DEG</div>
+			<div class="col">
+				<input type="hidden" id="findCourse" name="findCourseRequest">
+				Department name: <input id = "deptName" class="form-control" type="text" name="DeptName" style = "width: 30%">
+				<br />
+
+				<button id= "findCourseButton" type="button" class="btn btn-outline-primary">Find Courses</button>
+				<br /><br />
+				<div id = "coursesErrorText"></div>
+				<table id = "coursesTable">
+				</table>
+
+				<button id= "click-me-button" type="button" class="btn btn-outline-primary">CLick Courses</button>
+
+				<br />
+				<br />
+			</div>
+			<div class="col">
+				<br />
+				<br />
+				<input type="hidden" id="findRoom" name="findRoomRequest">
+				Room name: <input id = "roomName" class="form-control" type="text" name="FindRoom" style = "width: 30%">
+				<br />
+				<button id= "findRoomButton" type="button" class="btn btn-outline-primary">Find Room</button>
+				<br /><br />
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript" src="/frontend.js"></script>
