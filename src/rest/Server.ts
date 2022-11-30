@@ -105,7 +105,7 @@ export default class Server {
 			return;
 		}
 		try {
-			const content: string = Buffer.from(req.body).toString("base64");
+			const content: string = Buffer.from(req.body, "binary").toString("base64");
 			return insightFacade.addDataset(id, content, kind)
 				.then((datasetIDs) => {
 					res.status(200).json({results: datasetIDs});
