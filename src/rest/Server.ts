@@ -95,7 +95,6 @@ export default class Server {
 		const insightFacade = new InsightFacade();
 		console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
 		const id: string = req.params.id;
-		const content: string = (req.body as Buffer).toString("base64");
 		let kind: InsightDatasetKind;
 		if (req.params.kind === "rooms") {
 			kind = InsightDatasetKind.Rooms;
@@ -105,13 +104,18 @@ export default class Server {
 			res.status(400).json({error: "Invalid dataset kind"});
 			return;
 		}
-		return insightFacade.addDataset(id, content, kind)
-			.then((datasetIDs) => {
-				res.status(200).json({results: datasetIDs});
-			}).catch((err) => {
-				console.log(err.toString());
-				res.status(400).json({error: err.message});
-			});
+		try {
+			const content: string = Buffer.from(req.body).toString("base64");
+			return insightFacade.addDataset(id, content, kind)
+				.then((datasetIDs) => {
+					res.status(200).json({results: datasetIDs});
+				}).catch((err) => {
+					console.log(err.toString());
+					res.status(400).json({error: err.message});
+				});
+		} catch (err) {
+			res.status(400).json({error: err});
+		}
 	}
 
 	private static removeDatasetCall(req: Request, res: Response) {
