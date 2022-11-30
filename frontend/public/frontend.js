@@ -4,12 +4,14 @@ let room = document.getElementById("roomName").value;
 let course = document.getElementById("deptName").value;
 document.getElementById("click-me-button").addEventListener("click", handleClickMe);
 document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
-document.getElementById("findRoomButton").addEventListener("click", getRooms)
+document.getElementById("findRoomButton").addEventListener("click", handleFindRoomButton)
 
 const roomName_textInput = document.getElementById("roomName");
 const departmentCode_textInput = document.getElementById("deptName");
 const coursesError_text = document.getElementById("coursesErrorText");
 const coursesInfo_table = document.getElementById("coursesTable");
+const roomsInfo_table = document.getElementById("roomsTable");
+const roomsError_text = document.getElementById("roomsErrorText");
 
 function handleClickMe() {
 	alert("Button Clicked!");
@@ -17,16 +19,16 @@ function handleClickMe() {
 
 function handleFindCoursesButton() {
 	console.log("Find courses clicked!");
-	clearFields();
+	clearCourseFields();
 	getCourses(departmentCode_textInput.value.toLowerCase())
 		.then((response) => response.json())
 		.then((data)=> {
 			console.log(data);
 			if ("error" in data) {
-				showError(data.error);
+				showCourseError(data.error);
 			} else if ("result" in data && Array.isArray(data.result)) {
 				if (!data.result.length) {
-					showError("No courses available for the specified department code.");
+					showCourseError("No courses available for the specified department code.");
 				} else {
 					showCourseTable(data.result, coursesInfo_table);
 				}
@@ -34,24 +36,73 @@ function handleFindCoursesButton() {
 				console.error(data);
 			}
 		}).catch((error) => {
-			showError("Server connection error.");
+			showCourseError("Server connection error.");
 		});
 }
 
-function showError(errorText) {
+function showCourseError(errorText) {
 	coursesError_text.innerText = errorText;
 }
 
-function clearFields() {
+function showRoomError(errorText) {
+	roomsError_text.innerText = errorText;
+}
+
+function clearCourseFields() {
 	coursesError_text.innerText = "";
 	coursesInfo_table.innerHTML = null;
-
+}
+function clearRoomFields() {
+	roomsError_text.innerText = "";
+	roomsInfo_table.innerHTML = null;
 }
 
 function showCourseTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
 	for (let field of ["Department", "Course ID", "Course name", "Total number of sections offered"]) {
+		console.log(field);
+		let th = document.createElement("th");
+		let text = document.createTextNode(field);
+		th.appendChild(text);
+		row.appendChild(th);
+	}
+	for (let course of data) {
+		let row = table.insertRow();
+		for (let field in course) {
+			let cell = row.insertCell();
+			let text = document.createTextNode(course[field]);
+			cell.appendChild(text);
+		}
+	}
+}
+function handleFindRoomButton() {
+	console.log("Find Rooms clicked!");
+	clearRoomFields();
+	getRooms(roomName_textInput.value)
+		.then((response) => response.json())
+		.then((data)=> {
+			console.log(data);
+			if ("error" in data) {
+				showRoomError(data.error);
+			} else if ("result" in data && Array.isArray(data.result)) {
+				if (!data.result.length) {
+					showRoomError("No courses available for the specified department code.");
+				} else {
+					showRoomTable(data.result, roomsInfo_table);
+				}
+			} else {
+				console.error(data);
+			}
+		}).catch((error) => {
+		showRoomError("Server connection error.");
+	});
+}
+
+function showRoomTable(data, table) {
+	let thead = table.createTHead();
+	let row = thead.insertRow();
+	for (let field of ["Full name", "Address", "Number of seats", "Type of room", "Furniture"]) {
 		console.log(field);
 		let th = document.createElement("th");
 		let text = document.createTextNode(field);
@@ -139,8 +190,15 @@ function getRooms(roomName) {
 			]
 		}
 	}
-	xhr.send(JSON.stringify(json));
-	return xhr.responseText;
+	// xhr.send(JSON.stringify(json));
+	// return xhr.responseText;
+	return fetch('./query', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(json),
+	});
 
 }
 
