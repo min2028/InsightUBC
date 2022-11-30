@@ -87,7 +87,7 @@ function handleFindRoomButton() {
 				showRoomError(data.error);
 			} else if ("result" in data && Array.isArray(data.result)) {
 				if (!data.result.length) {
-					showRoomError("No courses available for the specified department code.");
+					showRoomError("No rooms available for the specified department code.");
 				} else {
 					showRoomTable(data.result, roomsInfo_table);
 				}
