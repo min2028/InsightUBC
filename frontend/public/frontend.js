@@ -3,11 +3,11 @@
 let room = document.getElementById("roomName").value;
 let course = document.getElementById("deptName").value;
 document.getElementById("click-me-button").addEventListener("click", handleClickMe);
-document.getElementById("findCourseButton").addEventListener("click", handleFindCourseButton)
+document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
 document.getElementById("findRoomButton").addEventListener("click", getRooms)
 
 const roomName_textInput = document.getElementById("roomName");
-const departmentCode_textInput = document.getElementById("roomName");
+const departmentCode_textInput = document.getElementById("deptName");
 const coursesError_text = document.getElementById("coursesErrorText");
 const coursesInfo_table = document.getElementById("coursesTable");
 
@@ -15,17 +15,27 @@ function handleClickMe() {
 	alert("Button Clicked!");
 }
 
-function handleFindCourseButton() {
-	console.log("Find course clicked!");
+function handleFindCoursesButton() {
+	console.log("Find courses clicked!");
 	clearFields();
-	const data = getCourses("DMP");
-	console.log("Server Response:"); //{result: []} {error: "errorText"}
-	console.log(data);
-	if ("error" in data) {
-		showError(data.error);
-	} else if ("result" in data && Array.isArray(data.result)) {
-		showCourseTable(data, coursesInfo_table);
-	}
+	getCourses(departmentCode_textInput.value.toLowerCase())
+		.then((response) => response.json())
+		.then((data)=> {
+			console.log(data);
+			if ("error" in data) {
+				showError(data.error);
+			} else if ("result" in data && Array.isArray(data.result)) {
+				if (!data.result.length) {
+					showError("No courses available for the specified department code.");
+				} else {
+					showCourseTable(data.result, coursesInfo_table);
+				}
+			} else {
+				console.error(data);
+			}
+		}).catch((error) => {
+			showError("Server connection error.");
+		});
 }
 
 function showError(errorText) {
@@ -58,51 +68,60 @@ function showCourseTable(data, table) {
 }
 
 function getCourses(departmentCode) {
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", "./query");
-	let json = {
-		"WHERE": {
-			"IS": {
-				"sections_dept": departmentCode
+	// let xhr = new XMLHttpRequest();
+	// xhr.open("POST", "./query", false);
+	// xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	const query = {
+		WHERE: {
+			IS: {
+				sections_dept: departmentCode
 			}
 		},
-		"OPTIONS": {
-			"COLUMNS": [
+		OPTIONS: {
+			COLUMNS: [
 				"sections_dept",
 				"sections_id",
 				"sections_title",
 				"countSections"
 			],
-			"ORDER": {
-				"dir": "DOWN",
-				"keys": [
+			ORDER: {
+				dir: "DOWN",
+				keys: [
 					"countSections"
 				]
 			}
 		},
-		"TRANSFORMATIONS": {
-			"GROUP": [
+		TRANSFORMATIONS: {
+			GROUP: [
 				"sections_dept",
 				"sections_id",
 				"sections_title"
 			],
-			"APPLY": [
+			APPLY: [
 				{
-					"countSections": {
-						"COUNT": "sections_uuid"
+					countSections: {
+						COUNT: "sections_uuid"
 					}
 				}
 			]
 		}
 	}
-	xhr.send(JSON.stringify(json));
-	console.log(xhr);
-	return xhr.responseText;
+	return fetch('./query', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(query),
+	});
+	// const response = await fetch()
+	// // xhr.send(JSON.stringify(query));
+	// return JSON.parse(xhr.responseText);
 }
 
 function getRooms(roomName) {
 	let xhr = new XMLHttpRequest();
 	xhr.open("POST", "./query");
+	xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	let json = {
 		"WHERE": {
 			"IS": {

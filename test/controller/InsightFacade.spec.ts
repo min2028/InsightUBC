@@ -783,10 +783,10 @@ describe("[ InsightFacade.spec.ts ]", function () {
 					"rooms", datasetContents.get("rooms") ?? "", InsightDatasetKind.Rooms
 				);
 				let insightDatasets = await insightFacade.addDataset(
-					"courses", datasetContents.get("valid_small") ?? "", InsightDatasetKind.Sections
+					"sections", datasetContents.get("sections") ?? "", InsightDatasetKind.Sections
 				);
 				expect(insightDatasets).to.be.instanceof(Array);
-				expect(insightDatasets).to.deep.equal(["rooms", "courses"]);
+				expect(insightDatasets).to.deep.equal(["rooms", "sections"]);
 				expect(insightDatasets).to.have.length(2);
 				return insightFacade.listDatasets()
 					.then((result) => {
@@ -797,7 +797,7 @@ describe("[ InsightFacade.spec.ts ]", function () {
 									kind: InsightDatasetKind.Rooms,
 									numRows: 364
 								},{
-									id: "courses",
+									id: "sections",
 									kind: InsightDatasetKind.Sections,
 									numRows: 39
 								}
