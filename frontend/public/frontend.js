@@ -1,34 +1,28 @@
-//import http from "http";
-
-let room = document.getElementById("roomName").value;
-let course = document.getElementById("deptName").value;
-document.getElementById("click-me-button").addEventListener("click", handleClickMe);
-document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
-document.getElementById("findRoomButton").addEventListener("click", handleFindRoomButton)
-
-const roomName_textInput = document.getElementById("roomName");
+// Course fields and variables
 const departmentCode_textInput = document.getElementById("deptName");
-const coursesError_text = document.getElementById("coursesErrorText");
+let course = document.getElementById("deptName").value;
+document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
+const coursesError_div = document.getElementById("coursesErrorDiv");
 const coursesInfo_table = document.getElementById("coursesTable");
-const roomsInfo_table = document.getElementById("roomsTable");
-const roomsError_text = document.getElementById("roomsErrorText");
 
-function handleClickMe() {
-	alert("Button Clicked!");
-}
+// Room fields and variables
+const roomName_textInput = document.getElementById("roomName");
+let room = document.getElementById("roomName").value;
+document.getElementById("findRoomButton").addEventListener("click", getRooms);
+const roomsError_div = document.getElementById("roomsErrorDiv");
 
 function handleFindCoursesButton() {
 	console.log("Find courses clicked!");
-	clearCourseFields();
+	clearFields();
 	getCourses(departmentCode_textInput.value.toLowerCase())
 		.then((response) => response.json())
 		.then((data)=> {
 			console.log(data);
 			if ("error" in data) {
-				showCourseError(data.error);
+				showError(data.error);
 			} else if ("result" in data && Array.isArray(data.result)) {
 				if (!data.result.length) {
-					showCourseError("No courses available for the specified department code.");
+					showError("No courses available for the specified department code.", coursesError_div);
 				} else {
 					showCourseTable(data.result, coursesInfo_table);
 				}
@@ -36,73 +30,14 @@ function handleFindCoursesButton() {
 				console.error(data);
 			}
 		}).catch((error) => {
-			showCourseError("Server connection error.");
+			showError("Server connection error.", coursesError_div);
 		});
-}
-
-function showCourseError(errorText) {
-	coursesError_text.innerText = errorText;
-}
-
-function showRoomError(errorText) {
-	roomsError_text.innerText = errorText;
-}
-
-function clearCourseFields() {
-	coursesError_text.innerText = "";
-	coursesInfo_table.innerHTML = null;
-}
-function clearRoomFields() {
-	roomsError_text.innerText = "";
-	roomsInfo_table.innerHTML = null;
 }
 
 function showCourseTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
 	for (let field of ["Department", "Course ID", "Course name", "Total number of sections offered"]) {
-		console.log(field);
-		let th = document.createElement("th");
-		let text = document.createTextNode(field);
-		th.appendChild(text);
-		row.appendChild(th);
-	}
-	for (let course of data) {
-		let row = table.insertRow();
-		for (let field in course) {
-			let cell = row.insertCell();
-			let text = document.createTextNode(course[field]);
-			cell.appendChild(text);
-		}
-	}
-}
-function handleFindRoomButton() {
-	console.log("Find Rooms clicked!");
-	clearRoomFields();
-	getRooms(roomName_textInput.value)
-		.then((response) => response.json())
-		.then((data)=> {
-			console.log(data);
-			if ("error" in data) {
-				showRoomError(data.error);
-			} else if ("result" in data && Array.isArray(data.result)) {
-				if (!data.result.length) {
-					showRoomError("No rooms available for the specified department code.");
-				} else {
-					showRoomTable(data.result, roomsInfo_table);
-				}
-			} else {
-				console.error(data);
-			}
-		}).catch((error) => {
-		showRoomError("Server connection error.");
-	});
-}
-
-function showRoomTable(data, table) {
-	let thead = table.createTHead();
-	let row = thead.insertRow();
-	for (let field of ["Full name", "Address", "Number of seats", "Type of room", "Furniture"]) {
 		console.log(field);
 		let th = document.createElement("th");
 		let text = document.createTextNode(field);
@@ -170,6 +105,10 @@ function getCourses(departmentCode) {
 	// return JSON.parse(xhr.responseText);
 }
 
+function handleFindRoomsButton() {
+
+}
+
 function getRooms(roomName) {
 	let xhr = new XMLHttpRequest();
 	xhr.open("POST", "./query");
@@ -190,41 +129,19 @@ function getRooms(roomName) {
 			]
 		}
 	}
-	// xhr.send(JSON.stringify(json));
-	// return xhr.responseText;
-	return fetch('./query', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify(json),
-	});
-
+	xhr.send(JSON.stringify(json));
+	return xhr.responseText;
 }
 
-function sendPOSTRequest (body) {
-	const urlEncodedAddress = encodeURIComponent(address);
-	const url = `${geoURIBase}/${teamNumber}/${urlEncodedAddress}`;
-	return new Promise((resolve, reject) => {
-		http.get(url, (res) => {
-			let contents = "";
-			res.on("data", function (content) {
-				contents += content;
-				let result;
-				try {
-					result = JSON.parse(contents);
-				} catch (e) {
-					return reject("Invalid JSON geolocation");
-				}
-				if (result.error || !result.lon || !result.lat || (isNaN(result.lon) || isNaN(result.lat))) {
-					return reject(result.error ?? "Invalid Longitude or Latitude in geolocation");
-				} else {
-					const geoLocation = {lat: result.lat, lon: result.lon};
-					return resolve(geoLocation);
-				}
-			});
-		}).on("error", function () {
-			return reject("Geolocation server request error");
-		});
-	});
+function showError(errorText, errorDiv) {
+	let errorTitle = document.createElement("h5");
+	let errorDesc = document.createElement("p");
+	errorTitle.textContent = "Error"
+	errorDesc.textContent = errorText;
+	errorDiv.append(errorTitle, errorDesc);
+}
+
+function clearFields() {
+	coursesError_div.innerText = "";
+	coursesInfo_table.innerHTML = null;
 }

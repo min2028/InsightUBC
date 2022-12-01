@@ -10,7 +10,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 	<!-- styles.css -->
-	<link href="style.css" rel="stylesheet"/>
+
 </head>
 <body>
 <div class="main-container">
@@ -21,37 +21,43 @@
 			</nav>
 		</header>
 	</div>
-	<div class="body-container">
-		<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+	<div class="body-container container-fluid">
+		<div id="carouselExampleControls" class="carousel carousel-dark slide" data-bs-ride="false">
 			<div class="carousel-indicators">
 				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
 				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-				<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
 			</div>
-			<div class="carousel-inner">
-				<div class="carousel-item">
-					<input type="hidden" id="findCourse" name="findCourseRequest">
-					Department name: <input id = "deptName" class="form-control" type="text" name="DeptName" style = "width: 30%">
-					<br />
+			<div class="carousel-inner container-fluid">
+				<div class="carousel-item active container-fluid">
 
-					<button id= "findCourseButton" type="button" class="btn btn-outline-primary" style = "width: 100%">Find Courses</button>
-					<br /><br />
-					<div id = "coursesErrorText" class = "error"></div>
-					<table id = "coursesTable" class = "table table-striped-columns">
+					<div class="input-group mb-3">
+						<span class="input-group-text" id="basic-addon1">Department Name</span>
+						<input id = "deptName" type="text" class="form-control" placeholder="e.g. CPSC " aria-label="Username" aria-describedby="basic-addon1">
+					</div>
+					<br>
+
+					<button id= "findCourseButton" type="button" class="btn btn-outline-dark">Find Courses</button>
+					<br />
+					<br />
+					<table id = "coursesTable" class = "table table-dark table-striped-columns">
 					</table>
 
-					<button id= "click-me-button" type="button" class="btn btn-outline-primary">CLick Courses</button>
+					<div id = "coursesErrorDiv" class="d-none d-md-block error-container">
+					</div>
 
+				</div>
+				<div class="carousel-item container-fluid">
 					<br />
-					<br />>
+					<br />
+					<input type="hidden" id="findRoom" name="findRoomRequest">
+					Room name: <input id = "roomName" class="form-control" type="text" name="FindRoom" style = "width: 30%">
+					<br />
+					<button id= "findRoomButton" type="button" class="btn btn-outline-dark">Find Room</button>
+					<br />
+					<br />
 
-				</div>
-				<div class="carousel-item">
-					<svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Second slide" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#666"></rect><text x="50%" y="50%" fill="#444" dy=".3em">Second slide</text></svg>
-
-				</div>
-				<div class="carousel-item active">
-					<svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Third slide" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#555"></rect><text x="50%" y="50%" fill="#333" dy=".3em">Third slide</text></svg>
+					<div id= "roomsErrorDiv" class="carousel-caption d-none d-md-block error-container">
+					</div>
 
 				</div>
 			</div>
@@ -65,26 +71,8 @@
 			</button>
 		</div>
 	</div>
-	<div id = "result" class="body-container">
-		<div class="row">
-			<div class="col">
-
-			</div>
-			<div class="col">
-				<br />
-				<br />
-				<input type="hidden" id="findRoom" name="findRoomRequest">
-				Room name: <input id = "roomName" class="form-control" type="text" name="FindRoom" style = "width: 30%">
-				<br />
-				<button id= "findRoomButton" type="button" class="btn btn-outline-primary" style = "width: 100%">Find Room </button>
-				<br /><br />
-				<div id = "roomsErrorText" class = "error"></div>
-				<table id = "roomsTable" class = "table table-striped-columns">
-				</table>
-			</div>
-		</div>
-	</div>
 	<script type="text/javascript" src="/frontend.js"></script>
+	<link href="style.css" rel="stylesheet"/>
 </div>
 </body>
 </html>

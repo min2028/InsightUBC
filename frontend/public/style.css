@@ -7,6 +7,28 @@
 	margin: 0;
 	padding: 3%;
 }
-.row{
+.navbar-brand{
+	margin-left: 1.5%;
+}
 
+.input-group {
+	margin-top: 5px;
+	width: 50%;
+}
+
+.carousel-item {
+	position: relative;
+	padding: 0 15%;
+}
+
+.error-container {
+	width: 35%;
+	position: relative;
+	text-align: center;
+	left: 32.5%;
+	margin: 0 0 7%;
+}
+
+.error-container h5 {
+	color: red;
 }
