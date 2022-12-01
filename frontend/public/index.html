@@ -31,36 +31,33 @@
 				<div class="carousel-item active container-fluid">
 
 					<div class="input-group mb-3">
-						<span class="input-group-text" id="basic-addon1">Department Name</span>
+						<span class="input-group-text">Department Name</span>
 						<input id = "deptName" type="text" class="form-control" placeholder="e.g. CPSC " aria-label="Username" aria-describedby="basic-addon1">
 					</div>
-					<br>
 
 					<button id= "findCourseButton" type="button" class="btn btn-outline-dark">Find Courses</button>
-					<br />
-					<br />
-					<table id = "coursesTable" class = "table table-dark table-striped-columns">
-					</table>
 
-					<div id = "coursesErrorDiv" class="d-none d-md-block error-container">
+					<table id = "coursesTable" class = "table table-dark table-striped-columns"></table>
+
+					<div id = "coursesErrorDiv" class="error-container">
 					</div>
 
 				</div>
 				<div class="carousel-item container-fluid">
-					<br />
-					<br />
-					<input type="hidden" id="findRoom" name="findRoomRequest">
-					Room name: <input id = "roomName" class="form-control" type="text" name="FindRoom" style = "width: 30%">
-					<br />
+					<div class="input-group mb-3">
+						<span class="input-group-text">Room Name</span>
+						<input id = "roomName" type="text" class="form-control" placeholder="e.g. DMP_201" aria-label="Username" aria-describedby="basic-addon1">
+					</div>
 					<button id= "findRoomButton" type="button" class="btn btn-outline-dark">Find Room</button>
-					<br />
-					<br />
 
-					<div id= "roomsErrorDiv" class="carousel-caption d-none d-md-block error-container">
+					<table id="roomsTable" class = "table table-dark table-striped-columns"></table>
+
+					<div id= "roomsErrorDiv" class="error-container">
 					</div>
 
 				</div>
 			</div>
+
 			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Previous</span>
