@@ -1,49 +1,47 @@
-//import http from "http";
-
-let room = document.getElementById("roomName").value;
+// Course fields and variables
+const departmentCode_textInput = document.getElementById("deptName");
 let course = document.getElementById("deptName").value;
-document.getElementById("click-me-button").addEventListener("click", handleClickMe);
-document.getElementById("findCourseButton").addEventListener("click", handleFindCourseButton)
-document.getElementById("findRoomButton").addEventListener("click", getRooms)
-
-const roomName_textInput = document.getElementById("roomName");
-const departmentCode_textInput = document.getElementById("roomName");
-const coursesError_text = document.getElementById("coursesErrorText");
+document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
+const coursesError_div = document.getElementById("coursesErrorDiv");
 const coursesInfo_table = document.getElementById("coursesTable");
 
-function handleClickMe() {
-	alert("Button Clicked!");
-}
+// Room fields and variables
+const roomName_textInput = document.getElementById("roomName");
+let room = document.getElementById("roomName").value;
+document.getElementById("findRoomButton").addEventListener("click", handleFindRoomsButton);
+const roomsError_div = document.getElementById("roomsErrorDiv");
+const roomsInfo_table = document.getElementById("roomsTable");
 
-function handleFindCourseButton() {
-	console.log("Find course clicked!");
+function handleFindCoursesButton() {
+	console.log("Find courses clicked!");
 	clearFields();
-	const data = getCourses("DMP");
-	console.log("Server Response:"); //{result: []} {error: "errorText"}
-	console.log(data);
-	if ("error" in data) {
-		showError(data.error);
-	} else if ("result" in data && Array.isArray(data.result)) {
-		showCourseTable(data, coursesInfo_table);
-	}
-}
-
-function showError(errorText) {
-	coursesError_text.innerText = errorText;
-}
-
-function clearFields() {
-	coursesError_text.innerText = "";
-	coursesInfo_table.innerHTML = null;
-
+	getCourses(departmentCode_textInput.value.toLowerCase())
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+			if ("error" in data) {
+				showError(data.error);
+			} else if ("result" in data && Array.isArray(data.result)) {
+				if (!data.result.length) {
+					showError("No courses available for the specified department code.", coursesError_div);
+				} else {
+					showCourseTable(data.result, coursesInfo_table);
+				}
+			} else {
+				console.error(data);
+			}
+		}).catch((error) => {
+		showError("Server connection error.", coursesError_div);
+	});
 }
 
 function showCourseTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
-	for (let key of data) {
+	for (let field of ["Department", "Course ID", "Course name", "Total number of sections offered"]) {
+		console.log(field);
 		let th = document.createElement("th");
-		let text = document.createTextNode(key);
+		let text = document.createTextNode(field);
 		th.appendChild(text);
 		row.appendChild(th);
 	}
@@ -58,51 +56,100 @@ function showCourseTable(data, table) {
 }
 
 function getCourses(departmentCode) {
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", "./query");
-	let json = {
-		"WHERE": {
-			"IS": {
-				"sections_dept": departmentCode
+	// let xhr = new XMLHttpRequest();
+	// xhr.open("POST", "./query", false);
+	// xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	const query = {
+		WHERE: {
+			IS: {
+				sections_dept: departmentCode
 			}
 		},
-		"OPTIONS": {
-			"COLUMNS": [
+		OPTIONS: {
+			COLUMNS: [
 				"sections_dept",
 				"sections_id",
 				"sections_title",
 				"countSections"
 			],
-			"ORDER": {
-				"dir": "DOWN",
-				"keys": [
+			ORDER: {
+				dir: "DOWN",
+				keys: [
 					"countSections"
 				]
 			}
 		},
-		"TRANSFORMATIONS": {
-			"GROUP": [
+		TRANSFORMATIONS: {
+			GROUP: [
 				"sections_dept",
 				"sections_id",
 				"sections_title"
 			],
-			"APPLY": [
+			APPLY: [
 				{
-					"countSections": {
-						"COUNT": "sections_uuid"
+					countSections: {
+						COUNT: "sections_uuid"
 					}
 				}
 			]
 		}
 	}
-	xhr.send(JSON.stringify(json));
-	console.log(xhr);
-	return xhr.responseText;
+	return fetch('./query', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(query),
+	});
+	// const response = await fetch()
+	// // xhr.send(JSON.stringify(query));
+	// return JSON.parse(xhr.responseText);
+}
+
+function handleFindRoomsButton() {
+	console.log("Find Rooms clicked!");
+	clearFields();
+	getRooms(roomName_textInput.value.toUpperCase())
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+			if ("error" in data) {
+				showError(data.error, roomsError_div);
+			} else if ("result" in data && Array.isArray(data.result)) {
+				if (!data.result.length) {
+					showError("No room exist for the specified Room Name.", roomsError_div);
+				} else {
+					showRoomTable(data.result, roomsInfo_table);
+				}
+			} else {
+				console.error(data);
+			}
+		}).catch((error) => {
+		showError("Server connection error.", roomsError_div);
+	});
+}
+
+function showRoomTable(data, table) {
+	let thead = table.createTHead();
+	let row = thead.insertRow();
+	for (let field of ["Full name", "Address", "Number of seats", "Type of room", "Furniture"]) {
+		console.log(field);
+		let th = document.createElement("th");
+		let text = document.createTextNode(field);
+		th.appendChild(text);
+		row.appendChild(th);
+	}
+	for (let course of data) {
+		let row = table.insertRow();
+		for (let field in course) {
+			let cell = row.insertCell();
+			let text = document.createTextNode(course[field]);
+			cell.appendChild(text);
+		}
+	}
 }
 
 function getRooms(roomName) {
-	let xhr = new XMLHttpRequest();
-	xhr.open("POST", "./query");
 	let json = {
 		"WHERE": {
 			"IS": {
@@ -119,34 +166,26 @@ function getRooms(roomName) {
 			]
 		}
 	}
-	xhr.send(JSON.stringify(json));
-	return xhr.responseText;
-
+	return fetch('./query', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(json),
+	});
 }
 
-function sendPOSTRequest (body) {
-	const urlEncodedAddress = encodeURIComponent(address);
-	const url = `${geoURIBase}/${teamNumber}/${urlEncodedAddress}`;
-	return new Promise((resolve, reject) => {
-		http.get(url, (res) => {
-			let contents = "";
-			res.on("data", function (content) {
-				contents += content;
-				let result;
-				try {
-					result = JSON.parse(contents);
-				} catch (e) {
-					return reject("Invalid JSON geolocation");
-				}
-				if (result.error || !result.lon || !result.lat || (isNaN(result.lon) || isNaN(result.lat))) {
-					return reject(result.error ?? "Invalid Longitude or Latitude in geolocation");
-				} else {
-					const geoLocation = {lat: result.lat, lon: result.lon};
-					return resolve(geoLocation);
-				}
-			});
-		}).on("error", function () {
-			return reject("Geolocation server request error");
-		});
-	});
+function showError(errorText, errorDiv) {
+	let errorTitle = document.createElement("h5");
+	let errorDesc = document.createElement("p");
+	errorTitle.textContent = "Error"
+	errorDesc.textContent = errorText;
+	errorDiv.append(errorTitle, errorDesc);
+}
+
+function clearFields() {
+	coursesError_div.innerText = "";
+	coursesInfo_table.innerHTML = null;
+	roomsError_div.innerText = "";
+	roomsInfo_table.innerHTML = null;
 }

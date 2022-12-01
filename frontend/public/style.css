@@ -1,7 +1,37 @@
 .main-container{
-	height: 1000px;
+	height: 100vh;
+}
+.body-container {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 3%;
+}
+.navbar-brand{
+	margin-left: 1.5%;
+}
+.carousel-item {
+	position: relative;
+	padding: 0 15%;
 }
 
-.body-container{
-	padding: 1vh;
+.input-group {
+	margin-top: 5px;
+	width: 50%;
+}
+
+.btn {
+	margin-bottom: 1.5%;
+}
+
+.error-container {
+	width: 35%;
+	position: relative;
+	text-align: center;
+	left: 32.5%;
+	margin: 0 0 5%;
+}
+
+.error-container h5 {
+	color: red;
 }
