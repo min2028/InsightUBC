@@ -92,19 +92,19 @@ export default class Server {
 	}
 
 	private static addDatasetCall(req: Request, res: Response) {
-		const insightFacade = new InsightFacade();
-		console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
-		const id: string = req.params.id;
-		let kind: InsightDatasetKind;
-		if (req.params.kind === "rooms") {
-			kind = InsightDatasetKind.Rooms;
-		} else if (req.params.kind === "sections") {
-			kind = InsightDatasetKind.Sections;
-		} else {
-			res.status(400).json({error: "Invalid dataset kind"});
-			return;
-		}
 		try {
+			const insightFacade = new InsightFacade();
+			console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
+			const id: string = req.params.id;
+			let kind: InsightDatasetKind;
+			if (req.params.kind === "rooms") {
+				kind = InsightDatasetKind.Rooms;
+			} else if (req.params.kind === "sections") {
+				kind = InsightDatasetKind.Sections;
+			} else {
+				res.status(400).json({error: "Invalid dataset kind"});
+				return;
+			}
 			const content: string = Buffer.from(req.body, "binary").toString("base64");
 			return insightFacade.addDataset(id, content, kind)
 				.then((datasetIDs) => {
