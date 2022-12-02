@@ -101,9 +101,9 @@ export default class Server {
 		try {
 			const id: string = req.params.id ?? "";
 			let kind: InsightDatasetKind;
-			if ((req.params.kind ?? "".toLowerCase()) === "rooms") {
+			if ((req.params.kind ?? "").trim().toLowerCase() === "rooms") {
 				kind = InsightDatasetKind.Rooms;
-			} else if ((req.params.kind ?? "".toLowerCase()) === "sections") {
+			} else if ((req.params.kind ?? "").trim().toLowerCase() === "sections") {
 				kind = InsightDatasetKind.Sections;
 			} else {
 				res.status(400).json({error: "Invalid dataset kind"});
@@ -112,7 +112,7 @@ export default class Server {
 			const content: string = Buffer.from(req.body, "binary").toString("base64");
 			return insightFacade.addDataset(id, content, kind)
 				.then((datasetIDs) => {
-					res.status(200).json({results: datasetIDs});
+					res.status(200).json({result: datasetIDs});
 				}).catch((err) => {
 					console.log(err.toString());
 					res.status(400).json({error: err.message});
