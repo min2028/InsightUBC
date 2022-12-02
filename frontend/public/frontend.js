@@ -1,7 +1,7 @@
 // Course fields and variables
 const departmentCode_textInput = document.getElementById("deptName");
 let course = document.getElementById("deptName").value;
-document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton)
+document.getElementById("findCourseButton").addEventListener("click", handleFindCoursesButton);
 const coursesError_div = document.getElementById("coursesErrorDiv");
 const coursesInfo_table = document.getElementById("coursesTable");
 
@@ -15,7 +15,15 @@ const roomsInfo_table = document.getElementById("roomsTable");
 function handleFindCoursesButton() {
 	console.log("Find courses clicked!");
 	clearFields();
-	getCourses(departmentCode_textInput.value.toLowerCase())
+	const input = departmentCode_textInput.value.trim().toLowerCase();
+	if (!input.length) {
+		showError("Please specify a department name in the field.", coursesError_div);
+		return;
+	} else if (!/(^[a-zA-Z]{1,10}$)/.test(input)) {
+		showError("Invalid input: Department short name can only contain up to 10 letters.", coursesError_div);
+		return;
+	}
+	getCourses(input)
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data);
@@ -23,7 +31,7 @@ function handleFindCoursesButton() {
 				showError(data.error);
 			} else if ("result" in data && Array.isArray(data.result)) {
 				if (!data.result.length) {
-					showError("No courses available for the specified department code.", coursesError_div);
+					showError("No courses were found for the specified Department.", coursesError_div);
 				} else {
 					showCourseTable(data.result, coursesInfo_table);
 				}
@@ -31,14 +39,14 @@ function handleFindCoursesButton() {
 				console.error(data);
 			}
 		}).catch((error) => {
-		showError("Server connection error.", coursesError_div);
-	});
+			showError("Server connection error.", coursesError_div);
+		});
 }
 
 function showCourseTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
-	for (let field of ["Department", "Course ID", "Course name", "Total number of sections offered"]) {
+	for (let field of ["Course number", "Course name", "Total number of sections offered"]) {
 		console.log(field);
 		let th = document.createElement("th");
 		let text = document.createTextNode(field);
@@ -56,9 +64,6 @@ function showCourseTable(data, table) {
 }
 
 function getCourses(departmentCode) {
-	// let xhr = new XMLHttpRequest();
-	// xhr.open("POST", "./query", false);
-	// xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 	const query = {
 		WHERE: {
 			IS: {
@@ -67,7 +72,6 @@ function getCourses(departmentCode) {
 		},
 		OPTIONS: {
 			COLUMNS: [
-				"sections_dept",
 				"sections_id",
 				"sections_title",
 				"countSections"
@@ -81,7 +85,6 @@ function getCourses(departmentCode) {
 		},
 		TRANSFORMATIONS: {
 			GROUP: [
-				"sections_dept",
 				"sections_id",
 				"sections_title"
 			],
@@ -101,15 +104,20 @@ function getCourses(departmentCode) {
 		},
 		body: JSON.stringify(query),
 	});
-	// const response = await fetch()
-	// // xhr.send(JSON.stringify(query));
-	// return JSON.parse(xhr.responseText);
 }
 
 function handleFindRoomsButton() {
 	console.log("Find Rooms clicked!");
 	clearFields();
-	getRooms(roomName_textInput.value.toUpperCase())
+	const input = roomName_textInput.value.trim().toUpperCase();
+	if (!input.length) {
+		showError("Please specify a room name in the field.", roomsError_div);
+		return;
+	} else if (!/(^[a-zA-Z]{1,10}_\w+$)/.test(input)) {
+		showError("Invalid input: Room name must be in the format [building short name]_[room number].", roomsError_div);
+		return;
+	}
+	getRooms(input)
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data);
@@ -117,7 +125,7 @@ function handleFindRoomsButton() {
 				showError(data.error, roomsError_div);
 			} else if ("result" in data && Array.isArray(data.result)) {
 				if (!data.result.length) {
-					showError("No room exist for the specified Room Name.", roomsError_div);
+					showError("No info were found for the specified Room Name.", roomsError_div);
 				} else {
 					showRoomTable(data.result, roomsInfo_table);
 				}
@@ -125,14 +133,14 @@ function handleFindRoomsButton() {
 				console.error(data);
 			}
 		}).catch((error) => {
-		showError("Server connection error.", roomsError_div);
-	});
+			showError("Server connection error.", roomsError_div);
+		});
 }
 
 function showRoomTable(data, table) {
 	let thead = table.createTHead();
 	let row = thead.insertRow();
-	for (let field of ["Full name", "Address", "Number of seats", "Type of room", "Furniture"]) {
+	for (let field of ["Building name", "Building address", "Number of seats in room", "Type of room", "Furniture"]) {
 		console.log(field);
 		let th = document.createElement("th");
 		let text = document.createTextNode(field);
