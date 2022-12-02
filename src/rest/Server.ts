@@ -97,9 +97,9 @@ export default class Server {
 			console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
 			const id: string = req.params.id;
 			let kind: InsightDatasetKind;
-			if (req.params.kind === "rooms") {
+			if (req.params.kind.toLowerCase() === "rooms") {
 				kind = InsightDatasetKind.Rooms;
-			} else if (req.params.kind === "sections") {
+			} else if (req.params.kind.toLowerCase() === "sections") {
 				kind = InsightDatasetKind.Sections;
 			} else {
 				res.status(400).json({error: "Invalid dataset kind"});
