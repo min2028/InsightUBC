@@ -142,10 +142,10 @@ export default class Server {
 		return insightFacade.listDatasets()
 			.then((insightDatasetList: InsightDataset[]) => {
 				res.status(200).json({result: insightDatasetList});
-			}).catch((err) =>
-				// The promise should not have been rejected
-				console.error(err)
-			);
+			}).catch((err) => {
+				// The promise should have not been rejected
+				console.error(err);
+			});
 	}
 
 	private static performQueryCall(req: Request, res: Response) {
