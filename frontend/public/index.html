@@ -29,40 +29,51 @@
 			</div>
 			<div class="carousel-inner container-fluid">
 				<div class="carousel-item active container-fluid">
-
-					<div class="input-group mb-3">
-						<span class="input-group-text">Department Name</span>
-						<input id = "deptName" type="text" class="form-control" placeholder="e.g. CPSC " aria-label="Username" aria-describedby="basic-addon1">
+					<h2>Course Popularity Finder</h2>
+					<p>
+						Enter the department name (in short format e.g. BIOL) in the field bellow to view list of courses
+						offered by the department sorted by their popularity/importance.
+					</p>
+					<div class="form">
+						<div class="input-group mb-3">
+							<span class="input-group-text">Department Name</span>
+							<input id = "deptName" type="text" class="form-control" placeholder="e.g. CPSC " aria-label="Username" aria-describedby="basic-addon1">
+						</div>
+						<button id= "findCourseButton" type="button" class="btn btn-outline-dark">Find Courses</button>
 					</div>
 
-					<button id= "findCourseButton" type="button" class="btn btn-outline-dark">Find Courses</button>
 
 					<table id = "coursesTable" class = "table table-dark table-striped-columns"></table>
 
-					<div id = "coursesErrorDiv" class="error-container">
-					</div>
+					<div id = "coursesErrorDiv" class="error-container"></div>
 
 				</div>
 				<div class="carousel-item container-fluid">
-					<div class="input-group mb-3">
-						<span class="input-group-text">Room Name</span>
-						<input id = "roomName" type="text" class="form-control" placeholder="e.g. DMP_201" aria-label="Username" aria-describedby="basic-addon1">
+					<h2>Campus Room Finder</h2>
+					<p>
+						Enter name of the room in the field bellow to see more details about it.
+					</p>
+					<div class="form">
+						<div class="input-group mb-3">
+							<span class="input-group-text">Room Name</span>
+							<input id = "roomName" type="text" class="form-control" placeholder="e.g. DMP_201" aria-label="Username" aria-describedby="basic-addon1">
+						</div>
+						<button id= "findRoomButton" type="button" class="btn btn-outline-dark">Find Room</button>
 					</div>
-					<button id= "findRoomButton" type="button" class="btn btn-outline-dark">Find Room</button>
 
 					<table id="roomsTable" class = "table table-dark table-striped-columns"></table>
 
 					<div id= "roomsErrorDiv" class="error-container">
 					</div>
-
 				</div>
+				<br />
 			</div>
 
-			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+			<button class="carousel-control-prev nav-button" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Previous</span>
 			</button>
-			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+			<button class="carousel-control-next nav-button" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Next</span>
 			</button>

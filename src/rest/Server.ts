@@ -89,17 +89,21 @@ export default class Server {
 		this.express.delete("/dataset/:id", Server.removeDatasetCall);
 		this.express.put("/dataset/:id/:kind", Server.addDatasetCall);
 		this.express.post("/query", Server.performQueryCall);
+		this.express.post("*", Server.invalidURI);
+		this.express.put("*", Server.invalidURI);
+		this.express.delete("*", Server.invalidURI);
+		// this.express.get("*", Server.invalidURI);
 	}
 
 	private static addDatasetCall(req: Request, res: Response) {
+		const insightFacade = new InsightFacade();
+		console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
 		try {
-			const insightFacade = new InsightFacade();
-			console.log(`Server::addDatasetCall(..) - params: ${JSON.stringify(req.params)}`);
-			const id: string = req.params.id;
+			const id: string = req.params.id ?? "";
 			let kind: InsightDatasetKind;
-			if (req.params.kind.toLowerCase() === "rooms") {
+			if ((req.params.kind ?? "".toLowerCase()) === "rooms") {
 				kind = InsightDatasetKind.Rooms;
-			} else if (req.params.kind.toLowerCase() === "sections") {
+			} else if ((req.params.kind ?? "".toLowerCase()) === "sections") {
 				kind = InsightDatasetKind.Sections;
 			} else {
 				res.status(400).json({error: "Invalid dataset kind"});
@@ -113,8 +117,8 @@ export default class Server {
 					console.log(err.toString());
 					res.status(400).json({error: err.message});
 				});
-		} catch (err) {
-			res.status(400).json({error: err});
+		} catch (err: any) {
+			res.status(400).json({error: err.message});
 		}
 	}
 
@@ -175,5 +179,9 @@ export default class Server {
 		} else {
 			return "Message not provided";
 		}
+	}
+
+	private static invalidURI(req: Request, res: Response) {
+		res.status(400).json({error: "Invalid URI"});
 	}
 }

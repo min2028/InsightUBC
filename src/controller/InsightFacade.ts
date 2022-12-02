@@ -54,7 +54,7 @@ export default class InsightFacade implements IInsightFacade {
 		}
 		const index = this.insightDatasetList.findIndex((item) => item.id === id);
 		if (index === -1) {
-			return Promise.reject(new NotFoundError());
+			return Promise.reject(new NotFoundError("Dataset does not exist"));
 		}
 		this.insightDatasetList.splice(index, 1);
 		Disk.writeDatasetMeta(this.insightDatasetList);
