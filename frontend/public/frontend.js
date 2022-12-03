@@ -17,7 +17,7 @@ function handleFindCoursesButton() {
 	clearFields();
 	const input = departmentCode_textInput.value.trim().toLowerCase();
 	if (!input.length) {
-		showError("Please specify a department name in the field.", coursesError_div);
+		showError("Please specify a department code in the field.", coursesError_div);
 		return;
 	} else if (!/(^[a-zA-Z]{1,10}$)/.test(input)) {
 		showError("Invalid input: Department short name can only contain up to 10 letters.", coursesError_div);
